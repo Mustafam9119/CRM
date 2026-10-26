@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Solutions CRM</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f1424">
+<meta name="description" content="Client projects, team timesheets and weekly payroll reports for AI Solutions.">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --side:#0f1424; --side-2:#1b2236; --side-ink:#cbd2e1;
+  --ink:#111827; --muted:#6b7280; --line:#e6e8ef; --bg:#f6f7fb; --card:#fff;
+  --brand:#4f46e5; --brand-2:#4338ca; --brand-soft:#eef2ff;
+  --green:#047857; --green-soft:#ecfdf5; --purple:#9333ea; --purple-soft:#faf5ff;
+  --amber:#b45309; --amber-soft:#fffbeb; --red:#dc2626; --red-soft:#fef2f2;
+  --r:12px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+/* Layout */
+#app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.side{background:var(--side);color:var(--side-ink);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.logo{display:flex;align-items:center;gap:10px;padding:18px 20px;color:#fff;font-weight:700;font-size:17px;border-bottom:1px solid var(--side-2)}
+.logo-mark{width:32px;height:32px;border-radius:8px;display:block;flex:none;box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+.nav{padding:14px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
+.nav button{all:unset;cursor:pointer;display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:9px;font-weight:500;color:var(--side-ink)}
+.nav button i{width:16px;text-align:center;opacity:.85}
+.nav button:hover{background:var(--side-2);color:#fff}
+.nav button.on{background:var(--brand);color:#fff}
+.nav button:focus-visible{outline:2px solid #fff}
+.session{padding:14px;border-top:1px solid var(--side-2)}
+.session small{display:block;font-size:11px;font-weight:600;color:#8b93a7;margin-bottom:10px;letter-spacing:.3px}
+.me{display:flex;align-items:center;gap:10px;background:var(--side-2);padding:10px;border-radius:10px}
+.me .who{flex:1;min-width:0}
+.me b{display:block;color:#fff;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.me em{font-style:normal;font-size:11px;color:#a5b4fc;font-weight:600}
+.me button{all:unset;cursor:pointer;width:28px;height:28px;display:grid;place-items:center;border-radius:7px;background:#262e45;color:#cbd2e1}
+.me button:hover{color:#fff}
+main{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:14px 24px}
+.top h1{font-size:19px;margin:0;flex:1;font-weight:700}
+.menu-btn{display:none}
+.sync{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.sync i{font-size:8px}
+.sync.ok i{color:#10b981}.sync.saving i{color:#f59e0b}.sync.error i{color:var(--red)}.sync.local i{color:#9ca3af}
+#view{padding:22px 24px 48px;max-width:1500px;width:100%}
+
+/* Components */
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid transparent;border-radius:9px;padding:9px 15px;font-weight:600;cursor:pointer;background:#fff;white-space:nowrap}
+.btn.primary{background:var(--brand);color:#fff}.btn.primary:hover{background:var(--brand-2)}
+.btn.ghost{border-color:var(--line);background:#f9fafb}.btn.ghost:hover{background:#f1f2f6}
+.btn.danger{background:var(--red-soft);color:var(--red);border-color:#fecaca}
+.btn.ok{background:var(--green-soft);color:var(--green);border-color:#a7f3d0}
+.btn.sm{padding:6px 11px;font-size:13px}
+.btn:disabled{opacity:.6;cursor:progress}
+.icon-btn{all:unset;cursor:pointer;width:30px;height:30px;display:inline-grid;place-items:center;border-radius:7px;color:#9ca3af}
+.icon-btn:hover{background:#f3f4f6;color:var(--ink)}
+.icon-btn.del:hover{color:var(--red);background:var(--red-soft)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r)}
+.head-card{display:flex;align-items:center;gap:16px;padding:20px 22px;margin-bottom:20px;flex-wrap:wrap}
+.head-card div{flex:1;min-width:220px}
+.head-card h2{margin:0 0 4px;font-size:16px}
+.head-card p{margin:0;color:var(--muted);font-size:13px}
+.badge{display:inline-block;white-space:nowrap;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:99px;border:1px solid}
+.b-green{background:var(--green-soft);color:var(--green);border-color:#a7f3d0}
+.b-purple{background:var(--purple-soft);color:var(--purple);border-color:#e9d5ff}
+.b-blue{background:var(--brand-soft);color:var(--brand);border-color:#c7d2fe}
+.b-amber{background:var(--amber-soft);color:var(--amber);border-color:#fde68a}
+.b-red{background:var(--red-soft);color:var(--red);border-color:#fecaca}
+.b-grey{background:#f3f4f6;color:#4b5563;border-color:#e5e7eb}
+.bar{height:6px;background:#eef0f5;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:99px}
+.bar i.over{background:var(--red)}
+.muted{color:var(--muted)}
+.empty{padding:36px 20px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);margin-bottom:4px}
+
+/* Projects */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px}
+.pcard{padding:20px;display:flex;flex-direction:column}
+.pc-top{display:flex;align-items:center;gap:6px;margin-bottom:12px}
+.pc-top .sp{flex:1}
+.pcard h3{margin:0 0 4px;font-size:16px}
+.client{color:var(--brand);font-size:12.5px;display:flex;gap:6px;align-items:center}
+.pc-label{font-size:12px;font-weight:600;color:var(--muted);margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--line)}
+.tasks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:190px;overflow:auto}
+.tasks li{display:flex;justify-content:space-between;gap:10px;background:#f8f9fb;border:1px solid #eff1f5;border-radius:7px;padding:8px 10px;font-size:13px}
+.tasks li span:last-child{white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}
+.tasks li.over span:last-child{color:var(--red);font-weight:600}
+.pc-foot{margin-top:auto;padding-top:16px;display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:8px;gap:8px}
+.pc-foot b{color:var(--ink)}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th{font-size:12px;font-weight:600;color:var(--muted);text-align:left;padding:12px 18px;border-bottom:1px solid var(--line);white-space:nowrap;background:#fbfbfd}
+td{padding:13px 18px;border-bottom:1px solid #f0f1f5;vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tfoot td{font-weight:700;background:#fbfbfd;border-top:1px solid var(--line)}
+.person{display:flex;align-items:center;gap:12px}
+.avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+.person b{display:block;white-space:nowrap}
+.person small{color:var(--muted);font-size:12px}
+.role-tag{white-space:nowrap;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:6px;padding:3px 8px;font-size:12.5px}
+.actions{white-space:nowrap;text-align:right}
+
+/* Dashboard */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px}
+.stat{padding:18px 20px}
+.stat span{color:var(--muted);font-size:13px}
+.stat b{display:block;font-size:26px;margin-top:6px;font-variant-numeric:tabular-nums}
+.two{display:grid;grid-template-columns:1.4fr 1fr;gap:20px}
+.panel-h{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+.panel-h h3{margin:0;font-size:15px}
+.blist{padding:6px 18px 16px}
+.blist div{padding:10px 0;border-bottom:1px solid #f0f1f5}
+.blist div:last-child{border:0}
+.blist p{display:flex;justify-content:space-between;margin:0 0 7px;font-size:13px}
+
+/* Week nav and toolbar */
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.toolbar .sp{flex:1}
+.week{display:inline-flex;align-items:center;background:#fff;border:1px solid var(--line);border-radius:9px}
+.week button{all:unset;cursor:pointer;padding:8px 11px;color:var(--muted)}
+.week button:hover{color:var(--ink)}
+.week span{font-weight:600;padding:0 6px;min-width:150px;text-align:center}
+.in,select.in,textarea.in{width:100%;border:1px solid #d9dce5;border-radius:8px;padding:9px 11px;background:#fff}
+.in:focus{outline:2px solid var(--brand-soft);border-color:var(--brand)}
+select.in.inline{width:auto}
+.cur-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:18px}
+.email-box{display:flex;align-items:center;gap:16px;padding:18px 20px;margin-bottom:20px;background:linear-gradient(0deg,#fff,#fff);border-left:4px solid var(--brand);flex-wrap:wrap}
+.email-box div{flex:1;min-width:240px}
+.email-box h3{margin:0 0 3px;font-size:15px}
+.email-box p{margin:0;color:var(--muted);font-size:13px}
+
+/* Forms / modal */
+.fl{display:block;font-size:12.5px;font-weight:600;color:#374151;margin:0 0 6px}
+.field{margin-bottom:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.trow{display:grid;grid-template-columns:1fr 100px 30px;gap:8px;margin-bottom:8px;align-items:center}
+.hint{font-size:12px;color:var(--muted);margin-top:5px}
+.warn{background:var(--amber-soft);border:1px solid #fde68a;color:var(--amber);padding:10px 12px;border-radius:8px;font-size:13px;margin-bottom:14px}
+#askRoot .modal-bg{z-index:70}
+.ask-msg{white-space:pre-line;margin:0;line-height:1.5}
+.modal-bg{position:fixed;inset:0;background:rgba(15,20,36,.45);display:grid;place-items:center;padding:20px;z-index:50}
+.modal{background:#fff;border-radius:14px;width:min(620px,100%);max-height:calc(100vh - 40px);overflow:auto;box-shadow:0 24px 60px rgba(15,20,36,.3)}
+.modal header{display:flex;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:1}
+.modal header h2{margin:0;font-size:17px;flex:1}
+.modal .body{padding:20px 22px}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:8px;padding-top:16px;border-top:1px solid var(--line)}
+.photo-pick{display:flex;align-items:center;gap:14px}
+.photo-pick .avatar{width:56px;height:56px;font-size:18px}
+.sect{padding:20px 22px;margin-bottom:20px}
+.sect h3{margin:0 0 4px;font-size:15px}
+.sect>p{margin:0 0 16px;color:var(--muted);font-size:13px}
+code{background:#f3f4f6;padding:1px 6px;border-radius:5px;font-size:12.5px}
+
+/* Toast */
+#toasts{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:8px;z-index:60}
+.toast{background:var(--side);color:#fff;padding:12px 16px;border-radius:10px;max-width:380px;box-shadow:0 10px 30px rgba(0,0,0,.2);font-size:13.5px;display:flex;gap:10px;align-items:flex-start}
+.toast.ok i{color:#34d399}.toast.err i{color:#f87171}
+@media (prefers-reduced-motion:no-preference){.toast{animation:tin .2s ease-out}.modal{animation:min .18s ease-out}}
+@keyframes tin{from{transform:translateY(8px);opacity:0}}
+@keyframes min{from{transform:scale(.98);opacity:0}}
+
+/* Login */
+#login{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
+.login-art{background:var(--side);color:#fff;padding:48px;display:flex;flex-direction:column;justify-content:space-between}
+.login-art h2{font-size:34px;line-height:1.15;margin:0 0 12px;max-width:420px}
+.login-art p{color:var(--side-ink);max-width:420px;line-height:1.6}
+.login-form{display:grid;place-items:center;padding:32px}
+.login-form form{width:min(380px,100%)}
+.login-form h1{font-size:22px;margin:0 0 6px}
+.err{color:var(--red);font-size:13px;min-height:18px;margin:6px 0}
+details{margin-top:24px;border-top:1px solid var(--line);padding-top:16px}
+summary{cursor:pointer;color:var(--brand);font-weight:600;font-size:13px}
+
+@media (max-width:1000px){.two{grid-template-columns:1fr}}
+@media (max-width:860px){
+  #app{grid-template-columns:1fr}
+  .side{position:fixed;inset:0 auto 0 0;width:250px;z-index:40;transform:translateX(-100%);transition:transform .2s}
+  .side.open{transform:none}
+  .menu-btn{display:inline-grid}
+  .top{padding:12px 16px;flex-wrap:wrap}
+  .top .btn span{display:none}
+  #view{padding:16px}
+  #login{grid-template-columns:1fr}.login-art{display:none}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .pgrid{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr;gap:10px}.stat{padding:14px}.stat b{font-size:22px}
+  #toasts{left:12px;right:12px;bottom:12px}.toast{max-width:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<section id="login" hidden>
+  <div class="login-art">
+    <div class="logo" style="border:0;padding:0"><img class="logo-mark" src="data:image/png;base64,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" alt="AI Solutions logo"><span id="loginCompany">AI Solutions</span></div>
+    <div>
+      <h2>Projects, hours and payroll in one place.</h2>
+      <p>Log time against client deliverables, keep in-direct work inside its weekly cap, and send the weekly payroll report in PDF and Excel with one click.</p>
+    </div>
+    <small style="color:#8b93a7">Team workspace</small>
+  </div>
+  <div class="login-form">
+    <form onsubmit="doLogin(event)">
+      <h1>Sign in</h1>
+      <p class="muted" style="margin:0 0 22px">Use the email your administrator added for you.</p>
+      <div class="field"><label class="fl" for="lgEmail">Email</label><input class="in" id="lgEmail" type="email" autocomplete="username" required></div>
+      <div class="field"><label class="fl" for="lgPin">PIN</label><input class="in" id="lgPin" type="password" inputmode="numeric" autocomplete="current-password" required>
+        <div class="hint">First time signing in? Your PIN is 1234 until you change it.</div></div>
+      <div class="err" id="lgErr" role="alert"></div>
+      <button class="btn primary" style="width:100%;justify-content:center" id="lgBtn">Sign in</button>
+      <p class="hint" style="margin-top:14px">Can't sign in on this device? <a href="#" onclick="resetDevice();return false">Reset this device to the starter data</a>.</p>
+      <details id="connBox">
+        <summary>Connect this device to your team's data</summary>
+        <p class="hint">Your administrator can send you an invite link instead. Paste the web app URL and API key from Google Apps Script.</p>
+        <div class="field"><label class="fl" for="lcUrl">Web app URL</label><input class="in" id="lcUrl" placeholder="https://script.google.com/macros/s/…/exec"></div>
+        <div class="field"><label class="fl" for="lcKey">API key</label><input class="in" id="lcKey" type="password"></div>
+        <button type="button" class="btn ghost" onclick="connectFromLogin()">Connect</button>
+        <span class="hint" id="lcState"></span>
+      </details>
+    </form>
+  </div>
+</section>
+
+<!-- App -->
+<div id="app" hidden>
+  <aside class="side" id="side">
+    <div class="logo"><img class="logo-mark" src="data:image/png;base64,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" alt="AI Solutions logo"><span id="companyName">AI Solutions</span></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="session">
+      <small>Active session</small>
+      <div class="me" id="me"></div>
+    </div>
+  </aside>
+  <main>
+    <header class="top">
+      <button class="icon-btn menu-btn" onclick="toggleSide()" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+      <h1 id="title"></h1>
+      <span class="sync" id="sync"></span>
+      <button class="btn primary" onclick="openTsModal()"><i class="fa-solid fa-plus"></i><span>Submit timesheet</span></button>
+      <button class="btn ghost" id="topNewProject" onclick="openProjectModal()"><i class="fa-solid fa-folder-plus"></i><span>New project</span></button>
+    </header>
+    <div id="view"></div>
+  </main>
+</div>
+
+<div id="modalRoot"></div>
+<div id="askRoot"></div>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* ============================================================
+   Configuration
+   ============================================================ */
+const REPORT_EMAIL = 'mohamed@ai-es.com.au';   // weekly report recipient (enforced again on the server)
+const CURRENCIES = ['AUD', 'EGP', 'SAR', 'USD'];
+const DEFAULT_PIN = '1234';
+const SEED_PHOTOS = {
+  'emp-elnasser': 'data:image/jpeg;base64,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',
+  'emp-mustafa': 'data:image/jpeg;base64,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',
+  'emp-badran': 'data:image/jpeg;base64,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'
+};
+const K = { db: 'aisol.db.v1', cfg: 'aisol.cfg.v1', sess: 'aisol.session.v1', q: 'aisol.queue.v1' };
+
+/* ============================================================
+   Small helpers
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-5);
+const round2 = n => Math.round((+n || 0) * 100) / 100;
+const fmtH = n => round2(n) + 'h';
+const money = (n, c) => (+n || 0).toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + (c ? ' ' + c : '');
+const sumH = arr => round2(arr.reduce((a, t) => a + (+t.hours || 0), 0));
+function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function parseYmd(s) { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
+function mondayOf(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; }
+function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function weekRange(ws) { return { start: ymd(ws), end: ymd(addDays(ws, 6)) }; }
+function weekLabel(ws) {
+  const we = addDays(ws, 6), o = { day: 'numeric', month: 'short' };
+  return ws.toLocaleDateString('en-AU', o) + ' – ' + we.toLocaleDateString('en-AU', { ...o, year: 'numeric' });
+}
+function niceDate(s) { return parseYmd(s).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }); }
+function initials(name) { return String(name || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join(''); }
+function avatar(e) { return e && e.photo ? `<img class="avatar" src="${esc(e.photo)}" alt="">` : `<span class="avatar">${esc(initials(e && e.name))}</span>`; }
+
+const store = {
+  get(k, f) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : f; } catch (e) { return f; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { toast('This device could not save the change: browser storage is full or blocked.', 'err'); } }
+};
+
+async function hashPin(pin, email) {
+  const text = 'aisol:' + String(email || '').toLowerCase() + ':' + pin;
+  if (window.crypto && crypto.subtle) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  let h = 0; for (const ch of text) h = (h * 31 + ch.charCodeAt(0)) | 0; return 'x' + h;
+}
+
+/* ============================================================
+   Data
+   ============================================================ */
+function defaultSettings() {
+  return { id: 'main', company: 'AI Solutions', fxToAUD: { AUD: 1, EGP: 0.031, USD: 1.53, SAR: 0.41 }, lastEmailed: null };
+}
+function seedDb() {
+  const client = 'Artificial Engineering Solutions';
+  const t = (id, name, limit) => ({ id, name, limit });
+  return {
+    employees: [
+      { id: 'emp-elnasser', name: 'Muhammed Abd Elnasser', location: 'Suhaj, Egypt', email: 'muhammedabdelnasser@yahoo.com', phone: '+201009409312', role: 'Mechanical Engineer', rate: 62.5, currency: 'EGP', access: 'employee', photo: SEED_PHOTOS['emp-elnasser'], pinHash: '' },
+      { id: 'emp-mustafa', name: 'Mohamed Mustafa', location: 'Brisbane, Australia', email: 'mohamed@ai-es.com.au', phone: '+61484192482', role: 'Founder', rate: 20, currency: 'AUD', access: 'admin', photo: SEED_PHOTOS['emp-mustafa'], pinHash: '' },
+      { id: 'emp-badran', name: 'Mohamed Badran', location: 'Philadelphia, Pennsylvania, United States', email: 'mohamedyoyo55@gmail.com', phone: '+15516979744', role: 'Technical Director', rate: 20, currency: 'USD', access: 'employee', photo: SEED_PHOTOS['emp-badran'], pinHash: '' }
+    ],
+    projects: [
+      { id: 'prj-linkedin', name: 'LinkedIn Page Management', client, type: 'indirect', status: 'active', budget: 10, tasks: [
+        t('tk-li-1', 'Preparing 4 Marketing Videos with Gemini & Canva', 5), t('tk-li-2', 'Publishing 3 posts weekly', 1), t('tk-li-3', 'Client interacting', 1)] },
+      { id: 'prj-sketchflow', name: 'SketchFlow Software', client, type: 'standard', status: 'active', budget: 40, tasks: [
+        t('tk-sf-1', 'Testing High rise building calculation & Combined', 10), t('tk-sf-2', 'Testing ESFR Sprinkler Protection', 10),
+        t('tk-sf-3', 'Testing Fire Hydrant Flow', 5), t('tk-sf-4', 'Testing Combined system', 5)] },
+      { id: 'prj-hose', name: 'Hose Sketcher', client, type: 'standard', status: 'active', budget: 40, tasks: [
+        t('tk-hs-1', 'Rectifying the wall detection', 10), t('tk-hs-2', 'Testing External FH coverage', 10),
+        t('tk-hs-3', 'Testing External FH Coverage to multiple levels', 10), t('tk-hs-4', 'Limiting FHR coverage through Fire/Smoke Doors', 10)] },
+      { id: 'prj-iqra', name: 'IQRA Island', client, type: 'standard', status: 'active', budget: 120, tasks: [
+        t('tk-iq-1', 'Testing the Quran Tahfeez', 50), t('tk-iq-2', 'Testing the Arabic letters teaching', 50), t('tk-iq-3', 'Upgrading the Parental Control', 20)] }
+    ],
+    timesheets: [],
+    settings: defaultSettings()
+  };
+}
+function normaliseDb(d) {
+  d = d || seedDb();
+  d.employees = d.employees || []; d.projects = d.projects || []; d.timesheets = d.timesheets || [];
+  d.settings = { ...defaultSettings(), ...(d.settings || {}) };
+  d.settings.fxToAUD = { ...defaultSettings().fxToAUD, ...(d.settings.fxToAUD || {}) };
+  return d;
+}
+/* Adds the profile photos to data saved before they were included (runs once). */
+function applyOwnerEmail() {
+  const OLD = 'mmuharam.a87@gmail.com', NEW = 'mohamed@ai-es.com.au';
+  const e = db.employees.find(x => (x.email || '').toLowerCase() === OLD);
+  if (e && !db.employees.some(x => (x.email || '').toLowerCase() === NEW)) saveRec('employees', { ...e, email: NEW, pinHash: '' });
+}
+function applySeedPhotos() {
+  if (db.settings.seedPhotosApplied) return;
+  db.employees.forEach(e => { if (!e.photo && SEED_PHOTOS[e.id]) saveRec('employees', { ...e, photo: SEED_PHOTOS[e.id] }); });
+  saveRec('settings', { ...db.settings, seedPhotosApplied: true });
+}
+
+let db = normaliseDb(store.get(K.db, null));
+let cfg = store.get(K.cfg, { apiUrl: '', apiKey: '' });
+let queue = store.get(K.q, []);
+let session = store.get(K.sess, null);
+const ui = { view: 'dashboard', week: mondayOf(new Date()), tsEmp: 'all', tsStatus: 'all', sync: cfg.apiUrl ? 'ok' : 'local', syncMsg: '', modalOpen: false, draftPhoto: null };
+
+const saveLocal = () => store.set(K.db, db);
+const cu = () => session && db.employees.find(e => e.id === session.id);
+const isAdmin = () => (cu() || {}).access === 'admin';
+const emp = id => db.employees.find(e => e.id === id);
+const proj = id => db.projects.find(p => p.id === id);
+const task = (p, id) => p && p.tasks.find(t => t.id === id);
+
+function saveRec(collection, record) {
+  if (collection === 'settings') db.settings = record;
+  else {
+    const arr = db[collection], i = arr.findIndex(x => x.id === record.id);
+    if (i >= 0) arr[i] = record; else arr.push(record);
+  }
+  saveLocal();
+  if (cfg.apiUrl) enqueue({ action: 'upsert', payload: { collection, record } });
+}
+function removeRec(collection, id) {
+  db[collection] = db[collection].filter(x => x.id !== id);
+  saveLocal();
+  if (cfg.apiUrl) enqueue({ action: 'remove', payload: { collection, id } });
+}
+
+/* ============================================================
+   Sync with Google Apps Script backend
+   ============================================================ */
+async function api(action, payload = {}) {
+  if (!cfg.apiUrl) throw new Error('This device is not connected to a backend.');
+  const res = await fetch(cfg.apiUrl, {
+    method: 'POST', redirect: 'follow',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },   // avoids a CORS preflight
+    body: JSON.stringify({ action, key: cfg.apiKey, ...payload })
+  });
+  if (!res.ok) throw new Error('The server answered with status ' + res.status + '.');
+  let j; try { j = await res.json(); } catch (e) { throw new Error('The server did not return data. Check the web app URL and that it is deployed for "Anyone".'); }
+  if (!j.ok) throw new Error(j.error || 'The request failed.');
+  return j;
+}
+function enqueue(op) { queue.push(op); store.set(K.q, queue); flushQueue(); }
+let flushing = false;
+async function flushQueue() {
+  if (!cfg.apiUrl || flushing || !queue.length) { updateSync(); return; }
+  flushing = true; ui.sync = 'saving'; updateSync();
+  try {
+    while (queue.length) {
+      let n = 0; while (n < queue.length && n < 40 && queue[n].action === 'upsert') n++;
+      if (n > 1) await api('bulk', { items: queue.slice(0, n).map(o => o.payload) });
+      else { n = 1; await api(queue[0].action, queue[0].payload); }
+      queue.splice(0, n); store.set(K.q, queue);
+    }
+    ui.sync = 'ok'; ui.syncMsg = '';
+  } catch (e) {
+    ui.sync = 'error'; ui.syncMsg = e.message; setTimeout(flushQueue, 20000);
+  } finally { flushing = false; updateSync(); }
+}
+async function pullRemote() {
+  if (!cfg.apiUrl || queue.length) return;
+  const j = await api('load');
+  if (!j.records.length) {             // brand new sheet: upload what this device has
+    const items = [{ collection: 'settings', record: db.settings }];
+    ['employees', 'projects', 'timesheets'].forEach(c => db[c].forEach(r => items.push({ collection: c, record: r })));
+    for (let i = 0; i < items.length; i += 40) await api('bulk', { items: items.slice(i, i + 40) });
+    return;
+  }
+  const d = { employees: [], projects: [], timesheets: [], settings: null };
+  j.records.forEach(r => { if (r.c === 'settings') d.settings = r.data; else if (d[r.c]) d[r.c].push(r.data); });
+  db = normaliseDb(d); saveLocal();
+  if (session && !cu()) logout(true);
+}
+function updateSync() {
+  const el = $('#sync'); if (!el) return;
+  const map = {
+    local: ['Saved on this device only', 'Connect a backend in Settings to share data with your team.'],
+    ok: ['Synced', 'All changes are saved to your Google Sheet.'],
+    saving: ['Saving…', 'Sending changes to your Google Sheet.'],
+    error: [`Not synced, retrying (${queue.length} waiting)`, ui.syncMsg]
+  };
+  const s = cfg.apiUrl ? ui.sync : 'local';
+  el.className = 'sync ' + s; el.title = map[s][1];
+  el.innerHTML = `<i class="fa-solid fa-circle"></i>${esc(map[s][0])}`;
+}
+async function connect(url, key) {
+  const old = { ...cfg };
+  cfg = { apiUrl: url.trim(), apiKey: key.trim() };
+  try {
+    await api('ping');
+    store.set(K.cfg, cfg);
+    await pullRemote();
+    ui.sync = 'ok'; updateSync();
+    toast('Connected. This device now syncs with your Google Sheet.', 'ok');
+    return true;
+  } catch (e) { cfg = old; toast('Could not connect: ' + e.message, 'err'); return false; }
+}
+async function disconnect() {
+  if (queue.length && !await ask(queue.length + ' change(s) have not reached the server yet and will stay on this device only. Disconnect anyway?', 'Disconnect', true)) return;
+  cfg = { apiUrl: '', apiKey: '' }; store.set(K.cfg, cfg); queue = []; store.set(K.q, queue);
+  ui.sync = 'local'; render(); toast('Disconnected. Changes are now saved on this device only.');
+}
+function inviteLink() {
+  const enc = btoa(unescape(encodeURIComponent(JSON.stringify({ u: cfg.apiUrl, k: cfg.apiKey }))));
+  return location.origin + location.pathname + '#connect=' + enc;
+}
+function readConnectHash() {
+  const m = location.hash.match(/^#connect=(.+)$/);
+  if (!m) return null;
+  history.replaceState(null, '', location.pathname + location.search);
+  try { const o = JSON.parse(decodeURIComponent(escape(atob(m[1])))); return o.u ? o : null; } catch (e) { return null; }
+}
+
+/* ============================================================
+   Shell: login, nav, modal, toast
+   ============================================================ */
+const NAV = [
+  ['dashboard', 'Dashboard', 'fa-chart-pie', false],
+  ['projects', 'Projects', 'fa-folder-open', false],
+  ['team', 'Team & access', 'fa-users', true],
+  ['timesheets', 'Timesheets', 'fa-clock-rotate-left', false],
+  ['payroll', 'Payroll reports', 'fa-file-invoice-dollar', true],
+  ['settings', 'Settings', 'fa-gear', true]
+];
+const TITLES = { dashboard: 'Dashboard', projects: 'Project directory', team: 'Team roster & profiles', timesheets: 'Timesheets', payroll: 'Payroll reports', settings: 'Settings' };
+
+function render() {
+  $('#companyName').textContent = db.settings.company;
+  $('#loginCompany').textContent = db.settings.company;
+  const u = cu();
+  if (!u) { $('#app').hidden = true; $('#login').hidden = false; return; }
+  $('#login').hidden = true; $('#app').hidden = false;
+  const admin = isAdmin();
+  if (!admin && NAV.find(n => n[0] === ui.view)[3]) ui.view = 'dashboard';
+  $('#nav').innerHTML = NAV.filter(n => admin || !n[3]).map(([id, label, icon]) =>
+    `<button class="${ui.view === id ? 'on' : ''}" onclick="go('${id}')"><i class="fa-solid ${icon}"></i>${label}</button>`).join('');
+  $('#me').innerHTML = `${avatar(u)}<div class="who"><b>${esc(u.name)}</b><em>${admin ? 'Administrator' : 'Team member'}</em></div>
+    <button onclick="openPinModal()" title="Change PIN" aria-label="Change PIN"><i class="fa-solid fa-key"></i></button>
+    <button onclick="logout()" title="Sign out" aria-label="Sign out"><i class="fa-solid fa-right-from-bracket"></i></button>`;
+  $('#title').textContent = TITLES[ui.view];
+  $('#topNewProject').hidden = !admin;
+  $('#view').innerHTML = VIEWS[ui.view]();
+  updateSync();
+}
+function go(v) { ui.view = v; $('#side').classList.remove('open'); render(); window.scrollTo(0, 0); }
+function toggleSide() { $('#side').classList.toggle('open'); }
+
+async function doLogin(ev) {
+  ev.preventDefault();
+  const email = $('#lgEmail').value.trim().toLowerCase(), pin = $('#lgPin').value, err = $('#lgErr'), btn = $('#lgBtn');
+  btn.disabled = true; err.textContent = '';
+  try { if (cfg.apiUrl) await pullRemote(); } catch (e) { /* fall back to local copy */ }
+  btn.disabled = false;
+  applyOwnerEmail();
+  const e = db.employees.find(x => (x.email || '').toLowerCase() === email);
+  if (!e) { err.textContent = 'No team member uses that email. Ask your administrator to add you under Team & access.'; return; }
+  const expected = e.pinHash || await hashPin(DEFAULT_PIN, e.email);
+  if (await hashPin(pin, e.email) !== expected) { err.textContent = 'That PIN does not match. Check it and try again.'; return; }
+  session = { id: e.id }; store.set(K.sess, session);
+  $('#lgPin').value = '';
+  ui.view = 'dashboard'; render();
+  if (!e.pinHash) { openPinModal(true); } else handleShortcut();
+}
+async function resetDevice() {
+  const msg = cfg.apiUrl
+    ? 'Clear the copy saved in this browser and download it again from your Google Sheet? Nothing in the sheet is deleted.'
+    : 'This device is not connected to a Google Sheet, so this clears everything saved in this browser (timesheets included) and restores the starter team and projects. Continue?';
+  if (!await ask(msg, 'Reset this device', true)) return;
+  [K.db, K.sess].forEach(k => localStorage.removeItem(k));
+  if (!cfg.apiUrl) { localStorage.removeItem(K.q); }
+  location.reload();
+}
+function logout(silent) {
+  session = null; store.set(K.sess, null); closeModal(); render();
+  if (silent === true) toast('Your account is no longer on the team list, so you were signed out.', 'err');
+}
+async function connectFromLogin() {
+  $('#lcState').textContent = 'Connecting…';
+  const ok = await connect($('#lcUrl').value, $('#lcKey').value);
+  $('#lcState').textContent = ok ? 'Connected. You can sign in now.' : '';
+}
+
+function openModal(title, body, wide) {
+  ui.modalOpen = true;
+  $('#modalRoot').innerHTML = `<div class="modal-bg" onmousedown="if(event.target===this)closeModal()">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="${esc(title)}" ${wide ? 'style="width:min(760px,100%)"' : ''}>
+      <header><h2>${esc(title)}</h2><button class="icon-btn" onclick="closeModal()" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></header>
+      <div class="body">${body}</div></div></div>`;
+  const f = $('#modalRoot input:not([type=hidden]):not([type=file]), #modalRoot select'); if (f) f.focus();
+}
+function closeModal() { ui.modalOpen = false; ui.draftPhoto = null; $('#modalRoot').innerHTML = ''; }
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (askResolve) { askDone(false); return; }
+  if (ui.modalOpen) closeModal();
+});
+
+/* Forms are run by the app itself, so they still work where the browser blocks
+   normal form submission (for example inside preview or embedded frames). */
+function runForm(form) {
+  if (!form.reportValidity()) return;
+  if (form.onsubmit) form.onsubmit.call(form, { preventDefault() {}, target: form });
+}
+document.addEventListener('click', e => {
+  const btn = e.target.closest('button');
+  if (!btn || !btn.form || (btn.getAttribute('type') || 'submit').toLowerCase() !== 'submit') return;
+  e.preventDefault(); runForm(btn.form);
+}, true);
+document.addEventListener('keydown', e => {
+  const el = e.target;
+  if (e.key !== 'Enter' || e.isComposing || !el.form || /^(TEXTAREA|BUTTON|SELECT)$/.test(el.tagName) || /^(checkbox|file|radio)$/.test(el.type)) return;
+  e.preventDefault(); runForm(el.form);
+});
+
+/* In-app confirmation dialog (replaces the browser's confirm box). Resolves true or false. */
+let askResolve = null;
+function ask(message, okLabel, danger) {
+  if (askResolve) askDone(false);
+  return new Promise(res => {
+    askResolve = res;
+    $('#askRoot').innerHTML = `<div class="modal-bg" onmousedown="if(event.target===this)askDone(false)">
+      <div class="modal" role="alertdialog" aria-modal="true" style="width:min(460px,100%)"><div class="body">
+        <p class="ask-msg">${esc(message)}</p>
+        <div class="modal-foot"><button type="button" class="btn ghost" onclick="askDone(false)">Cancel</button>
+        <button type="button" class="btn ${danger ? 'danger' : 'primary'}" id="askOk" onclick="askDone(true)">${esc(okLabel || 'Continue')}</button></div>
+      </div></div></div>`;
+    $('#askOk').focus();
+  });
+}
+function askDone(v) { const r = askResolve; askResolve = null; $('#askRoot').innerHTML = ''; if (r) r(v); }
+
+function toast(msg, kind) {
+  const el = document.createElement('div');
+  el.className = 'toast ' + (kind || '');
+  el.innerHTML = `<i class="fa-solid ${kind === 'err' ? 'fa-circle-exclamation' : kind === 'ok' ? 'fa-circle-check' : 'fa-circle-info'}"></i><span>${esc(msg)}</span>`;
+  $('#toasts').appendChild(el);
+  setTimeout(() => el.remove(), kind === 'err' ? 8000 : 4500);
+}
+
+function weekNav() {
+  const isThis = ymd(ui.week) === ymd(mondayOf(new Date()));
+  return `<div class="week"><button onclick="shiftWeek(-1)" aria-label="Previous week"><i class="fa-solid fa-chevron-left"></i></button>
+    <span>${weekLabel(ui.week)}</span><button onclick="shiftWeek(1)" aria-label="Next week"><i class="fa-solid fa-chevron-right"></i></button></div>
+    ${isThis ? '' : '<button class="btn ghost sm" onclick="shiftWeek(0)">This week</button>'}`;
+}
+function shiftWeek(n) { ui.week = n === 0 ? mondayOf(new Date()) : addDays(ui.week, 7 * n); render(); }
+
+/* ============================================================
+   Hours and limits
+   ============================================================ */
+function liveEntries() { return db.timesheets.filter(t => t.status !== 'rejected'); }
+function hoursFor(pid, tid, range, excludeId) {
+  return sumH(liveEntries().filter(t => t.projectId === pid && (!tid || t.taskId === tid) && t.id !== excludeId &&
+    (!range || (t.date >= range.start && t.date <= range.end))));
+}
+function limitWarnings(pid, tid, date, hours, excludeId) {
+  const p = proj(pid); if (!p || !hours) return [];
+  const tk = task(p, tid), out = [];
+  const range = p.type === 'indirect' ? weekRange(mondayOf(parseYmd(date))) : null;
+  const scope = p.type === 'indirect' ? 'this week' : 'in total';
+  if (tk && +tk.limit) {
+    const after = hoursFor(pid, tid, range, excludeId) + hours;
+    if (after > +tk.limit) out.push(`"${tk.name}" would reach ${fmtH(after)} ${scope}, over its ${fmtH(tk.limit)}${p.type === 'indirect' ? ' weekly' : ''} limit.`);
+  }
+  if (+p.budget) {
+    const after = hoursFor(pid, null, range, excludeId) + hours;
+    if (after > +p.budget) out.push(`${p.name} would reach ${fmtH(after)} ${scope}, over its ${fmtH(p.budget)} ${p.type === 'indirect' ? 'weekly cap' : 'budget'}.`);
+  }
+  return out;
+}
+
+/* ============================================================
+   Views
+   ============================================================ */
+const VIEWS = {};
+
+VIEWS.dashboard = function () {
+  const u = cu(), admin = isAdmin(), r = weekRange(ui.week);
+  const mine = t => admin || t.employeeId === u.id;
+  const wk = liveEntries().filter(t => mine(t) && t.date >= r.start && t.date <= r.end);
+  const pending = db.timesheets.filter(t => mine(t) && t.status === 'pending').length;
+  const active = db.projects.filter(p => p.status === 'active');
+  const people = admin ? db.employees : [u];
+  const rows = people.map(e => {
+    const es = wk.filter(t => t.employeeId === e.id), h = sumH(es);
+    return `<tr><td><div class="person">${avatar(e)}<div><b>${esc(e.name)}</b><small>${esc(e.role)}</small></div></div></td>
+      <td class="num">${fmtH(h)}</td><td class="num">${money(sumH(es.filter(t => t.status === 'approved')) * (+e.rate || 0), e.currency)}</td></tr>`;
+  }).join('');
+  const cw = weekRange(mondayOf(new Date()));
+  const bars = active.map(p => {
+    const used = p.type === 'indirect' ? hoursFor(p.id, null, cw) : hoursFor(p.id);
+    const cap = +p.budget || 0, pct = cap ? Math.min(100, used / cap * 100) : 0;
+    return `<div><p><span>${esc(p.name)}</span><b>${fmtH(used)} / ${fmtH(cap)}${p.type === 'indirect' ? ' this week' : ''}</b></p>
+      <div class="bar"><i class="${cap && used > cap ? 'over' : ''}" style="width:${pct}%"></i></div></div>`;
+  }).join('') || '<div class="empty"><b>No active projects</b>Create one from New project.</div>';
+
+  return `<div class="toolbar"><div><b style="font-size:16px">Welcome back, ${esc(u.name.split(' ')[0])}</b></div><span class="sp"></span>${weekNav()}</div>
+  <div class="stats">
+    <div class="card stat"><span>${admin ? 'Team hours' : 'My hours'} this week</span><b>${fmtH(sumH(wk))}</b></div>
+    <div class="card stat"><span>Waiting for approval</span><b>${pending}</b></div>
+    <div class="card stat"><span>Active projects</span><b>${active.length}</b></div>
+    <div class="card stat"><span>Team members</span><b>${db.employees.length}</b></div>
+  </div>
+  <div class="two">
+    <div class="card"><div class="panel-h"><h3>Hours by person</h3><button class="btn ghost sm" onclick="go('timesheets')">Open timesheets</button></div>
+      <div class="tbl-wrap"><table><thead><tr><th>Person</th><th class="num">Hours</th><th class="num">Approved pay</th></tr></thead><tbody>${rows}</tbody></table></div></div>
+    <div class="card"><div class="panel-h"><h3>Project budgets</h3><button class="btn ghost sm" onclick="go('projects')">All projects</button></div>
+      <div class="blist">${bars}</div></div>
+  </div>`;
+};
+
+VIEWS.projects = function () {
+  const admin = isAdmin(), cw = weekRange(mondayOf(new Date()));
+  const cards = db.projects.map(p => {
+    const ind = p.type === 'indirect';
+    const range = ind ? cw : null;
+    const used = hoursFor(p.id, null, range), cap = +p.budget || 0;
+    const tasks = p.tasks.map(t => {
+      const h = hoursFor(p.id, t.id, range), over = +t.limit && h > +t.limit;
+      return `<li class="${over ? 'over' : ''}"><span>${esc(t.name)}</span><span>${round2(h)} / ${fmtH(t.limit || 0)}${ind ? '/wk max' : ''}</span></li>`;
+    }).join('') || '<li><span class="muted">No tasks yet</span><span></span></li>';
+    const status = { active: ['Active', 'b-green'], hold: ['On hold', 'b-amber'], done: ['Completed', 'b-grey'] }[p.status] || ['Active', 'b-green'];
+    return `<article class="card pcard">
+      <div class="pc-top"><span class="badge ${status[1]}">${status[0]}</span>
+        <span class="badge ${ind ? 'b-purple' : 'b-blue'}">${ind ? 'In-direct limit' : 'Standard project'}</span><span class="sp"></span>
+        ${admin ? `<button class="icon-btn" onclick="openProjectModal('${p.id}')" aria-label="Edit ${esc(p.name)}"><i class="fa-regular fa-pen-to-square"></i></button>
+        <button class="icon-btn del" onclick="deleteProject('${p.id}')" aria-label="Delete ${esc(p.name)}"><i class="fa-regular fa-trash-can"></i></button>` : ''}</div>
+      <h3>${esc(p.name)}</h3><div class="client"><i class="fa-solid fa-building"></i>Client: ${esc(p.client)}</div>
+      <div class="pc-label">Tasks, deliverables and ${ind ? 'weekly limits (this week)' : 'hour limits'}</div>
+      <ul class="tasks">${tasks}</ul>
+      <div class="pc-foot"><span>${ind ? 'Project weekly cap' : 'Total hours logged'}</span><b>${fmtH(used)} / ${fmtH(cap)} ${ind ? 'weekly limit' : 'budget'}</b></div>
+      <div class="bar"><i class="${cap && used > cap ? 'over' : ''}" style="width:${cap ? Math.min(100, used / cap * 100) : 0}%"></i></div>
+    </article>`;
+  }).join('');
+  return `<div class="card head-card"><div><h2>Client & project directory</h2><p>Active client projects, their deliverables, and in-direct weekly limits.</p></div>
+    ${admin ? '<button class="btn primary" onclick="openProjectModal()"><i class="fa-solid fa-plus"></i>New project</button>' : ''}</div>
+    ${cards ? `<div class="pgrid">${cards}</div>` : '<div class="card empty"><b>No projects yet</b>Add your first client project to start logging time.</div>'}`;
+};
+
+VIEWS.team = function () {
+  const rows = db.employees.map(e => `<tr>
+    <td><div class="person">${avatar(e)}<div><b>${esc(e.name)}</b><small>${esc(e.location)}</small></div></div></td>
+    <td>${esc(e.email)}</td><td>${esc(e.phone)}</td>
+    <td><span class="role-tag">${esc(e.role)}</span></td>
+    <td>${e.access === 'admin' ? '<span class="badge b-blue">Administrator</span>' : '<span class="badge b-grey">Team member</span>'}</td>
+    <td><b>${round2(e.rate)} ${esc(e.currency)}/hr</b></td>
+    <td class="actions"><button class="icon-btn" onclick="openEmpModal('${e.id}')" aria-label="Edit ${esc(e.name)}"><i class="fa-regular fa-pen-to-square"></i></button>
+      <button class="icon-btn del" onclick="deleteEmp('${e.id}')" aria-label="Delete ${esc(e.name)}"><i class="fa-regular fa-trash-can"></i></button></td></tr>`).join('');
+  return `<div class="card head-card"><div><h2>Team members & access</h2><p>Manage people, contact details, photos, pay rates in EGP, AUD, SAR or USD, and who can administer the workspace.</p></div>
+    <button class="btn primary" onclick="openEmpModal()"><i class="fa-solid fa-user-plus"></i>Add employee</button></div>
+    <div class="card tbl-wrap"><table><thead><tr><th>Employee</th><th>Email / login</th><th>Contact & phone</th><th>Role</th><th>Access</th><th>Rate & currency</th><th class="actions">Actions</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>`;
+};
+
+VIEWS.timesheets = function () {
+  const admin = isAdmin(), u = cu(), r = weekRange(ui.week);
+  let list = db.timesheets.filter(t => t.date >= r.start && t.date <= r.end && (admin || t.employeeId === u.id));
+  if (admin && ui.tsEmp !== 'all') list = list.filter(t => t.employeeId === ui.tsEmp);
+  if (ui.tsStatus !== 'all') list = list.filter(t => t.status === ui.tsStatus);
+  list.sort((a, b) => a.date.localeCompare(b.date) || (a.createdAt || 0) - (b.createdAt || 0));
+  const badge = s => ({ approved: '<span class="badge b-green">Approved</span>', pending: '<span class="badge b-amber">Pending</span>', rejected: '<span class="badge b-red">Rejected</span>' }[s]);
+  const rows = list.map(t => {
+    const e = emp(t.employeeId), p = proj(t.projectId), tk = task(p, t.taskId);
+    const canEdit = admin || (t.employeeId === u.id && t.status === 'pending');
+    return `<tr><td>${niceDate(t.date)}</td>${admin ? `<td>${esc(e ? e.name : 'Removed member')}</td>` : ''}
+      <td>${esc(p ? p.name : 'Deleted project')}</td><td>${esc(tk ? tk.name : '—')}</td>
+      <td class="num">${fmtH(t.hours)}</td><td class="muted" style="max-width:240px">${esc(t.notes)}</td><td>${badge(t.status)}</td>
+      <td class="actions">
+        ${admin && t.status !== 'approved' ? `<button class="icon-btn" onclick="setStatus('${t.id}','approved')" title="Approve" aria-label="Approve"><i class="fa-solid fa-check"></i></button>` : ''}
+        ${admin && t.status !== 'rejected' ? `<button class="icon-btn del" onclick="setStatus('${t.id}','rejected')" title="Reject" aria-label="Reject"><i class="fa-solid fa-ban"></i></button>` : ''}
+        ${canEdit ? `<button class="icon-btn" onclick="openTsModal('${t.id}')" title="Edit" aria-label="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+        <button class="icon-btn del" onclick="deleteTs('${t.id}')" title="Delete" aria-label="Delete"><i class="fa-regular fa-trash-can"></i></button>` : ''}</td></tr>`;
+  }).join('');
+  const pendingIds = list.filter(t => t.status === 'pending').map(t => t.id);
+  const cols = admin ? 8 : 7;
+  return `<div class="toolbar">${weekNav()}<span class="sp"></span>
+    ${admin ? `<select class="in inline" onchange="ui.tsEmp=this.value;render()" aria-label="Filter by person"><option value="all">Everyone</option>
+      ${db.employees.map(e => `<option value="${e.id}" ${ui.tsEmp === e.id ? 'selected' : ''}>${esc(e.name)}</option>`).join('')}</select>` : ''}
+    <select class="in inline" onchange="ui.tsStatus=this.value;render()" aria-label="Filter by status">
+      ${[['all', 'All statuses'], ['pending', 'Pending'], ['approved', 'Approved'], ['rejected', 'Rejected']].map(([v, l]) => `<option value="${v}" ${ui.tsStatus === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+    ${admin && pendingIds.length ? `<button class="btn ok sm" onclick="approveAll(${esc(JSON.stringify(pendingIds))})"><i class="fa-solid fa-check-double"></i>Approve ${pendingIds.length} pending</button>` : ''}
+  </div>
+  <div class="card tbl-wrap"><table><thead><tr><th>Date</th>${admin ? '<th>Person</th>' : ''}<th>Project</th><th>Task</th><th class="num">Hours</th><th>Notes</th><th>Status</th><th class="actions"></th></tr></thead>
+    <tbody>${rows || `<tr><td colspan="${cols}"><div class="empty"><b>No entries for this week</b>Use Submit timesheet to log your hours.</div></td></tr>`}</tbody>
+    ${rows ? `<tfoot><tr><td colspan="${admin ? 4 : 3}">Total (excluding rejected)</td><td class="num">${fmtH(sumH(list.filter(t => t.status !== 'rejected')))}</td><td colspan="3"></td></tr></tfoot>` : ''}
+  </table></div>`;
+};
+
+VIEWS.payroll = function () {
+  const r = buildReport(ui.week), s = db.settings;
+  const last = s.lastEmailed ? `Last sent ${new Date(s.lastEmailed.at).toLocaleString('en-AU', { dateStyle: 'medium', timeStyle: 'short' })} for ${esc(s.lastEmailed.label)}.` : 'Not sent yet.';
+  const cur = Object.entries(r.currencyTotals).map(([c, v]) => `<div class="card stat"><span>Payroll in ${c}</span><b>${money(v)}</b></div>`).join('');
+  const rows = r.payroll.map(p => `<tr><td><div class="person">${avatar(p.e)}<div><b>${esc(p.e.name)}</b><small>${esc(p.e.role)}</small></div></div></td>
+    <td class="num">${round2(p.e.rate)} ${esc(p.e.currency)}</td><td class="num">${fmtH(p.approved)}</td><td class="num">${p.pending ? `<span class="badge b-amber">${fmtH(p.pending)}</span>` : '0h'}</td>
+    <td class="num"><b>${money(p.amount, p.e.currency)}</b></td><td class="num muted">${money(p.aud, 'AUD')}</td></tr>`).join('');
+  const prow = r.projects.map(p => `<tr><td><b>${esc(p.name)}</b></td><td>${p.type === 'indirect' ? 'In-direct' : 'Standard'}</td>
+    <td class="num">${fmtH(p.week)}</td><td class="num">${fmtH(p.total)}</td><td class="num">${fmtH(p.budget)}${p.type === 'indirect' ? '/wk' : ''}</td></tr>`).join('');
+  return `<div class="card email-box">
+      <div><h3>Weekly report for ${esc(r.label)}</h3><p>Sends the payroll summary, timesheet detail and project hours to <b>${esc(REPORT_EMAIL)}</b> as a PDF and an Excel file. ${last}</p></div>
+      <button class="btn primary" id="emailBtn" onclick="emailReport()"><i class="fa-solid fa-paper-plane"></i>Email PDF + Excel</button>
+    </div>
+    <div class="toolbar">${weekNav()}<span class="sp"></span>
+      <button class="btn ghost sm" onclick="downloadPdf()"><i class="fa-regular fa-file-pdf"></i>Download PDF</button>
+      <button class="btn ghost sm" onclick="downloadXlsx()"><i class="fa-regular fa-file-excel"></i>Download Excel</button></div>
+    <div class="cur-cards">${cur}<div class="card stat"><span>Total in AUD (approx.)</span><b>${money(r.audTotal)}</b></div></div>
+    ${r.pendingTotal ? `<div class="warn">${fmtH(r.pendingTotal)} this week is still pending and is not included in pay. Approve it on Timesheets to include it.</div>` : ''}
+    <div class="card tbl-wrap" style="margin-bottom:20px"><table><thead><tr><th>Employee</th><th class="num">Rate</th><th class="num">Approved hours</th><th class="num">Pending</th><th class="num">Pay</th><th class="num">AUD equiv.</th></tr></thead>
+      <tbody>${rows || '<tr><td colspan="6"><div class="empty">No team members yet.</div></td></tr>'}</tbody></table></div>
+    <div class="card tbl-wrap"><div class="panel-h"><h3>Project hours</h3></div><table><thead><tr><th>Project</th><th>Type</th><th class="num">This week</th><th class="num">All time</th><th class="num">Budget</th></tr></thead>
+      <tbody>${prow}</tbody></table></div>`;
+};
+
+VIEWS.settings = function () {
+  const s = db.settings, connected = !!cfg.apiUrl;
+  return `<div class="card sect"><h3>Shared data and email</h3>
+    <p>Connect the Google Apps Script backend so the whole team shares one database (a Google Sheet) and the email button can send reports.</p>
+    ${connected ? `<p style="margin-bottom:14px"><span class="badge b-green">Connected</span> <span class="muted" style="word-break:break-all">${esc(cfg.apiUrl)}</span></p>
+      <div class="toolbar"><button class="btn ghost" onclick="copyInvite()"><i class="fa-regular fa-copy"></i>Copy team invite link</button>
+      <button class="btn ghost" onclick="syncNow()"><i class="fa-solid fa-rotate"></i>Sync now</button>
+      <button class="btn danger" onclick="disconnect()">Disconnect this device</button></div>
+      <p class="hint">The invite link contains the API key. Send it to team members privately; opening it connects their device.</p>`
+    : `<div class="grid2"><div class="field"><label class="fl" for="stUrl">Web app URL</label><input class="in" id="stUrl" placeholder="https://script.google.com/macros/s/…/exec"></div>
+      <div class="field"><label class="fl" for="stKey">API key</label><input class="in" id="stKey" type="password"></div></div>
+      <button class="btn primary" onclick="connectFromSettings(this)">Connect</button>`}
+  </div>
+  <div class="card sect"><h3>Workspace</h3><p>Shown in the sidebar and on reports.</p>
+    <div class="field" style="max-width:360px"><label class="fl" for="stCompany">Company name</label><input class="in" id="stCompany" value="${esc(s.company)}"></div>
+    <h3 style="margin-top:8px">Exchange rates to AUD</h3><p>Used only for the approximate AUD totals on reports. Update them when rates move.</p>
+    <div class="grid3" style="grid-template-columns:repeat(4,1fr)">${CURRENCIES.map(c => `<div class="field"><label class="fl" for="fx${c}">1 ${c} =</label>
+      <input class="in" id="fx${c}" type="number" step="0.0001" min="0" value="${s.fxToAUD[c]}" ${c === 'AUD' ? 'disabled' : ''}></div>`).join('')}</div>
+    <button class="btn primary" onclick="saveSettings()">Save settings</button>
+  </div>
+  <div class="card sect"><h3>Backup</h3><p>Download everything as a JSON file, or restore from one.</p>
+    <div class="toolbar"><button class="btn ghost" onclick="downloadBackup()"><i class="fa-solid fa-download"></i>Download backup</button>
+    <label class="btn ghost"><i class="fa-solid fa-upload"></i>Restore from backup<input type="file" accept=".json" hidden onchange="restoreBackup(this)"></label></div>
+  </div>`;
+};
+
+/* ============================================================
+   Actions: projects
+   ============================================================ */
+function taskRow(t) {
+  return `<div class="trow" data-id="${esc(t.id)}"><input class="in" name="tname" placeholder="Task or deliverable" value="${esc(t.name)}" aria-label="Task name">
+    <input class="in" name="tlimit" type="number" min="0" step="0.25" placeholder="Hours" value="${esc(t.limit)}" aria-label="Hour limit">
+    <button type="button" class="icon-btn del" onclick="this.parentElement.remove()" aria-label="Remove task"><i class="fa-solid fa-xmark"></i></button></div>`;
+}
+function openProjectModal(id) {
+  if (!isAdmin()) return;
+  const p = id ? JSON.parse(JSON.stringify(proj(id))) : { id: '', name: '', client: 'Artificial Engineering Solutions', type: 'standard', status: 'active', budget: '', tasks: [{ id: uid(), name: '', limit: '' }] };
+  const sel = (v, opts) => opts.map(([k, l]) => `<option value="${k}" ${v === k ? 'selected' : ''}>${l}</option>`).join('');
+  openModal(id ? 'Edit project' : 'New project', `<form onsubmit="saveProject(event,'${p.id}')">
+    <div class="grid2"><div class="field"><label class="fl" for="pName">Project name</label><input class="in" id="pName" required value="${esc(p.name)}"></div>
+      <div class="field"><label class="fl" for="pClient">Client</label><input class="in" id="pClient" required value="${esc(p.client)}"></div></div>
+    <div class="grid3"><div class="field"><label class="fl" for="pType">Type</label><select class="in" id="pType" onchange="$('#pBudgetL').textContent=this.value==='indirect'?'Weekly cap (hours)':'Total budget (hours)'">
+        ${sel(p.type, [['standard', 'Standard project'], ['indirect', 'In-direct (weekly limit)']])}</select></div>
+      <div class="field"><label class="fl" for="pStatus">Status</label><select class="in" id="pStatus">${sel(p.status, [['active', 'Active'], ['hold', 'On hold'], ['done', 'Completed']])}</select></div>
+      <div class="field"><label class="fl" for="pBudget" id="pBudgetL">${p.type === 'indirect' ? 'Weekly cap (hours)' : 'Total budget (hours)'}</label>
+        <input class="in" id="pBudget" type="number" min="0" step="0.5" value="${esc(p.budget)}" placeholder="Sum of tasks"></div></div>
+    <label class="fl">Tasks and hour limits</label>
+    <div id="taskRows">${p.tasks.map(taskRow).join('')}</div>
+    <button type="button" class="btn ghost sm" onclick="$('#taskRows').insertAdjacentHTML('beforeend',taskRow({id:uid(),name:'',limit:''}))"><i class="fa-solid fa-plus"></i>Add task</button>
+    <p class="hint">For in-direct projects, task limits are hours per week. For standard projects, they are total hours.</p>
+    <div class="modal-foot"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn primary">Save project</button></div></form>`, true);
+}
+function saveProject(ev, id) {
+  ev.preventDefault();
+  const tasks = [...document.querySelectorAll('#taskRows .trow')].map(r => ({
+    id: r.dataset.id, name: r.querySelector('[name=tname]').value.trim(), limit: round2(r.querySelector('[name=tlimit]').value)
+  })).filter(t => t.name);
+  const b = $('#pBudget').value;
+  const rec = {
+    id: id || 'prj-' + uid(), name: $('#pName').value.trim(), client: $('#pClient').value.trim(),
+    type: $('#pType').value, status: $('#pStatus').value, tasks,
+    budget: b === '' ? round2(tasks.reduce((a, t) => a + t.limit, 0)) : round2(b)
+  };
+  saveRec('projects', rec); closeModal(); render(); toast(id ? 'Project saved.' : 'Project created.', 'ok');
+}
+async function deleteProject(id) {
+  const p = proj(id), n = db.timesheets.filter(t => t.projectId === id).length;
+  if (!await ask(`Delete ${p.name}?` + (n ? `\n\n${n} timesheet entr${n === 1 ? 'y stays' : 'ies stay'} in reports, labelled "Deleted project".` : ''), 'Delete project', true)) return;
+  removeRec('projects', id); render(); toast('Project deleted.');
+}
+
+/* ============================================================
+   Actions: team
+   ============================================================ */
+function openEmpModal(id) {
+  const e = id ? emp(id) : { id: '', name: '', location: '', email: '', phone: '', role: '', rate: '', currency: 'AUD', access: 'employee', photo: '' };
+  ui.draftPhoto = e.photo || '';
+  openModal(id ? 'Edit team member' : 'Add employee', `<form onsubmit="saveEmp(event,'${e.id}')">
+    <div class="field photo-pick"><span id="phPrev">${avatar(e)}</span>
+      <div><label class="btn ghost sm"><i class="fa-regular fa-image"></i>Choose photo<input type="file" accept="image/*" hidden onchange="pickPhoto(this)"></label>
+      <button type="button" class="btn ghost sm" onclick="ui.draftPhoto='';$('#phPrev').innerHTML=avatar({name:$('#eName').value})">Remove</button></div></div>
+    <div class="grid2"><div class="field"><label class="fl" for="eName">Full name</label><input class="in" id="eName" required value="${esc(e.name)}"></div>
+      <div class="field"><label class="fl" for="eLoc">Location</label><input class="in" id="eLoc" value="${esc(e.location)}" placeholder="City, Country"></div>
+      <div class="field"><label class="fl" for="eEmail">Email (used to sign in)</label><input class="in" id="eEmail" type="email" required value="${esc(e.email)}"></div>
+      <div class="field"><label class="fl" for="ePhone">Phone</label><input class="in" id="ePhone" value="${esc(e.phone)}" placeholder="+61…"></div>
+      <div class="field"><label class="fl" for="eRole">Role</label><input class="in" id="eRole" value="${esc(e.role)}"></div>
+      <div class="field"><label class="fl" for="eAccess">Access</label><select class="in" id="eAccess">
+        <option value="employee" ${e.access !== 'admin' ? 'selected' : ''}>Team member: logs own time</option>
+        <option value="admin" ${e.access === 'admin' ? 'selected' : ''}>Administrator: full access</option></select></div>
+      <div class="field"><label class="fl" for="eRate">Hourly rate</label><input class="in" id="eRate" type="number" min="0" step="0.01" required value="${esc(e.rate)}"></div>
+      <div class="field"><label class="fl" for="eCur">Currency</label><select class="in" id="eCur">${CURRENCIES.map(c => `<option ${e.currency === c ? 'selected' : ''}>${c}</option>`).join('')}</select></div></div>
+    ${id ? `<label style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" id="eResetPin"> Reset PIN to 1234 (they will be asked to choose a new one)</label>`
+         : '<p class="hint">They sign in with this email and the PIN 1234, then choose their own PIN.</p>'}
+    <div class="modal-foot"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn primary">${id ? 'Save changes' : 'Add employee'}</button></div></form>`);
+}
+function pickPhoto(input) {
+  const f = input.files[0]; if (!f) return;
+  const img = new Image(), url = URL.createObjectURL(f);
+  img.onload = () => {
+    const S = 128, c = document.createElement('canvas'); c.width = c.height = S;
+    const s = Math.min(img.width, img.height), ctx = c.getContext('2d');
+    ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, S, S);
+    ui.draftPhoto = c.toDataURL('image/jpeg', 0.78); URL.revokeObjectURL(url);
+    $('#phPrev').innerHTML = `<img class="avatar" src="${ui.draftPhoto}" alt="">`;
+  };
+  img.onerror = () => toast('That file could not be read as an image. Try a JPG or PNG.', 'err');
+  img.src = url;
+}
+function saveEmp(ev, id) {
+  ev.preventDefault();
+  const email = $('#eEmail').value.trim();
+  if (db.employees.some(x => x.id !== id && x.email.toLowerCase() === email.toLowerCase())) { toast('Another team member already uses that email.', 'err'); return; }
+  const old = id ? emp(id) : {};
+  const access = $('#eAccess').value;
+  if (id === session.id && access !== 'admin' && db.employees.filter(x => x.access === 'admin').length === 1) { toast('You are the only administrator. Make someone else an administrator first.', 'err'); return; }
+  const rec = { ...old, id: id || 'emp-' + uid(), name: $('#eName').value.trim(), location: $('#eLoc').value.trim(), email,
+    phone: $('#ePhone').value.trim(), role: $('#eRole').value.trim(), access, rate: round2($('#eRate').value), currency: $('#eCur').value, photo: ui.draftPhoto || '' };
+  if (!id || ($('#eResetPin') && $('#eResetPin').checked) || (old.email && old.email.toLowerCase() !== email.toLowerCase())) rec.pinHash = '';
+  saveRec('employees', rec); closeModal(); render(); toast(id ? 'Changes saved.' : 'Employee added.', 'ok');
+}
+async function deleteEmp(id) {
+  if (id === session.id) { toast('You cannot delete your own account while signed in.', 'err'); return; }
+  const e = emp(id);
+  if (!await ask(`Remove ${e.name} from the team?\n\nTheir past timesheets stay in reports.`, 'Remove', true)) return;
+  removeRec('employees', id); render(); toast('Team member removed.');
+}
+function openPinModal(forced) {
+  openModal(forced ? 'Choose your own PIN' : 'Change PIN', `<form onsubmit="savePin(event)">
+    ${forced ? '<p class="muted" style="margin-top:0">You signed in with the starter PIN. Pick a PIN only you know.</p>' : ''}
+    <div class="grid2"><div class="field"><label class="fl" for="pin1">New PIN</label><input class="in" id="pin1" type="password" inputmode="numeric" minlength="4" required></div>
+    <div class="field"><label class="fl" for="pin2">Repeat new PIN</label><input class="in" id="pin2" type="password" inputmode="numeric" minlength="4" required></div></div>
+    <p class="hint">At least 4 characters.</p>
+    <div class="modal-foot">${forced ? '' : '<button type="button" class="btn ghost" onclick="closeModal()">Cancel</button>'}<button class="btn primary">Save PIN</button></div></form>`);
+}
+async function savePin(ev) {
+  ev.preventDefault();
+  if ($('#pin1').value !== $('#pin2').value) { toast('The two PINs do not match.', 'err'); return; }
+  if ($('#pin1').value === DEFAULT_PIN) { toast('Choose a PIN other than 1234.', 'err'); return; }
+  const u = cu(); saveRec('employees', { ...u, pinHash: await hashPin($('#pin1').value, u.email) });
+  closeModal(); toast('PIN saved.', 'ok');
+}
+
+/* ============================================================
+   Actions: timesheets
+   ============================================================ */
+function openTsModal(id) {
+  const u = cu(), admin = isAdmin();
+  const active = db.projects.filter(p => p.status === 'active');
+  const t = id ? db.timesheets.find(x => x.id === id) : { id: '', employeeId: u.id, projectId: (active[0] || {}).id || '', taskId: '', date: ymd(new Date()), hours: '', notes: '' };
+  const projects = db.projects.filter(p => p.status === 'active' || p.id === t.projectId);
+  if (!projects.length) { toast('There are no active projects to log time against yet.', 'err'); return; }
+  openModal(id ? 'Edit time entry' : 'Submit timesheet', `<form onsubmit="saveTs(event,'${t.id}')">
+    ${admin ? `<div class="field"><label class="fl" for="tsEmp">Team member</label><select class="in" id="tsEmp">${db.employees.map(e => `<option value="${e.id}" ${e.id === t.employeeId ? 'selected' : ''}>${esc(e.name)}</option>`).join('')}</select></div>` : ''}
+    <div class="grid2"><div class="field"><label class="fl" for="tsProject">Project</label><select class="in" id="tsProject" onchange="tsProjChange()">
+      ${projects.map(p => `<option value="${p.id}" ${p.id === t.projectId ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select></div>
+      <div class="field"><label class="fl" for="tsTask">Task</label><select class="in" id="tsTask" onchange="tsCheck()"></select></div>
+      <div class="field"><label class="fl" for="tsDate">Date</label><input class="in" id="tsDate" type="date" required value="${t.date}" onchange="tsCheck()"></div>
+      <div class="field"><label class="fl" for="tsHours">Hours</label><input class="in" id="tsHours" type="number" min="0.25" max="24" step="0.25" required value="${esc(t.hours)}" oninput="tsCheck()"></div></div>
+    <div class="field"><label class="fl" for="tsNotes">What did you work on? (optional)</label><textarea class="in" id="tsNotes" rows="3">${esc(t.notes)}</textarea></div>
+    <div id="tsWarn"></div>
+    <p class="hint">${admin ? 'Entries you add are approved straight away.' : 'Your administrator approves entries before they count toward pay.'}</p>
+    <div class="modal-foot"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn primary">${id ? 'Save entry' : 'Submit hours'}</button></div>
+    <input type="hidden" id="tsInitTask" value="${esc(t.taskId)}"></form>`);
+  tsProjChange();
+}
+function tsProjChange() {
+  const p = proj($('#tsProject').value), init = $('#tsInitTask').value;
+  $('#tsTask').innerHTML = (p ? p.tasks : []).map(t => `<option value="${t.id}" ${t.id === init ? 'selected' : ''}>${esc(t.name)}${+t.limit ? ` (${fmtH(t.limit)}${p.type === 'indirect' ? '/wk' : ''})` : ''}</option>`).join('') || '<option value="">General</option>';
+  tsCheck();
+}
+function tsCheck() {
+  const editing = (document.querySelector('#modalRoot form').getAttribute('onsubmit').match(/'([^']*)'\)/) || [])[1];
+  const ws = limitWarnings($('#tsProject').value, $('#tsTask').value, $('#tsDate').value || ymd(new Date()), +$('#tsHours').value || 0, editing);
+  $('#tsWarn').innerHTML = ws.length ? `<div class="warn"><i class="fa-solid fa-triangle-exclamation"></i> ${ws.map(esc).join('<br>')}</div>` : '';
+  return ws;
+}
+async function saveTs(ev, id) {
+  ev.preventDefault();
+  const hours = round2($('#tsHours').value);
+  if (!(hours > 0 && hours <= 24)) { toast('Enter between 0.25 and 24 hours.', 'err'); return; }
+  const ws = tsCheck();
+  if (ws.length && !await ask('This goes over a limit:\n\n' + ws.join('\n') + '\n\nSubmit anyway?', 'Submit anyway')) return;
+  const admin = isAdmin(), old = id ? db.timesheets.find(x => x.id === id) : {};
+  const rec = { ...old, id: id || 'ts-' + uid(), employeeId: admin ? $('#tsEmp').value : cu().id, projectId: $('#tsProject').value, taskId: $('#tsTask').value,
+    date: $('#tsDate').value, hours, notes: $('#tsNotes').value.trim(), status: admin ? 'approved' : 'pending', createdAt: old.createdAt || Date.now(), updatedBy: cu().id };
+  saveRec('timesheets', rec); closeModal();
+  ui.week = mondayOf(parseYmd(rec.date)); render();
+  toast(admin ? 'Hours saved and approved.' : 'Hours submitted for approval.', 'ok');
+}
+function setStatus(id, status) { const t = db.timesheets.find(x => x.id === id); saveRec('timesheets', { ...t, status, reviewedBy: cu().id }); render(); }
+function approveAll(ids) { ids.forEach(id => { const t = db.timesheets.find(x => x.id === id); if (t) saveRec('timesheets', { ...t, status: 'approved', reviewedBy: cu().id }); }); render(); toast(ids.length + ' entries approved.', 'ok'); }
+async function deleteTs(id) { if (!await ask('Delete this time entry?', 'Delete', true)) return; removeRec('timesheets', id); render(); }
+
+/* ============================================================
+   Settings actions
+   ============================================================ */
+async function connectFromSettings(btn) { btn.disabled = true; if (await connect($('#stUrl').value, $('#stKey').value)) render(); btn.disabled = false; }
+async function syncNow() { try { await flushQueue(); await pullRemote(); ui.sync = 'ok'; render(); toast('Up to date.', 'ok'); } catch (e) { toast('Sync failed: ' + e.message, 'err'); } }
+async function copyInvite() {
+  const link = inviteLink();
+  try { await navigator.clipboard.writeText(link); toast('Invite link copied. Send it privately to your team.', 'ok'); }
+  catch (e) {
+    openModal('Team invite link', `<p class="muted" style="margin-top:0">Copy this link and send it privately to your team.</p>
+      <input class="in" readonly value="${esc(link)}" onfocus="this.select()">
+      <div class="modal-foot"><button type="button" class="btn primary" onclick="closeModal()">Done</button></div>`);
+  }
+}
+function saveSettings() {
+  const fx = { AUD: 1 }; CURRENCIES.filter(c => c !== 'AUD').forEach(c => fx[c] = +$('#fx' + c).value || 0);
+  saveRec('settings', { ...db.settings, company: $('#stCompany').value.trim() || 'AI Solutions', fxToAUD: fx });
+  render(); toast('Settings saved.', 'ok');
+}
+function downloadBackup() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'ai-solutions-crm-backup-' + ymd(new Date()) + '.json'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function restoreBackup(input) {
+  const f = input.files[0]; if (!f) return;
+  f.text().then(async txt => {
+    const d = JSON.parse(txt);
+    if (!d.employees || !d.projects) throw new Error('not a backup');
+    if (!await ask('Replace the data on this device with the backup?' + (cfg.apiUrl ? ' Every record in the backup is also written to the shared sheet.' : ''), 'Restore backup', true)) return;
+    db = normaliseDb(d); saveLocal();
+    if (cfg.apiUrl) {
+      enqueue({ action: 'upsert', payload: { collection: 'settings', record: db.settings } });
+      ['employees', 'projects', 'timesheets'].forEach(c => db[c].forEach(r => queue.push({ action: 'upsert', payload: { collection: c, record: r } })));
+      store.set(K.q, queue); flushQueue();
+    }
+    if (!cu()) logout(); else render();
+    toast('Backup restored.', 'ok');
+  }).catch(() => toast('That file is not a CRM backup.', 'err'));
+}
+
+/* ============================================================
+   Reports: data, PDF, Excel, email
+   ============================================================ */
+function buildReport(ws) {
+  const r = weekRange(ws), fx = db.settings.fxToAUD;
+  const entries = db.timesheets.filter(t => t.date >= r.start && t.date <= r.end && t.status !== 'rejected')
+    .sort((a, b) => a.date.localeCompare(b.date) || (a.createdAt || 0) - (b.createdAt || 0));
+  const payroll = db.employees.map(e => {
+    const es = entries.filter(t => t.employeeId === e.id);
+    const approved = sumH(es.filter(t => t.status === 'approved')), pending = sumH(es.filter(t => t.status === 'pending'));
+    const amount = round2(approved * (+e.rate || 0));
+    return { e, approved, pending, amount, aud: round2(amount * (fx[e.currency] || 0)) };
+  });
+  const currencyTotals = {};
+  payroll.forEach(p => { if (p.amount) currencyTotals[p.e.currency] = round2((currencyTotals[p.e.currency] || 0) + p.amount); });
+  if (!Object.keys(currencyTotals).length) currencyTotals.AUD = 0;
+  const projects = db.projects.map(p => ({
+    id: p.id, name: p.name, type: p.type, budget: +p.budget || 0,
+    week: hoursFor(p.id, null, r), total: hoursFor(p.id),
+    tasks: p.tasks.map(t => ({ name: t.name, limit: +t.limit || 0, week: hoursFor(p.id, t.id, r), total: hoursFor(p.id, t.id) }))
+  }));
+  const detail = entries.map(t => {
+    const e = emp(t.employeeId), p = proj(t.projectId), tk = task(p, t.taskId);
+    return { date: t.date, person: e ? e.name : 'Removed member', project: p ? p.name : 'Deleted project', task: tk ? tk.name : '', hours: +t.hours, status: t.status, notes: t.notes || '' };
+  });
+  return {
+    ...r, label: weekLabel(ws), generated: new Date().toLocaleString('en-AU', { dateStyle: 'medium', timeStyle: 'short' }),
+    payroll, currencyTotals, audTotal: round2(payroll.reduce((a, p) => a + p.aud, 0)),
+    pendingTotal: round2(payroll.reduce((a, p) => a + p.pending, 0)), projects, detail
+  };
+}
+const fileBase = r => `${db.settings.company.replace(/[^\w]+/g, '-')}_Weekly-Report_${r.start}_to_${r.end}`;
+function libsReady() {
+  if (!window.jspdf || !window.XLSX) { toast('The PDF and Excel tools did not load. Check your internet connection and reload the page.', 'err'); return false; }
+  return true;
+}
+
+function makePdf(r) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+  const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 32;
+  doc.setFillColor(15, 20, 36); doc.rect(0, 0, W, 70, 'F');
+  doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(17); doc.text(db.settings.company, M, 32);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.text('Weekly timesheet & payroll report', M, 50);
+  doc.setFont('helvetica', 'bold'); doc.text(r.label, W - M, 32, { align: 'right' });
+  doc.setFont('helvetica', 'normal'); doc.text('Generated ' + r.generated, W - M, 50, { align: 'right' });
+  doc.setTextColor(17, 24, 39);
+  let y = 100;
+  const title = (t, sub) => {
+    if (y > H - 110) { doc.addPage(); y = 48; }
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(12.5); doc.text(t, M, y);
+    if (sub) { doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(107, 114, 128); doc.text(sub, M, y + 13); doc.setTextColor(17, 24, 39); y += 13; }
+    y += 8;
+  };
+  const table = (head, body, opts = {}) => {
+    if (!body.length) body = [[{ content: 'Nothing to show for this week.', colSpan: head.length, styles: { textColor: [107, 114, 128], halign: 'center' } }]];
+    doc.autoTable({ startY: y, head: [head], body, margin: { left: M, right: M }, theme: 'grid',
+      styles: { fontSize: 9, cellPadding: 5, lineColor: [230, 232, 239], lineWidth: 0.5, textColor: [17, 24, 39] },
+      headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold' },
+      footStyles: { fillColor: [238, 242, 255], textColor: [17, 24, 39], fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [248, 249, 252] }, ...opts });
+    y = doc.lastAutoTable.finalY + 26;
+  };
+  const right = n => ({ content: n, styles: { halign: 'right' } });
+
+  title('Payroll summary', 'Pay counts approved hours only. AUD equivalents use the rates in Settings and are approximate.');
+  table(['Employee', 'Role', 'Rate', 'Approved hrs', 'Pending hrs', 'Pay', 'AUD equiv.'],
+    r.payroll.map(p => [p.e.name, p.e.role, right(`${round2(p.e.rate)} ${p.e.currency}/hr`), right(fmtH(p.approved)), right(fmtH(p.pending)), right(money(p.amount, p.e.currency)), right(money(p.aud, 'AUD'))]),
+    { foot: [['Total', '', '', right(fmtH(r.payroll.reduce((a, p) => a + p.approved, 0))), right(fmtH(r.pendingTotal)),
+      right(Object.entries(r.currencyTotals).map(([c, v]) => money(v, c)).join('\n')), right(money(r.audTotal, 'AUD'))]] });
+
+  title('Project hours', 'In-direct projects are measured against their weekly cap; standard projects against their total budget.');
+  const pBody = [];
+  r.projects.forEach(p => {
+    pBody.push([{ content: p.name, styles: { fontStyle: 'bold' } }, p.type === 'indirect' ? 'In-direct' : 'Standard', right(fmtH(p.week)), right(fmtH(p.total)), right(fmtH(p.budget) + (p.type === 'indirect' ? '/wk' : ''))]);
+    p.tasks.forEach(t => pBody.push([{ content: '   ' + t.name, styles: { textColor: [75, 85, 99] } }, '', right(fmtH(t.week)), right(fmtH(t.total)), right(fmtH(t.limit) + (p.type === 'indirect' ? '/wk' : ''))]));
+  });
+  table(['Project / task', 'Type', 'This week', 'All time', 'Limit'], pBody);
+
+  title('Timesheet detail');
+  table(['Date', 'Employee', 'Project', 'Task', 'Hours', 'Status', 'Notes'],
+    r.detail.map(d => [niceDate(d.date), d.person, d.project, d.task, right(fmtH(d.hours)), d.status, d.notes]),
+    { columnStyles: { 6: { cellWidth: 170 } } });
+
+  const n = doc.getNumberOfPages();
+  for (let i = 1; i <= n; i++) {
+    doc.setPage(i); doc.setFontSize(8); doc.setTextColor(140);
+    doc.text(`${db.settings.company} weekly report, ${r.start} to ${r.end}`, M, H - 16);
+    doc.text(`Page ${i} of ${n}`, W - M, H - 16, { align: 'right' });
+  }
+  return doc;
+}
+
+function makeXlsx(r) {
+  const wb = XLSX.utils.book_new();
+  const add = (name, rows, widths) => { const ws = XLSX.utils.aoa_to_sheet(rows); ws['!cols'] = widths.map(w => ({ wch: w })); XLSX.utils.book_append_sheet(wb, ws, name); };
+  const head = [[db.settings.company + ' weekly payroll report'], ['Week', r.label], ['Period', r.start + ' to ' + r.end], ['Generated', r.generated], []];
+  add('Payroll summary', [...head,
+    ['Employee', 'Role', 'Location', 'Currency', 'Rate per hour', 'Approved hours', 'Pending hours', 'Pay', 'AUD equivalent (approx.)'],
+    ...r.payroll.map(p => [p.e.name, p.e.role, p.e.location, p.e.currency, +p.e.rate || 0, p.approved, p.pending, p.amount, p.aud]),
+    [], ['Totals by currency'], ...Object.entries(r.currencyTotals).map(([c, v]) => [c, v]), ['AUD total (approx.)', r.audTotal]
+  ], [26, 20, 28, 10, 13, 15, 14, 14, 22]);
+  add('Timesheet detail', [['Date', 'Employee', 'Project', 'Task', 'Hours', 'Status', 'Notes'],
+    ...r.detail.map(d => [d.date, d.person, d.project, d.task, d.hours, d.status, d.notes])], [12, 24, 26, 44, 8, 11, 50]);
+  const pr = [['Project', 'Task', 'Type', 'Hours this week', 'Hours all time', 'Limit / budget']];
+  r.projects.forEach(p => {
+    pr.push([p.name, '(project total)', p.type === 'indirect' ? 'In-direct (weekly)' : 'Standard', p.week, p.total, p.budget]);
+    p.tasks.forEach(t => pr.push([p.name, t.name, '', t.week, t.total, t.limit]));
+  });
+  add('Project hours', pr, [28, 46, 18, 15, 15, 15]);
+  add('Team', [['Name', 'Role', 'Email', 'Phone', 'Location', 'Rate', 'Currency', 'Access'],
+    ...db.employees.map(e => [e.name, e.role, e.email, e.phone, e.location, +e.rate || 0, e.currency, e.access])], [26, 20, 32, 18, 32, 8, 10, 12]);
+  return wb;
+}
+
+function downloadPdf() { if (!libsReady()) return; const r = buildReport(ui.week); makePdf(r).save(fileBase(r) + '.pdf'); }
+function downloadXlsx() { if (!libsReady()) return; const r = buildReport(ui.week); XLSX.writeFile(makeXlsx(r), fileBase(r) + '.xlsx'); }
+
+function summaryHtml(r) {
+  const td = 'padding:6px 10px;border-bottom:1px solid #e6e8ef;';
+  return `<div style="font-family:Arial,sans-serif;color:#111827;font-size:14px">
+    <p>Hello,</p><p>Attached is the ${esc(db.settings.company)} weekly timesheet and payroll report for <b>${esc(r.label)}</b>, as a PDF and an Excel workbook.</p>
+    <table style="border-collapse:collapse;margin:12px 0"><tr><th style="${td}text-align:left">Employee</th><th style="${td}text-align:right">Approved hours</th><th style="${td}text-align:right">Pay</th></tr>
+    ${r.payroll.map(p => `<tr><td style="${td}">${esc(p.e.name)}</td><td style="${td}text-align:right">${fmtH(p.approved)}</td><td style="${td}text-align:right">${money(p.amount, p.e.currency)}</td></tr>`).join('')}
+    </table><p>Approximate total in AUD: <b>${money(r.audTotal, 'AUD')}</b>${r.pendingTotal ? `<br>Pending, not yet approved: ${fmtH(r.pendingTotal)}` : ''}</p>
+    <p style="color:#6b7280;font-size:12px">Sent from ${esc(db.settings.company)} CRM by ${esc(cu().name)}.</p></div>`;
+}
+
+async function emailReport() {
+  if (!libsReady()) return;
+  const btn = $('#emailBtn'), r = buildReport(ui.week), base = fileBase(r);
+  const doc = makePdf(r), wb = makeXlsx(r);
+  if (!cfg.apiUrl) {
+    doc.save(base + '.pdf'); XLSX.writeFile(wb, base + '.xlsx');
+    location.href = `mailto:${REPORT_EMAIL}?subject=${encodeURIComponent('Weekly timesheet & payroll report: ' + r.label)}&body=${encodeURIComponent('Hello,\n\nPlease find the weekly report for ' + r.label + ' attached (PDF and Excel).\n')}`;
+    toast('No backend is connected, so the two files were downloaded and your email app opened. Attach both files before sending, or connect the backend in Settings for one-click sending.');
+    return;
+  }
+  btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>Sending…';
+  try {
+    const j = await api('email', {
+      subject: `${db.settings.company} weekly timesheet & payroll report: ${r.label}`,
+      html: summaryHtml(r),
+      files: [
+        { name: base + '.pdf', mime: 'application/pdf', data: doc.output('datauristring').split(',')[1] },
+        { name: base + '.xlsx', mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', data: XLSX.write(wb, { bookType: 'xlsx', type: 'base64' }) }
+      ]
+    });
+    saveRec('settings', { ...db.settings, lastEmailed: { at: Date.now(), label: r.label, by: cu().id } });
+    render();
+    toast(`Report emailed to ${j.to || REPORT_EMAIL}.`, 'ok');
+  } catch (e) {
+    toast('The email was not sent: ' + e.message, 'err');
+    btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>Email PDF + Excel';
+  }
+}
+
+/* ============================================================
+   Start
+   ============================================================ */
+function handleShortcut() {
+  const m = location.hash.match(/^#(submit|payroll)$/);
+  if (!m || !cu()) return;
+  history.replaceState(null, '', location.pathname + location.search);
+  if (m[1] === 'payroll' && isAdmin()) go('payroll'); else if (m[1] === 'submit') openTsModal();
+}
+window.addEventListener('hashchange', handleShortcut);
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+async function boot() {
+  const invite = readConnectHash();
+  if (!cfg.apiUrl) { applyOwnerEmail(); applySeedPhotos(); }
+  render();
+  if (invite && (!cfg.apiUrl || cfg.apiUrl !== invite.u)) { if (await connect(invite.u, invite.k)) render(); }
+  if (cfg.apiUrl) {
+    try { await flushQueue(); await pullRemote(); applyOwnerEmail(); applySeedPhotos(); ui.sync = queue.length ? ui.sync : 'ok'; if (!ui.modalOpen) render(); }
+    catch (e) { ui.sync = 'error'; ui.syncMsg = e.message; updateSync(); }
+  }
+  handleShortcut();
+}
+async function backgroundRefresh() {
+  if (!cfg.apiUrl || document.hidden || queue.length || ui.modalOpen || flushing) return;
+  try {
+    const before = JSON.stringify(db); await pullRemote();
+    ui.sync = 'ok'; if (JSON.stringify(db) !== before) render(); else updateSync();
+  } catch (e) { ui.sync = 'error'; ui.syncMsg = e.message; updateSync(); }
+}
+setInterval(backgroundRefresh, 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) backgroundRefresh(); });
+boot();
+</script>
+</body>
+</html>
