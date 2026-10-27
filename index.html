@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <style>
 :root{
   --side:#0f1424; --side-2:#1b2236; --side-ink:#cbd2e1;
@@ -1196,15 +1196,17 @@ function buildReport(ws) {
     const e = emp(t.employeeId), p = proj(t.projectId), tk = task(p, t.taskId);
     return { date: t.date, person: e ? e.name : 'Removed member', project: p ? p.name : 'Deleted project', task: tk ? tk.name : '', hours: +t.hours, status: t.status, notes: t.notes || '' };
   });
+  const days = [...Array(7)].map((_, i) => ymd(addDays(ws, i)));
+  const daily = db.employees.map(e => ({ e, hours: days.map(d => sumH(entries.filter(t => t.employeeId === e.id && t.date === d))) }));
   return {
-    ...r, label: weekLabel(ws), generated: new Date().toLocaleString('en-AU', { dateStyle: 'medium', timeStyle: 'short' }),
+    ...r, label: weekLabel(ws), daily, generated: new Date().toLocaleString('en-AU', { dateStyle: 'medium', timeStyle: 'short' }),
     payroll, currencyTotals, audTotal: round2(payroll.reduce((a, p) => a + p.aud, 0)),
     pendingTotal: round2(payroll.reduce((a, p) => a + p.pending, 0)), projects, detail
   };
 }
 const fileBase = r => `${db.settings.company.replace(/[^\w]+/g, '-')}_Weekly-Report_${r.start}_to_${r.end}`;
 function libsReady() {
-  if (!window.jspdf || !window.XLSX) { toast('The PDF and Excel tools did not load. Check your internet connection and reload the page.', 'err'); return false; }
+  if (!window.jspdf || !window.ExcelJS) { toast('The PDF and Excel tools did not load. Check your internet connection and reload the page.', 'err'); return false; }
   return true;
 }
 
@@ -1264,30 +1266,228 @@ function makePdf(r) {
   return doc;
 }
 
-function makeXlsx(r) {
-  const wb = XLSX.utils.book_new();
-  const add = (name, rows, widths) => { const ws = XLSX.utils.aoa_to_sheet(rows); ws['!cols'] = widths.map(w => ({ wch: w })); XLSX.utils.book_append_sheet(wb, ws, name); };
-  const head = [[db.settings.company + ' weekly payroll report'], ['Week', r.label], ['Period', r.start + ' to ' + r.end], ['Generated', r.generated], []];
-  add('Payroll summary', [...head,
-    ['Employee', 'Role', 'Location', 'Currency', 'Rate per hour', 'Approved hours', 'Pending hours', 'Pay', 'AUD equivalent (approx.)'],
-    ...r.payroll.map(p => [p.e.name, p.e.role, p.e.location, p.e.currency, +p.e.rate || 0, p.approved, p.pending, p.amount, p.aud]),
-    [], ['Totals by currency'], ...Object.entries(r.currencyTotals).map(([c, v]) => [c, v]), ['AUD total (approx.)', r.audTotal]
-  ], [26, 20, 28, 10, 13, 15, 14, 14, 22]);
-  add('Timesheet detail', [['Date', 'Employee', 'Project', 'Task', 'Hours', 'Status', 'Notes'],
-    ...r.detail.map(d => [d.date, d.person, d.project, d.task, d.hours, d.status, d.notes])], [12, 24, 26, 44, 8, 11, 50]);
-  const pr = [['Project', 'Task', 'Type', 'Hours this week', 'Hours all time', 'Limit / budget']];
-  r.projects.forEach(p => {
-    pr.push([p.name, '(project total)', p.type === 'indirect' ? 'In-direct (weekly)' : 'Standard', p.week, p.total, p.budget]);
-    p.tasks.forEach(t => pr.push([p.name, t.name, '', t.week, t.total, t.limit]));
+/* ---------- Professional Excel workbook (ExcelJS) ---------- */
+const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+const XL = { navy: 'FF0F1424', brand: 'FF4F46E5', soft: 'FFEEF2FF', zebra: 'FFF8F9FC', line: 'FFE6E8EF', orange: 'FFE85D0D',
+  muted: 'FF6B7280', ink: 'FF111827', white: 'FFFFFFFF', sub: 'FFC7D2FE', green: 'FF047857', amber: 'FFB45309', red: 'FFDC2626', input: 'FF1D4ED8', weekend: 'FFF1F2F6' };
+const NF = {
+  h: '#,##0.00;-#,##0.00;"-"',
+  money: c => `#,##0.00 "${c}";-#,##0.00 "${c}";"-"`,
+  pct: '0%;-0%;"-"',
+  remain: '#,##0.00;[Red]-#,##0.00;"-"',
+  date: 'ddd dd/mm/yyyy',
+  fx: '0.0000'
+};
+const xlFont = (o = {}) => ({ name: 'Arial', size: 10, color: { argb: XL.ink }, ...o });
+const xlFill = argb => ({ type: 'pattern', pattern: 'solid', fgColor: { argb } });
+const xlLine = { style: 'thin', color: { argb: XL.line } };
+const xlDate = s => { const [y, m, d] = s.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d)); };
+const dmy = s => s.split('-').reverse().join('/');
+const isNumLike = v => typeof v === 'number' || (v && typeof v === 'object' && 'formula' in v);
+
+function xlSheet(wb, name, widths, ctx, headerRow) {
+  const ws = wb.addWorksheet(name, { views: [{ state: 'frozen', ySplit: headerRow || 3, showGridLines: false }] });
+  ws.columns = widths.map(w => ({ width: w }));
+  const n = widths.length, ind = 1;
+  [1, 2, 3].forEach(r => ws.mergeCells(r, 1, r, n));
+  ws.getRow(1).height = 30; ws.getRow(2).height = 20; ws.getRow(3).height = 4;
+  const t = ws.getCell(1, 1);
+  t.value = ctx.company; t.font = xlFont({ size: 15, bold: true, color: { argb: XL.white } }); t.fill = xlFill(XL.navy); t.alignment = { vertical: 'bottom', indent: ind };
+  const s = ws.getCell(2, 1);
+  s.value = ctx.subtitle + '  |  ' + name; s.font = xlFont({ color: { argb: XL.sub } }); s.fill = xlFill(XL.navy); s.alignment = { vertical: 'middle', indent: ind };
+  ws.getCell(3, 1).fill = xlFill(XL.orange);
+  if (ctx.logoId != null) ws.addImage(ctx.logoId, { tl: { col: n - 1 + Math.max(0, 1 - 52 / (widths[n - 1] * 7.2)), row: 0.25 }, ext: { width: 38, height: 38 }, editAs: 'oneCell' });
+  ws.pageSetup = { orientation: 'landscape', paperSize: 9, fitToPage: true, fitToWidth: 1, fitToHeight: 0, horizontalCentered: true,
+    margins: { left: 0.4, right: 0.4, top: 0.5, bottom: 0.6, header: 0.2, footer: 0.25 } };
+  if (headerRow) ws.pageSetup.printTitlesRow = `${headerRow}:${headerRow}`;
+  ws.headerFooter = { oddFooter: `&L&8${ctx.company.replace(/&/g, '&&')}  |  Weekly report ${ctx.label}&R&8Page &P of &N` };
+  return ws;
+}
+function xlSection(ws, row, text, n) {
+  const c = ws.getCell(row, 1);
+  c.value = text; c.font = xlFont({ size: 12, bold: true, color: { argb: XL.brand } });
+  ws.getRow(row).height = 22;
+  if (n) for (let i = 1; i <= n; i++) ws.getCell(row, i).border = { bottom: { style: 'medium', color: { argb: XL.brand } } };
+}
+function xlHeader(ws, row, labels, right = []) {
+  labels.forEach((l, i) => {
+    const c = ws.getCell(row, i + 1);
+    c.value = l; c.font = xlFont({ bold: true, color: { argb: XL.white } }); c.fill = xlFill(XL.brand);
+    c.alignment = { vertical: 'middle', horizontal: right.includes(i + 1) ? 'right' : 'left', wrapText: true, indent: right.includes(i + 1) ? 0 : 0 };
   });
-  add('Project hours', pr, [28, 46, 18, 15, 15, 15]);
-  add('Team', [['Name', 'Role', 'Email', 'Phone', 'Location', 'Rate', 'Currency', 'Access'],
-    ...db.employees.map(e => [e.name, e.role, e.email, e.phone, e.location, +e.rate || 0, e.currency, e.access])], [26, 20, 32, 18, 32, 8, 10, 12]);
+  ws.getRow(row).height = 24;
+}
+/* cells: plain values, or { v, nf, font, align, indent, wrap, fill } */
+function xlRow(ws, row, cells, opt = {}) {
+  cells.forEach((cell, i) => {
+    const o = cell !== null && typeof cell === 'object' && 'v' in cell ? cell : { v: cell };
+    const c = ws.getCell(row, i + 1);
+    c.value = o.v === undefined ? null : o.v;
+    c.font = xlFont({ bold: !!opt.bold, ...(o.font || {}) });
+    if (o.nf) c.numFmt = o.nf;
+    c.alignment = { vertical: 'middle', horizontal: o.align || (isNumLike(o.v) ? 'right' : 'left'), wrapText: !!o.wrap, indent: o.indent || 0 };
+    const f = o.fill || opt.fill; if (f) c.fill = xlFill(f);
+    c.border = opt.total ? { top: { style: 'medium', color: { argb: XL.navy } }, bottom: { style: 'medium', color: { argb: XL.navy } } } : { bottom: xlLine };
+  });
+  if (opt.height) ws.getRow(row).height = opt.height;
+}
+const xlTotal = (ws, row, cells) => xlRow(ws, row, cells, { bold: true, total: true, fill: XL.soft, height: 22 });
+function xlNote(ws, row, text, n) {
+  ws.mergeCells(row, 1, row, n);
+  const c = ws.getCell(row, 1);
+  c.value = text; c.font = xlFont({ size: 9, italic: true, color: { argb: XL.muted } }); c.alignment = { wrapText: true, vertical: 'top' };
+  ws.getRow(row).height = 30;
+}
+const F = (formula, result) => ({ formula, result });
+
+async function buildXlsx(r) {
+  const wb = new ExcelJS.Workbook(), co = db.settings.company, fx = db.settings.fxToAUD;
+  wb.creator = co + ' CRM'; wb.lastModifiedBy = (cu() || {}).name || ''; wb.created = new Date(); wb.title = `${co} weekly report ${r.label}`;
+  const icon = document.querySelector('link[rel=icon]');
+  const ctx = { company: co, label: r.label, subtitle: 'Weekly timesheet & payroll report  |  ' + r.label,
+    logoId: icon && /^data:image\/png;base64,/.test(icon.href) ? wb.addImage({ base64: icon.href, extension: 'png' }) : null };
+
+  /* 1. Summary */
+  const S = xlSheet(wb, 'Summary', [28, 22, 34, 11, 14, 14, 14, 18, 20], ctx);
+  [['Week', r.label], ['Period', `${dmy(r.start)} to ${dmy(r.end)}`], ['Generated', r.generated], ['Prepared by', (cu() || {}).name || '']]
+    .forEach(([k, v], i) => {
+      const row = 5 + i;
+      S.getCell(row, 1).value = k; S.getCell(row, 1).font = xlFont({ bold: true, color: { argb: XL.muted } });
+      S.mergeCells(row, 2, row, 4); S.getCell(row, 2).value = v; S.getCell(row, 2).font = xlFont();
+    });
+  const H = 11, first = 12, n = r.payroll.length, last = first + Math.max(n, 1) - 1, tot = last + 1;
+  const curUsed = CURRENCIES.filter(c => r.payroll.some(p => p.e.currency === c));
+  const ctSec = tot + 2, ctFirst = ctSec + 1, ctLast = ctFirst + Math.max(curUsed.length, 1) - 1;
+  const fxSec = ctLast + 2, fxHead = fxSec + 1, fxFirst = fxHead + 1, fxLast = fxFirst + CURRENCIES.length - 1;
+  const fxRange = `$A$${fxFirst}:$B$${fxLast}`;
+  const totA = round2(r.payroll.reduce((a, p) => a + p.approved, 0));
+
+  // key figures (top right)
+  [['Approved hours', F(`F${tot}`, totA), NF.h],
+   ['Pending hours', F(`G${tot}`, r.pendingTotal), NF.h],
+   ['Team members paid', F(`COUNTIF(F${first}:F${last},">0")`, r.payroll.filter(p => p.approved > 0).length), '0'],
+   ['Total payroll (AUD approx.)', F(`I${tot}`, r.audTotal), NF.money('AUD')]].forEach(([k, v, nf], i) => {
+    const row = 5 + i;
+    S.mergeCells(row, 6, row, 7); S.mergeCells(row, 8, row, 9);
+    const a = S.getCell(row, 6), b = S.getCell(row, 8);
+    a.value = k; a.font = xlFont({ bold: true, color: { argb: XL.muted } }); a.fill = xlFill(XL.soft); a.alignment = { vertical: 'middle', indent: 1 };
+    b.value = v; b.numFmt = nf; b.font = xlFont({ size: 12, bold: true, color: { argb: XL.brand } }); b.fill = xlFill(XL.soft); b.alignment = { vertical: 'middle', horizontal: 'right', indent: 1 };
+    S.getRow(row).height = 20;
+  });
+
+  xlSection(S, H - 1, 'Payroll summary', 9);
+  xlHeader(S, H, ['Employee', 'Role', 'Location', 'Currency', 'Rate / hour', 'Approved hours', 'Pending hours', 'Pay', 'Pay in AUD (approx.)'], [5, 6, 7, 8, 9]);
+  r.payroll.forEach((p, i) => {
+    const row = first + i, c = p.e.currency;
+    xlRow(S, row, [p.e.name, p.e.role || '', p.e.location || '', { v: c, align: 'center' },
+      { v: +p.e.rate || 0, nf: NF.money(c) }, { v: p.approved, nf: NF.h }, { v: p.pending, nf: NF.h, font: p.pending ? { color: { argb: XL.amber } } : {} },
+      { v: F(`E${row}*F${row}`, p.amount), nf: NF.money(c) },
+      { v: F(`H${row}*VLOOKUP(D${row},${fxRange},2,FALSE)`, p.aud), nf: NF.money('AUD') }],
+      { fill: i % 2 ? XL.zebra : null, height: 20 });
+  });
+  if (!n) xlRow(S, first, [{ v: 'No team members yet.', font: { italic: true, color: { argb: XL.muted } } }]);
+  xlTotal(S, tot, ['Total', '', '', '', '', { v: F(`SUM(F${first}:F${last})`, totA), nf: NF.h }, { v: F(`SUM(G${first}:G${last})`, r.pendingTotal), nf: NF.h },
+    { v: 'See below', align: 'right', font: { bold: false, italic: true, color: { argb: XL.muted } } }, { v: F(`SUM(I${first}:I${last})`, r.audTotal), nf: NF.money('AUD') }]);
+
+  xlSection(S, ctSec, 'Totals by currency', 9);
+  (curUsed.length ? curUsed : ['AUD']).forEach((c, i) => {
+    const row = ctFirst + i, amt = r.currencyTotals[c] || 0;
+    xlRow(S, row, [`Total paid in ${c}`, undefined, undefined, undefined, undefined, undefined, undefined,
+      { v: F(`SUMIF($D$${first}:$D$${last},"${c}",$H$${first}:$H$${last})`, amt), nf: NF.money(c) },
+      { v: F(`SUMIF($D$${first}:$D$${last},"${c}",$I$${first}:$I$${last})`, round2(amt * (fx[c] || 0))), nf: NF.money('AUD') }],
+      { fill: i % 2 ? XL.zebra : null, height: 20 });
+    S.mergeCells(row, 1, row, 7);
+  });
+
+  xlSection(S, fxSec, 'Exchange rates used', 2);
+  xlHeader(S, fxHead, ['Currency', '1 unit in AUD'], [2]);
+  CURRENCIES.forEach((c, i) => xlRow(S, fxFirst + i, [{ v: c, align: 'left' }, { v: +fx[c] || 0, nf: NF.fx, font: { color: { argb: XL.input } } }], { fill: i % 2 ? XL.zebra : null }));
+  xlNote(S, fxLast + 2, 'Pay counts approved hours only; pending hours are shown for information and are not paid until approved. ' +
+    'AUD amounts are approximate and use the exchange rates above (blue), taken from the CRM Settings page.', 9);
+
+  /* 2. Daily hours */
+  const days = [...Array(7)].map((_, i) => ymd(addDays(parseYmd(r.start), i)));
+  const D = xlSheet(wb, 'Daily hours', [28, 12, 12, 12, 12, 12, 12, 12, 13], ctx, 6);
+  xlSection(D, 5, 'Hours per person per day (approved and pending)', 9);
+  xlHeader(D, 6, ['Employee', ...days.map(d => parseYmd(d).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'numeric' })), 'Total'], [2, 3, 4, 5, 6, 7, 8, 9]);
+  const dFirst = 7, dLast = dFirst + Math.max(r.daily.length, 1) - 1;
+  r.daily.forEach((row, i) => {
+    const rr = dFirst + i;
+    xlRow(D, rr, [row.e.name, ...row.hours.map((h, k) => ({ v: h, nf: NF.h, fill: k >= 5 ? XL.weekend : null })), { v: F(`SUM(B${rr}:H${rr})`, sumH(row.hours.map(h => ({ hours: h })))), nf: NF.h, font: { bold: true } }],
+      { fill: i % 2 ? XL.zebra : null, height: 20 });
+  });
+  const colL = k => String.fromCharCode(65 + k);
+  xlTotal(D, dLast + 1, ['Total', ...days.map((_, k) => ({ v: F(`SUM(${colL(k + 1)}${dFirst}:${colL(k + 1)}${dLast})`, sumH(r.daily.map(x => ({ hours: x.hours[k] })))), nf: NF.h })),
+    { v: F(`SUM(I${dFirst}:I${dLast})`, sumH(r.detail)), nf: NF.h }]);
+
+  /* 3. Timesheet detail */
+  const T = xlSheet(wb, 'Timesheet detail', [17, 26, 26, 46, 11, 13, 46], ctx, 5);
+  xlHeader(T, 5, ['Date', 'Employee', 'Project', 'Task', 'Hours', 'Status', 'Notes'], [5]);
+  T.getCell(5, 6).alignment = { vertical: 'middle', indent: 1 };
+  const tFirst = 6, tLast = tFirst + Math.max(r.detail.length, 1) - 1;
+  const stat = { approved: ['Approved', XL.green], pending: ['Pending', XL.amber] };
+  r.detail.forEach((d, i) => {
+    const s = stat[d.status] || [d.status, XL.ink];
+    xlRow(T, tFirst + i, [{ v: xlDate(d.date), nf: NF.date, align: 'left' }, d.person, { v: d.project, wrap: true }, { v: d.task, wrap: true }, { v: d.hours, nf: NF.h },
+      { v: s[0], indent: 1, font: { bold: true, color: { argb: s[1] } } }, { v: d.notes, wrap: true }], { fill: i % 2 ? XL.zebra : null, height: 20 });
+  });
+  if (!r.detail.length) xlRow(T, tFirst, [{ v: 'No timesheet entries for this week.', font: { italic: true, color: { argb: XL.muted } } }]);
+  else T.autoFilter = { from: { row: 5, column: 1 }, to: { row: tLast, column: 7 } };
+  xlTotal(T, tLast + 1, ['Total (rows shown)', '', '', '', { v: F(`SUBTOTAL(109,E${tFirst}:E${tLast})`, sumH(r.detail)), nf: NF.h }, '', '']);
+
+  /* 4. Project hours */
+  const P = xlSheet(wb, 'Project hours', [28, 46, 16, 12, 13, 13, 14, 10], ctx, 5);
+  xlHeader(P, 5, ['Project', 'Task', 'Limit basis', 'Limit (h)', 'This week (h)', 'All time (h)', 'Remaining (h)', 'Used'], [4, 5, 6, 7, 8]);
+  let pr = 6;
+  r.projects.forEach(p => {
+    const ind = p.type === 'indirect', basis = ind ? 'Per week' : 'Total budget', usedCol = ind ? 'E' : 'F';
+    const line = (name, task, limit, week, total, isProject) => {
+      const used = ind ? week : total;
+      xlRow(P, pr, [isProject ? name : '', { v: task, indent: isProject ? 0 : 1 }, { v: basis, font: { color: { argb: XL.muted } } },
+        { v: limit, nf: NF.h }, { v: week, nf: NF.h }, { v: total, nf: NF.h },
+        { v: F(`D${pr}-${usedCol}${pr}`, round2(limit - used)), nf: NF.remain },
+        { v: F(`IF(D${pr}=0,0,${usedCol}${pr}/D${pr})`, limit ? used / limit : 0), nf: NF.pct }],
+        isProject ? { bold: true, fill: XL.soft, height: 22 } : { height: 19 });
+      pr++;
+    };
+    line(p.name, 'All tasks', p.budget, p.week, p.total, true);
+    p.tasks.forEach(t => line(p.name, t.name, t.limit, t.week, t.total, false));
+  });
+  if (pr > 6) P.addConditionalFormatting({ ref: `H6:H${pr - 1}`, rules: [{ type: 'cellIs', operator: 'greaterThan', formulae: [1], priority: 1,
+    style: { font: { bold: true, color: { argb: XL.red } }, fill: { type: 'pattern', pattern: 'solid', bgColor: { argb: 'FFFEF2F2' } } } }] });
+  xlNote(P, pr + 1, 'In-direct projects are measured against their weekly limit using this week\u2019s hours. Standard projects are measured against their total budget using all-time hours. ' +
+    'Hours include approved and pending entries. Anything over 100% is highlighted in red.', 8);
+
+  /* 5. Team */
+  const M = xlSheet(wb, 'Team', [26, 22, 42, 34, 18, 14, 12, 16], ctx, 5);
+  xlHeader(M, 5, ['Name', 'Role', 'Location', 'Email', 'Phone', 'Rate / hour', 'Currency', 'Access'], [6]);
+  M.getCell(5, 7).alignment = { vertical: 'middle', horizontal: 'center' };
+  db.employees.forEach((e, i) => xlRow(M, 6 + i, [e.name, e.role || '', e.location || '', e.email || '', e.phone || '',
+    { v: +e.rate || 0, nf: NF.money(e.currency) }, { v: e.currency, align: 'center' }, e.access === 'admin' ? 'Administrator' : 'Team member'],
+    { fill: i % 2 ? XL.zebra : null, height: 20 }));
+
   return wb;
+}
+const xlsxBuffer = async r => (await buildXlsx(r)).xlsx.writeBuffer();
+function bufToB64(buf) {
+  const b = new Uint8Array(buf); let s = '';
+  for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+function saveBlob(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 3000);
 }
 
 function downloadPdf() { if (!libsReady()) return; const r = buildReport(ui.week); makePdf(r).save(fileBase(r) + '.pdf'); }
-function downloadXlsx() { if (!libsReady()) return; const r = buildReport(ui.week); XLSX.writeFile(makeXlsx(r), fileBase(r) + '.xlsx'); }
+async function downloadXlsx() {
+  if (!libsReady()) return;
+  const r = buildReport(ui.week);
+  try { saveBlob(new Blob([await xlsxBuffer(r)], { type: XLSX_MIME }), fileBase(r) + '.xlsx'); }
+  catch (e) { toast('The Excel file could not be created: ' + e.message, 'err'); }
+}
 
 function summaryHtml(r) {
   const td = 'padding:6px 10px;border-bottom:1px solid #e6e8ef;';
@@ -1302,9 +1502,11 @@ function summaryHtml(r) {
 async function emailReport() {
   if (!libsReady()) return;
   const btn = $('#emailBtn'), r = buildReport(ui.week), base = fileBase(r);
-  const doc = makePdf(r), wb = makeXlsx(r);
+  const doc = makePdf(r);
+  let xbuf;
+  try { xbuf = await xlsxBuffer(r); } catch (e) { toast('The Excel file could not be created: ' + e.message, 'err'); return; }
   if (!cfg.apiUrl) {
-    doc.save(base + '.pdf'); XLSX.writeFile(wb, base + '.xlsx');
+    doc.save(base + '.pdf'); saveBlob(new Blob([xbuf], { type: XLSX_MIME }), base + '.xlsx');
     location.href = `mailto:${REPORT_EMAIL}?subject=${encodeURIComponent('Weekly timesheet & payroll report: ' + r.label)}&body=${encodeURIComponent('Hello,\n\nPlease find the weekly report for ' + r.label + ' attached (PDF and Excel).\n')}`;
     toast('No backend is connected, so the two files were downloaded and your email app opened. Attach both files before sending, or connect the backend in Settings for one-click sending.');
     return;
@@ -1316,7 +1518,7 @@ async function emailReport() {
       html: summaryHtml(r),
       files: [
         { name: base + '.pdf', mime: 'application/pdf', data: doc.output('datauristring').split(',')[1] },
-        { name: base + '.xlsx', mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', data: XLSX.write(wb, { bookType: 'xlsx', type: 'base64' }) }
+        { name: base + '.xlsx', mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', data: bufToB64(xbuf) }
       ]
     });
     saveRec('settings', { ...db.settings, lastEmailed: { at: Date.now(), label: r.label, by: cu().id } });
