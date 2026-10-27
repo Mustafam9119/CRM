@@ -111,7 +111,8 @@ table{width:100%;border-collapse:collapse;min-width:760px}
 th{font-size:12px;font-weight:600;color:var(--muted);text-align:left;padding:12px 18px;border-bottom:1px solid var(--line);white-space:nowrap;background:#fbfbfd}
 td{padding:13px 18px;border-bottom:1px solid #f0f1f5;vertical-align:middle}
 tr:last-child td{border-bottom:0}
-td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.nowrap{white-space:nowrap}
 tfoot td{font-weight:700;background:#fbfbfd;border-top:1px solid var(--line)}
 .person{display:flex;align-items:center;gap:12px}
 .avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
@@ -178,6 +179,73 @@ select.in.inline{width:auto}
 .sect>p{margin:0 0 16px;color:var(--muted);font-size:13px}
 code{background:#f3f4f6;padding:1px 6px;border-radius:5px;font-size:12.5px}
 
+/* Resourcing */
+.chips{display:flex;flex-wrap:wrap;gap:8px;max-height:220px;overflow:auto;padding:2px}
+.chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:99px;padding:4px 12px 4px 4px;cursor:pointer;font-size:13px;background:#fff;user-select:none}
+.chip .avatar{width:26px;height:26px;font-size:11px}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip:has(input:checked){border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
+.chip:has(input:focus-visible){outline:2px solid var(--brand);outline-offset:2px}
+.chip.proj{padding:6px 12px}
+.team-av{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;color:var(--muted)}
+.team-av .stack{display:flex}
+.team-av .avatar{width:24px;height:24px;font-size:10px;border:2px solid #fff;margin-left:-6px}
+.team-av .stack .avatar:first-child{margin-left:0}
+.subline{display:block;font-size:11.5px;color:var(--muted);margin-top:3px}
+.subline .copyable{font-size:11.5px}
+
+/* Resource planner */
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);align-items:center;margin:0 0 12px}
+.legend span{display:inline-flex;align-items:center}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px;flex:none}
+.dot.grey{background:#9ca3af}.dot.green{background:#10b981}.dot.blue{background:#3b82f6}
+.pl-wrap{overflow:auto;max-height:calc(100vh - 250px)}
+table.pl{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%}
+.pl th,.pl td{border-bottom:1px solid #eef0f4;padding:6px 8px;background:#fff;text-align:center;vertical-align:middle}
+.pl .pl-name{position:sticky;left:0;z-index:2;width:310px;min-width:310px;max-width:310px;text-align:left;font-weight:500;border-right:1px solid var(--line)}
+.pl thead th{position:sticky;top:0;z-index:3;background:#fbfbfd;font-size:12.5px;font-weight:600;padding:10px 8px;border-bottom:1px solid var(--line)}
+.pl thead th.pl-name{z-index:4;color:var(--muted)}
+.pl-wk{min-width:118px}
+.pl-wk span{display:block;font-size:11px;color:var(--muted);font-weight:500}
+.pl thead th.now{background:var(--brand-soft);color:var(--brand)}
+.pl-row{display:flex;align-items:center;gap:6px;min-width:0}
+.pl-row .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.pl-emp th,.pl-emp td{background:#f8f9fc;border-top:2px solid var(--line)}
+.pl-emp .person{gap:10px;min-width:0;flex:1}
+.pl-emp .person small{display:block}
+.pl-util{margin-left:auto;font-weight:700;font-size:12.5px;padding:3px 9px;border-radius:99px;background:var(--brand-soft);color:var(--brand);white-space:nowrap}
+.pl-util.over{background:var(--red-soft);color:var(--red)}.pl-util.none{background:#f3f4f6;color:var(--muted)}
+.pl-cell{display:flex;flex-direction:column;gap:3px;font-size:12px;text-align:left}
+.pl-cell .top{display:flex;justify-content:space-between;gap:6px}
+.pl-cell b{font-size:13px}.pl-cell b.over{color:var(--red)}.pl-cell b.none{color:var(--muted)}
+.pl-cell small{color:var(--muted)}
+.pl-bar{display:flex;height:6px;border-radius:99px;overflow:hidden;background:#eef0f5}
+.pl-bar i{display:block;height:100%}
+.pl-bar .grey{background:#9ca3af}.pl-bar .green{background:#10b981}.pl-bar .blue{background:#3b82f6}
+.pl-in{width:66px;border:1px solid #d9dce5;border-radius:6px;padding:5px 7px;text-align:right;font-variant-numeric:tabular-nums;background:#fff}
+.pl-in:focus{outline:2px solid var(--brand);border-color:var(--brand)}
+.pl-in.grey{background:#f3f4f6}.pl-in.green{background:#f0fdf4;border-color:#bbf7d0}.pl-in.blue{background:#eff6ff;border-color:#bfdbfe}
+.pl-ro{font-variant-numeric:tabular-nums}
+.pl-psum{font-weight:600;font-variant-numeric:tabular-nums}
+.pl .pl-psum.green{color:#047857;background:#f0fdf4}.pl .pl-psum.blue{color:#1d4ed8;background:#eff6ff}
+.pl-leave th.pl-name,.pl-proj th.pl-name{padding-left:12px}
+.pl-task th.pl-name{padding-left:56px;font-weight:400;color:#374151;font-size:12.5px}
+.pl-tog{all:unset;cursor:pointer;width:22px;height:22px;display:inline-grid;place-items:center;border-radius:5px;color:var(--muted);flex:none}
+.pl-tog:hover{background:#f3f4f6;color:var(--ink)}
+.pl-tog:focus-visible{outline:2px solid var(--brand)}
+.pl-sp{display:inline-block;width:22px;flex:none}
+.pl-x{width:24px;height:24px;margin-left:auto;flex:none}
+.pl-add th,.pl-add td{border-bottom:0;padding-bottom:12px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}
+.seg button{all:unset;cursor:pointer;padding:7px 12px;font-size:13px;color:var(--muted)}
+.seg button.on{background:var(--brand-soft);color:var(--brand);font-weight:600}
+.seg button:focus-visible{outline:2px solid var(--brand)}
+
+/* Accounting */
+.amt-in{color:var(--green);font-weight:600}.amt-out{color:var(--red);font-weight:600}
+.stat small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+.stat b.pos{color:var(--green)}.stat b.neg{color:var(--red)}
+
 /* Toast */
 #toasts{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:8px;z-index:60}
 .toast{background:var(--side);color:#fff;padding:12px 16px;border-radius:10px;max-width:380px;box-shadow:0 10px 30px rgba(0,0,0,.2);font-size:13.5px;display:flex;gap:10px;align-items:flex-start}
@@ -232,11 +300,11 @@ summary{cursor:pointer;color:var(--brand);font-weight:600;font-size:13px}
       <h1>Sign in</h1>
       <p class="muted" style="margin:0 0 22px">Use the email your administrator added for you.</p>
       <div class="field"><label class="fl" for="lgEmail">Email</label><input class="in" id="lgEmail" type="email" autocomplete="username" required></div>
-      <div class="field"><label class="fl" for="lgPin">PIN</label><input class="in" id="lgPin" type="password" inputmode="numeric" autocomplete="current-password" required>
-        <div class="hint">First time signing in? Your PIN is 1234 until you change it.</div></div>
+      <div class="field"><label class="fl" for="lgPw">Password</label><input class="in" id="lgPw" type="password" autocomplete="current-password" required>
+        <div class="hint">First time signing in? Use the starter password your administrator gave you: your first name plus 4 numbers, for example Mohamed0512.</div></div>
       <div class="err" id="lgErr" role="alert"></div>
       <button class="btn primary" style="width:100%;justify-content:center" id="lgBtn">Sign in</button>
-      <p class="hint" style="margin-top:14px">Can't sign in on this device? <a href="#" onclick="resetDevice();return false">Reset this device to the starter data</a>.</p>
+      <p class="hint" style="margin-top:14px">Forgot your password? Ask your administrator to reset it. Problems on this device? <a href="#" onclick="resetDevice();return false">Reset this device</a>.</p>
       <details id="connBox">
         <summary>Connect this device to your team's data</summary>
         <p class="hint">Your administrator can send you an invite link instead. Paste the web app URL and API key from Google Apps Script.</p>
@@ -282,7 +350,11 @@ summary{cursor:pointer;color:var(--brand);font-weight:600;font-size:13px}
    ============================================================ */
 const REPORT_EMAIL = 'mohamed@ai-es.com.au';   // weekly report recipient (enforced again on the server)
 const CURRENCIES = ['AUD', 'EGP', 'SAR', 'USD'];
-const DEFAULT_PIN = '1234';
+const LEGACY_PIN = '1234';      // old PIN default, accepted once so people can move to passwords
+const PLAN_WEEKS = 8;
+const EXP_CATS = ['Contractors & salaries', 'Software & subscriptions', 'Office & rent', 'Equipment', 'Marketing & advertising', 'Travel', 'Professional fees', 'Bank & payment fees', 'Tax', 'Insurance', 'Other expense'];
+const INC_CATS = ['Client payment', 'Consulting', 'Project milestone', 'Grant or refund', 'Other income'];
+const OLD_BACKEND = 'Your Google Apps Script backend is an older version. Paste the new Code.gs into Apps Script, then Deploy > Manage deployments > Edit > New version.';
 const SEED_PHOTOS = {
   'emp-elnasser': 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAUEBAYFBQUGBgYHCQ4JCQgICRINDQoOFRIWFhUSFBQXGiEcFxgfGRQUHScdHyIjJSUlFhwpLCgkKyEkJST/2wBDAQYGBgkICREJCREkGBQYJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCT/wAARCACAAIADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD6pooooAKKKQsFGSQAKAFpruiDLsB9axtZ8U2WkxMzSqWHvXl3ib4nTSM4t247YoA9cutcsrT78q/nWdN410yIczL+deBJ4wvNTkYTyFVHvXPa74lWAsv2o8e9S2Uo3PpX/hYelbsecn51bg8aaZP0mX86+Nx4vJmx9qP512Ph7WprraFuCc+9FwcT6ottYtLv7kin8auK6N90g18x3XxBufD06xeaSPrW9onxqKyoJpPl9zT1FofQFFcv4d8e6PrcCbblPMPbNdMrq6hlIKnvSCw6ijNFUIKD0opGYKpZugoARnCKWYgKOtecfEf4kwaFavHBIpPqDR8RviFDpdtJaW8g8wjHBr528Rahd6yX852OTVJCbOkk8ZS+IWO6Y4J9auGxQWu/IauH0+A2EAYHmuw0y5e5siD6USGjnNZln3GO0U7j6Vg3PgzV9SXzGWTmvRvB2krqWsMrqCAe9erJodpBBt8tMgelcFatZ2PSoUeaNz5D1HwJqViDLh+Oam8Na3eaZdCKTIwcc19EeI9MtXidTGteJ+J9GSynaaIAYOeKVKtdk1aNkdhb6RD4hhWeY81YPhHT1ix5gBqDwHqdvJpRWYjeBWhNiZzsJxmu+Mro8+Ssyx4bsbfRLpZVuTgHOM17X4Z8cWNxElvJKucYHNeGtaExcE5qO0uZtOuEfewAOaUkNM+qI3WZA6EFT0p4rg/AnjOG/tkt5JAWAxXdggjI6GkhC1Q1m6W1sJCTg7av+9cb451ApA0aHtVJCbPnnxxPc3vik/Mxj3VU1O1A27R2re1O2V9QMjjJzSzWAuUAQZNXYkwRYbrQE1raTG0duVA7VbGhXTQhQhre0PwzK0fzoazkaxM7wdL/AGVqEk0inBrqn8VrJKwwcUadoMRmZZFAxTrnQbXDshHy15OJXvHt4T4DkfE/iFSDszzXm+u3ZuYHZlNd1qotGvvszYyTiqHiDQrW3ssAAlhTox1KxGxzvgzT5rm3Zo84rr7SyljYKynrVXwNaNaKRt+XNd/ZQ28sgygr1qcdDwa25nWelgx7nXisjxFFBDGQuM16DqVtHDp5aMAHFeZagJbu6KFSRmraM4h4J1O4stSUlmC5r6Q8Pah9vsUYnJxXz/puknemwYIr2nwIjxWYRz0FQWdU5whPoK888XyiZ2Arv7p9lq7egry/WboTXbrnvVRIkcBqtqXudo65rW0LTMOvmDNRamAl8taFleCN1q2SjsILG0jtwSgzj0q7pq2zNtVQM+1U7ORbi2HParFhEsU2d1Q43L5jP8WxHS08yEYLelcs0ly9sz7j81d34kjgvbcBmGR71wuoXIswIgPlrzMTB8x7OEqLkPM9deS21LzGJzmlF8+p3MUUjZXipfGckQcOCM1y8Wota4mB+7SpRdyq1VWPdPD/AIajW1RkUEEVvWujIpGFArifhx8Q7S4tBbzyrv6cmvT7GSC5QSo4IPPWvShojxqurK1xorz25UDjFcjeaLFYTFmiyc+ldnq/ie30a3Yuw4FeeXvxK06+uTGWXOcDmm5BGJq2tsm5WQYzXfeHJPs0AzxXnmjXwuHEo/1farmrePLbSAIy4BHvUcxUkeq6q+zT5T/s141dXZfUXAPevZdUj83T5V9RXguv3X9l6wynoTWkTJlPXbspqCVNDeruUscVzHiXV/8ATkKHJqjqusyW2nmcHDAVpa5KPU4PElvZW2WlAwPWub1T4owWcrbJgce9eJ3nje8udybyB061hXNzPcMzmQkketWoiZ7anxXl1O+jt0cnc2OtdrrKsdKinZfmYZrxX4LeGZdf1RpHBPlnIruviX4n1LRV+xpEcRcDisalFNnRSquKsZOs6FqWqPvWJig9q5PX4H0yydHGGAr2f4Ravc+INIle/tdoVTgkV5D8Yb+JNVkggxjcRxURopDlWbPNNN8S3+manvjdggbsa9i8O/Gma2gSOSQ9Mda8d+zrnlRk04WZU5BxW3JoY82p7Tr/AMQTr1qUWTkj1rl9I0G6vb5JvNON2etcMl5JaYIYnFbek+OJrN0UDrxWUqb3NozR9GaPNBZ6SsRcbwvrXkHxN1GdbxtshA+tdLod7darY+dGSWxnFZ8vhC78T3LC5RlAOOlc6lrY1a0PsORN8TJ6jFfPvxY02az1LzFBFfQg61598TtCXUIvNCZIFbpnNY+bgXutTRX7U7xgyQ2XlgjpSaiWsdf8nGOa5/x3qMgkEee1axYmjknjyWIHemxH94FPekimJU5p0K5uovcgVtFkH0X+zppaWizXTrgAZrF+KOuwap4uWyjVTl8HFdh8O5ItA8JyTuQpePg/hXlthbHWPGst7I2UWTPP1p2Eewz39p4M8EBlCRyPH/SvlfW9Rm17VridiWXcSK9L+M/i95YINPgkO0DaQK8sEgs4hn7zilYLkbfeHtSlhTFywLGoJZcHrSGF0+F4qnFcFZk+tSTyZWqkbfPn0qW9AR9GfCbVbFLVFuGXp3r3DQtP0q/G+FV59K+PPA11d3V0sMDN+FfWPws0a9jsg8+7n1ricNTq59D1Wqmo2CX8DRsASRVug5AOOtaGR8w/EzwodK1w3XlHbnORXifjLUEuL/aO3Ffdfi3wraeIdMnieJTMy/K3vXxr8VvhvfeHrmaQRsecg1pFks4JWA6VPu8q4tm/2hWfY3HlgpOuGHrVm3lDXiM5yqnIrdMhnv8Aq+qNZ+BrYo+NyDpXC6TraafHJMT8zc1X1TxK17o0VoCQqjFcndXjLHtycVaJZPrGojWLx55GyFOeaybieO5cEdFqF7nbkL0PWoRIi8DvQwSJJ7xRgJVN597dajurqONtgXJ9arqGL7t2BWTZaRcYbkqsPkfGM5qR5WkCxxjJPpXfeAfhffeJ7m3cxHZuBPHaobGkdZ+z14Rn1TVBM8LBM9SK+yNOso9NtViRQMDtWH4J8F6Z4X0e2jtbdEmWMbmHc10+MjnrWTZQtFFFIA965Lxn4FtfFdu6yIpYjriuto+lNOwWPjz4hfAe5015JbWIkZzwK8bvdF1DQ7g+fCwCnuK/R67sba9QpcRq4PqK8+8X/BnSNfjcpAqs3oKtTFY+KIddju08kAKwqGe4U8FxXuHib9m6HRpWniLDca4fVPg+0QLCRq1UieU86keP++PzqrLIo+64zXZf8KrkL48xq07T4MmZdxkapchpHm/2yBYirKGf1pLDTb/V51ht4XbcccCvefDH7M6atIszu5UHOO1e5+DfgTomgRxvJAjOPUVDkVY8L+GfwGutSWKa7iI78ivprwX4As/C9uiiNNwHpXTWdha6dEI7eNUAGOBVlTkc1DYCAAdBiloNFIZ//9k=',
   'emp-mustafa': 'data:image/jpeg;base64,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',
@@ -327,6 +399,20 @@ async function hashPin(pin, email) {
   let h = 0; for (const ch of text) h = (h * 31 + ch.charCodeAt(0)) | 0; return 'x' + h;
 }
 
+const hashPw = hashPin;
+const pwOk = p => String(p).length >= 8 && /\p{L}/u.test(p) && /\d/.test(p);
+const hasOwnPw = e => e.pwSet !== undefined ? !!e.pwSet : !!e.pwHash;
+/* Starter password: first name + the time (HHMM) the person was added, e.g. Mohamed0512 */
+function starterFor(name, when) {
+  const d = new Date(when), hhmm = String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0');
+  const words = String(name || '').trim().split(/\s+/).map(w => w.replace(/[^\p{L}]/gu, '')).filter(Boolean);
+  let base = words[0] || 'User';
+  if ((base + hhmm).length < 8) base = words.join('') || 'User';
+  if ((base + hhmm).length < 8) base += 'Team';
+  return base.charAt(0).toUpperCase() + base.slice(1).toLowerCase() + hhmm;
+}
+function sundayOf(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - x.getDay()); return x; }
+
 /* ============================================================
    Data
    ============================================================ */
@@ -338,9 +424,9 @@ function seedDb() {
   const t = (id, name, limit) => ({ id, name, limit });
   return {
     employees: [
-      { id: 'emp-elnasser', name: 'Muhammed Abd Elnasser', location: 'Suhaj, Egypt', email: 'muhammedabdelnasser@yahoo.com', phone: '+201009409312', role: 'Mechanical Engineer', rate: 62.5, currency: 'EGP', access: 'employee', photo: SEED_PHOTOS['emp-elnasser'], pinHash: '' },
-      { id: 'emp-mustafa', name: 'Mohamed Mustafa', location: 'Brisbane, Australia', email: 'mohamed@ai-es.com.au', phone: '+61484192482', role: 'Founder', rate: 20, currency: 'AUD', access: 'admin', photo: SEED_PHOTOS['emp-mustafa'], pinHash: '' },
-      { id: 'emp-badran', name: 'Mohamed Badran', location: 'Philadelphia, Pennsylvania, United States', email: 'mohamedyoyo55@gmail.com', phone: '+15516979744', role: 'Technical Director', rate: 20, currency: 'USD', access: 'employee', photo: SEED_PHOTOS['emp-badran'], pinHash: '' }
+      { id: 'emp-elnasser', name: 'Muhammed Abd Elnasser', location: 'Suhaj, Egypt', email: 'muhammedabdelnasser@yahoo.com', phone: '+201009409312', role: 'Mechanical Engineer', rate: 62.5, currency: 'EGP', access: 'employee', photo: SEED_PHOTOS['emp-elnasser'], pinHash: '', weeklyHours: 40 },
+      { id: 'emp-mustafa', name: 'Mohamed Mustafa', location: 'Brisbane, Australia', email: 'mohamed@ai-es.com.au', phone: '+61484192482', role: 'Founder', rate: 20, currency: 'AUD', access: 'admin', photo: SEED_PHOTOS['emp-mustafa'], pinHash: '', weeklyHours: 40 },
+      { id: 'emp-badran', name: 'Mohamed Badran', location: 'Philadelphia, Pennsylvania, United States', email: 'mohamedyoyo55@gmail.com', phone: '+15516979744', role: 'Technical Director', rate: 20, currency: 'USD', access: 'employee', photo: SEED_PHOTOS['emp-badran'], pinHash: '', weeklyHours: 40 }
     ],
     projects: [
       { id: 'prj-linkedin', name: 'LinkedIn Page Management', client, type: 'indirect', status: 'active', budget: 10, tasks: [
@@ -354,13 +440,15 @@ function seedDb() {
       { id: 'prj-iqra', name: 'IQRA Island', client, type: 'standard', status: 'active', budget: 120, tasks: [
         t('tk-iq-1', 'Testing the Quran Tahfeez', 50), t('tk-iq-2', 'Testing the Arabic letters teaching', 50), t('tk-iq-3', 'Upgrading the Parental Control', 20)] }
     ],
-    timesheets: [],
+    timesheets: [], plans: [], ledger: [],
     settings: defaultSettings()
   };
 }
 function normaliseDb(d) {
   d = d || seedDb();
   d.employees = d.employees || []; d.projects = d.projects || []; d.timesheets = d.timesheets || [];
+  d.plans = d.plans || []; d.ledger = d.ledger || [];
+  d.projects.forEach(p => { p.resources = p.resources || []; p.tasks = p.tasks || []; });
   d.settings = { ...defaultSettings(), ...(d.settings || {}) };
   d.settings.fxToAUD = { ...defaultSettings().fxToAUD, ...(d.settings.fxToAUD || {}) };
   return d;
@@ -381,11 +469,15 @@ let db = normaliseDb(store.get(K.db, null));
 let cfg = store.get(K.cfg, { apiUrl: '', apiKey: '' });
 let queue = store.get(K.q, []);
 let session = store.get(K.sess, null);
-const ui = { view: 'dashboard', week: mondayOf(new Date()), tsEmp: 'all', tsStatus: 'all', sync: cfg.apiUrl ? 'ok' : 'local', syncMsg: '', modalOpen: false, draftPhoto: null };
+const ui = { view: 'dashboard', week: mondayOf(new Date()), tsEmp: 'all', tsStatus: 'all', sync: cfg.apiUrl ? 'ok' : 'local', syncMsg: '', modalOpen: false, draftPhoto: null,
+  plStart: sundayOf(new Date()), plOpen: {}, plMine: false,
+  acMonth: new Date(new Date().getFullYear(), new Date().getMonth(), 1), acScope: 'month', acType: 'all', lockModal: false };
 
 const saveLocal = () => store.set(K.db, db);
 const cu = () => session && db.employees.find(e => e.id === session.id);
 const isAdmin = () => (cu() || {}).access === 'admin';
+const canAcct = () => isAdmin() || !!(cu() || {}).accounting;
+const signedIn = () => !!(session && (!cfg.apiUrl || session.token));
 const emp = id => db.employees.find(e => e.id === id);
 const proj = id => db.projects.find(p => p.id === id);
 const task = (p, id) => p && p.tasks.find(t => t.id === id);
@@ -413,17 +505,20 @@ async function api(action, payload = {}) {
   const res = await fetch(cfg.apiUrl, {
     method: 'POST', redirect: 'follow',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },   // avoids a CORS preflight
-    body: JSON.stringify({ action, key: cfg.apiKey, ...payload })
+    body: JSON.stringify({ action, key: cfg.apiKey, token: (session && session.token) || '', ...payload })
   });
   if (!res.ok) throw new Error('The server answered with status ' + res.status + '.');
   let j; try { j = await res.json(); } catch (e) { throw new Error('The server did not return data. Check the web app URL and that it is deployed for "Anyone".'); }
-  if (!j.ok) throw new Error(j.error || 'The request failed.');
+  if (!j.ok) {
+    if (j.code === 'auth') sessionEnded(j.error);
+    throw new Error(/^Unknown action/.test(j.error || '') ? OLD_BACKEND : (j.error || 'The request failed.'));
+  }
   return j;
 }
 function enqueue(op) { queue.push(op); store.set(K.q, queue); flushQueue(); }
 let flushing = false;
 async function flushQueue() {
-  if (!cfg.apiUrl || flushing || !queue.length) { updateSync(); return; }
+  if (!cfg.apiUrl || flushing || !queue.length || !session || !session.token) { updateSync(); return; }
   flushing = true; ui.sync = 'saving'; updateSync();
   try {
     while (queue.length) {
@@ -437,19 +532,37 @@ async function flushQueue() {
     ui.sync = 'error'; ui.syncMsg = e.message; setTimeout(flushQueue, 20000);
   } finally { flushing = false; updateSync(); }
 }
+const COLLECTIONS = ['employees', 'projects', 'timesheets', 'plans', 'ledger'];
 async function pullRemote() {
-  if (!cfg.apiUrl || queue.length) return;
+  if (!cfg.apiUrl || queue.length || !session || !session.token) return;
   const j = await api('load');
-  if (!j.records.length) {             // brand new sheet: upload what this device has
-    const items = [{ collection: 'settings', record: db.settings }];
-    ['employees', 'projects', 'timesheets'].forEach(c => db[c].forEach(r => items.push({ collection: c, record: r })));
-    for (let i = 0; i < items.length; i += 40) await api('bulk', { items: items.slice(i, i + 40) });
-    return;
-  }
-  const d = { employees: [], projects: [], timesheets: [], settings: null };
-  j.records.forEach(r => { if (r.c === 'settings') d.settings = r.data; else if (d[r.c]) d[r.c].push(r.data); });
+  applyRecords(j.records);
+}
+function applyRecords(records) {
+  const d = { employees: [], projects: [], timesheets: [], plans: [], ledger: [], settings: null };
+  records.forEach(r => { if (r.c === 'settings') d.settings = r.data; else if (d[r.c]) d[r.c].push(r.data); });
   db = normaliseDb(d); saveLocal();
   if (session && !cu()) logout(true);
+}
+/* First connection to an empty Google Sheet: upload everything on this device. */
+async function bootstrapUpload() {
+  await ensureStarters(true);
+  const items = [{ collection: 'settings', record: db.settings }];
+  COLLECTIONS.forEach(c => db[c].forEach(r => items.push({ collection: c, record: r })));
+  await api('bootstrap', { items });
+}
+function showStarterList() {
+  const rows = db.employees.map(e => `<tr><td>${esc(e.name)}<span class="subline">${esc(e.email)}</span></td>
+    <td>${hasOwnPw(e) ? '<span class="muted">Uses their own password</span>' : e.starterPw ? copyable(e.starterPw, 'Starter password') : ''}</td></tr>`).join('');
+  openModal('Starter passwords', `<p class="muted" style="margin-top:0">Your data is now in the Google Sheet and everyone signs in with a password. Note these down and pass them on privately.
+    Administrators can see them later on the Team page until each person sets their own.</p>
+    <div class="tbl-wrap"><table style="min-width:0"><thead><tr><th>Person</th><th>Starter password</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="modal-foot"><button type="button" class="btn primary" onclick="closeModal()">Done</button></div>`);
+}
+function sessionEnded(msg) {
+  if (!session) return;
+  session = null; store.set(K.sess, null); ui.lockModal = false; closeModal(); render();
+  toast(msg || 'Please sign in again.', 'err');
 }
 function updateSync() {
   const el = $('#sync'); if (!el) return;
@@ -467,17 +580,22 @@ async function connect(url, key) {
   const old = { ...cfg };
   cfg = { apiUrl: url.trim(), apiKey: key.trim() };
   try {
-    await api('ping');
+    const p = await api('ping');
+    if (!p.version || p.version < 2) throw new Error(OLD_BACKEND);
+    if (p.empty) await bootstrapUpload();
     store.set(K.cfg, cfg);
-    await pullRemote();
-    ui.sync = 'ok'; updateSync();
-    toast('Connected. This device now syncs with your Google Sheet.', 'ok');
+    queue = []; store.set(K.q, queue);
+    session = null; store.set(K.sess, null);
+    ui.sync = 'ok'; render();
+    toast(p.empty ? 'Connected, and your data was copied to the Google Sheet. Sign in with your email and password.' : 'Connected. Sign in with your email and password.', 'ok');
+    if (p.empty) showStarterList();
     return true;
   } catch (e) { cfg = old; toast('Could not connect: ' + e.message, 'err'); return false; }
 }
 async function disconnect() {
   if (queue.length && !await ask(queue.length + ' change(s) have not reached the server yet and will stay on this device only. Disconnect anyway?', 'Disconnect', true)) return;
   cfg = { apiUrl: '', apiKey: '' }; store.set(K.cfg, cfg); queue = []; store.set(K.q, queue);
+  if (session) { session = { id: session.id }; store.set(K.sess, session); }
   ui.sync = 'local'; render(); toast('Disconnected. Changes are now saved on this device only.');
 }
 function inviteLink() {
@@ -498,28 +616,34 @@ const NAV = [
   ['dashboard', 'Dashboard', 'fa-chart-pie', false],
   ['projects', 'Projects', 'fa-folder-open', false],
   ['team', 'Team & access', 'fa-users', true],
+  ['planner', 'Resource planner', 'fa-calendar-week', false],
   ['timesheets', 'Timesheets', 'fa-clock-rotate-left', false],
   ['payroll', 'Payroll reports', 'fa-file-invoice-dollar', true],
+  ['accounting', 'Accounting', 'fa-scale-balanced', 'acct'],
   ['settings', 'Settings', 'fa-gear', true]
 ];
-const TITLES = { dashboard: 'Dashboard', projects: 'Project directory', team: 'Team roster & profiles', timesheets: 'Timesheets', payroll: 'Payroll reports', settings: 'Settings' };
+const TITLES = { dashboard: 'Dashboard', projects: 'Project directory', team: 'Team roster & profiles', planner: 'Resource planner', timesheets: 'Timesheets',
+  payroll: 'Payroll reports', accounting: 'Accounting', settings: 'Settings' };
+const navAllowed = n => n[3] === false || (n[3] === true && isAdmin()) || (n[3] === 'acct' && canAcct());
 
 function render() {
   $('#companyName').textContent = db.settings.company;
   $('#loginCompany').textContent = db.settings.company;
-  const u = cu();
+  const u = signedIn() && cu();
   if (!u) { $('#app').hidden = true; $('#login').hidden = false; return; }
   $('#login').hidden = true; $('#app').hidden = false;
   const admin = isAdmin();
-  if (!admin && NAV.find(n => n[0] === ui.view)[3]) ui.view = 'dashboard';
-  $('#nav').innerHTML = NAV.filter(n => admin || !n[3]).map(([id, label, icon]) =>
+  if (!navAllowed(NAV.find(n => n[0] === ui.view))) ui.view = 'dashboard';
+  $('#nav').innerHTML = NAV.filter(navAllowed).map(([id, label, icon]) =>
     `<button class="${ui.view === id ? 'on' : ''}" onclick="go('${id}')"><i class="fa-solid ${icon}"></i>${label}</button>`).join('');
   $('#me').innerHTML = `${avatar(u)}<div class="who"><b>${esc(u.name)}</b><em>${admin ? 'Administrator' : 'Team member'}</em></div>
-    <button onclick="openPinModal()" title="Change PIN" aria-label="Change PIN"><i class="fa-solid fa-key"></i></button>
+    <button onclick="openPwModal()" title="Change password" aria-label="Change password"><i class="fa-solid fa-key"></i></button>
     <button onclick="logout()" title="Sign out" aria-label="Sign out"><i class="fa-solid fa-right-from-bracket"></i></button>`;
   $('#title').textContent = TITLES[ui.view];
   $('#topNewProject').hidden = !admin;
+  const wrap = $('.pl-wrap'), sx = wrap ? wrap.scrollLeft : 0, sy = wrap ? wrap.scrollTop : 0;
   $('#view').innerHTML = VIEWS[ui.view]();
+  const wrap2 = $('.pl-wrap'); if (wrap2) { wrap2.scrollLeft = sx; wrap2.scrollTop = sy; }
   updateSync();
 }
 function go(v) { ui.view = v; $('#side').classList.remove('open'); render(); window.scrollTo(0, 0); }
@@ -527,19 +651,55 @@ function toggleSide() { $('#side').classList.toggle('open'); }
 
 async function doLogin(ev) {
   ev.preventDefault();
-  const email = $('#lgEmail').value.trim().toLowerCase(), pin = $('#lgPin').value, err = $('#lgErr'), btn = $('#lgBtn');
-  btn.disabled = true; err.textContent = '';
-  try { if (cfg.apiUrl) await pullRemote(); } catch (e) { /* fall back to local copy */ }
-  btn.disabled = false;
+  const email = $('#lgEmail').value.trim().toLowerCase(), pw = $('#lgPw').value, err = $('#lgErr'), btn = $('#lgBtn');
+  err.textContent = '';
+  if (cfg.apiUrl) {                                    // checked by the Google Apps Script backend
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    try {
+      const prev = session && session.id;
+      const j = await api('login', { email, hash: await hashPw(pw, email) });
+      if (prev !== j.uid) { queue = []; store.set(K.q, queue); }
+      session = { id: j.uid, token: j.token }; store.set(K.sess, session);
+      applyRecords(j.records);
+      await afterLogin(j.must ? 'must' : j.starter ? 'starter' : null);
+      flushQueue();
+    } catch (e2) { err.textContent = e2.message; }
+    finally { btn.disabled = false; btn.textContent = 'Sign in'; }
+    return;
+  }
   applyOwnerEmail();
   const e = db.employees.find(x => (x.email || '').toLowerCase() === email);
-  if (!e) { err.textContent = 'No team member uses that email. Ask your administrator to add you under Team & access.'; return; }
-  const expected = e.pinHash || await hashPin(DEFAULT_PIN, e.email);
-  if (await hashPin(pin, e.email) !== expected) { err.textContent = 'That PIN does not match. Check it and try again.'; return; }
+  const h2 = e ? await hashPw(pw, e.email) : '';
+  let ok = false, mode = null;
+  if (e) {
+    if (e.pwHash) ok = h2 === e.pwHash;
+    else if (e.starterHash && h2 === e.starterHash) { ok = true; mode = 'starter'; }
+    else if (e.pinHash && h2 === e.pinHash) { ok = true; mode = 'must'; }
+    else if (!e.pinHash && !e.starterHash && h2 === await hashPw(LEGACY_PIN, e.email)) { ok = true; mode = 'must'; }
+  }
+  if (!ok) { err.textContent = 'That email and password don\u2019t match. Check them and try again.'; return; }
   session = { id: e.id }; store.set(K.sess, session);
-  $('#lgPin').value = '';
+  await afterLogin(mode);
+}
+async function afterLogin(mode) {
+  $('#lgPw').value = '';
   ui.view = 'dashboard'; render();
-  if (!e.pinHash) { openPinModal(true); } else handleShortcut();
+  await ensureStarters();
+  if (mode) openPwModal(mode); else handleShortcut();
+}
+/* Gives everyone without their own password a starter password (administrators, or on a device that isn't connected). */
+async function ensureStarters(force) {
+  if (!force && cfg.apiUrl && !isAdmin()) return;
+  const base = Math.floor(Date.now() / 60000) * 60000;
+  let i = 0, changed = 0;
+  for (const e of db.employees.slice()) {
+    if (hasOwnPw(e)) { if (!e.addedAt) { saveRec('employees', { ...e, addedAt: base + (i++) * 60000 }); changed++; } continue; }
+    if (e.starterPw) continue;
+    const addedAt = e.addedAt || base + (i++) * 60000, starterPw = starterFor(e.name, addedAt);
+    saveRec('employees', { ...e, addedAt, starterPw, starterHash: await hashPw(starterPw, e.email) });
+    changed++;
+  }
+  if (changed && !force) render();
 }
 async function resetDevice() {
   const msg = cfg.apiUrl
@@ -551,7 +711,11 @@ async function resetDevice() {
   location.reload();
 }
 function logout(silent) {
-  session = null; store.set(K.sess, null); closeModal(); render();
+  if (cfg.apiUrl && session && session.token) {
+    api('logout').catch(() => {});
+    db = normaliseDb({ employees: [], projects: [], timesheets: [], plans: [], ledger: [], settings: db.settings }); saveLocal();
+  }
+  session = null; store.set(K.sess, null); ui.lockModal = false; closeModal(); render();
   if (silent === true) toast('Your account is no longer on the team list, so you were signed out.', 'err');
 }
 async function connectFromLogin() {
@@ -568,7 +732,7 @@ function openModal(title, body, wide) {
       <div class="body">${body}</div></div></div>`;
   const f = $('#modalRoot input:not([type=hidden]):not([type=file]), #modalRoot select'); if (f) f.focus();
 }
-function closeModal() { ui.modalOpen = false; ui.draftPhoto = null; $('#modalRoot').innerHTML = ''; }
+function closeModal() { if (ui.lockModal) return; ui.modalOpen = false; ui.draftPhoto = null; $('#modalRoot').innerHTML = ''; }
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   if (askResolve) { askDone(false); return; }
@@ -707,6 +871,10 @@ VIEWS.projects = function () {
         <button class="icon-btn" onclick="openProjectModal('${p.id}')" aria-label="Edit ${esc(p.name)}"><i class="fa-regular fa-pen-to-square"></i></button>
         <button class="icon-btn del" onclick="deleteProject('${p.id}')" aria-label="Delete ${esc(p.name)}"><i class="fa-regular fa-trash-can"></i></button>` : ''}</div>
       <h3>${esc(p.name)}</h3><div class="client"><i class="fa-solid fa-building"></i>Client: ${esc(p.client)}</div>
+      <div class="team-av">${(p.resources || []).map(emp).filter(Boolean).length
+        ? `<span class="stack">${(p.resources || []).map(emp).filter(Boolean).map(e => `<span title="${esc(e.name)}">${avatar(e)}</span>`).join('')}</span>
+           ${(p.resources || []).map(emp).filter(Boolean).length} assigned`
+        : `<i class="fa-solid fa-user-plus"></i>${admin ? `<a href="#" onclick="openProjectModal('${p.id}');return false">Add resourcing</a>` : 'No one assigned yet'}`}</div>
       <div class="pc-label">Tasks, deliverables and ${ind ? 'weekly limits (this week)' : 'hour limits'}</div>
       <ul class="tasks">${tasks}</ul>
       <div class="pc-foot"><span>${ind ? 'Project weekly cap' : 'Total hours logged'}</span><b>${fmtH(used)} / ${fmtH(cap)} ${ind ? 'weekly limit' : 'budget'}</b></div>
@@ -721,16 +889,19 @@ VIEWS.projects = function () {
 VIEWS.team = function () {
   const rows = db.employees.map(e => `<tr>
     <td><div class="person">${avatar(e)}<div><b>${esc(e.name)}</b><small>${esc(e.location)}</small></div></div></td>
-    <td>${copyable(e.email, 'Email')}</td><td>${copyable(e.phone, 'Phone number')}</td>
+    <td>${copyable(e.email, 'Email')}<span class="subline">${hasOwnPw(e) ? 'Own password set'
+      : e.starterPw ? 'Starter password: ' + copyable(e.starterPw, 'Starter password') : 'Starter password being created…'}</span></td>
+    <td>${copyable(e.phone, 'Phone number')}</td>
     <td><span class="role-tag">${esc(e.role)}</span></td>
-    <td>${e.access === 'admin' ? '<span class="badge b-blue">Administrator</span>' : '<span class="badge b-grey">Team member</span>'}</td>
-    <td><b>${round2(e.rate)} ${esc(e.currency)}/hr</b></td>
+    <td>${e.access === 'admin' ? '<span class="badge b-blue">Administrator</span>' : '<span class="badge b-grey">Team member</span>'}
+      ${e.access !== 'admin' && e.accounting ? '<span class="subline"><span class="badge b-purple">Accounting</span></span>' : ''}</td>
+    <td><b>${round2(e.rate)} ${esc(e.currency)}/hr</b><span class="subline">${+e.weeklyHours || 40} h/week</span></td>
     <td class="actions"><button class="icon-btn" onclick="openEmpModal('${e.id}')" aria-label="Edit ${esc(e.name)}"><i class="fa-regular fa-pen-to-square"></i></button>
       <button class="icon-btn del" onclick="deleteEmp('${e.id}')" aria-label="Delete ${esc(e.name)}"><i class="fa-regular fa-trash-can"></i></button></td></tr>`).join('');
-  return `<div class="card head-card"><div><h2>Team members & access</h2><p>Manage people, contact details, photos, pay rates in EGP, AUD, SAR or USD, and who can administer the workspace.</p></div>
+  return `<div class="card head-card"><div><h2>Team members & access</h2><p>Manage people, contact details, photos, pay rates in EGP, AUD, SAR or USD, weekly hours, sign-in and access. New people sign in with their starter password (first name + the time they were added).</p></div>
     <button class="btn ghost" onclick="copyTeamTable()" title="Copy the table to paste into Excel or an email"><i class="fa-regular fa-copy"></i>Copy table</button>
     <button class="btn primary" onclick="openEmpModal()"><i class="fa-solid fa-user-plus"></i>Add employee</button></div>
-    <div class="card tbl-wrap"><table><thead><tr><th>Employee</th><th>Email / login</th><th>Contact & phone</th><th>Role</th><th>Access</th><th>Rate & currency</th><th class="actions">Actions</th></tr></thead>
+    <div class="card tbl-wrap"><table><thead><tr><th>Employee</th><th>Email / sign-in</th><th>Contact & phone</th><th>Role</th><th>Access</th><th>Rate & hours</th><th class="actions">Actions</th></tr></thead>
     <tbody>${rows}</tbody></table></div>`;
 };
 
@@ -744,7 +915,7 @@ VIEWS.timesheets = function () {
   const rows = list.map(t => {
     const e = emp(t.employeeId), p = proj(t.projectId), tk = task(p, t.taskId);
     const canEdit = admin || (t.employeeId === u.id && t.status === 'pending');
-    return `<tr><td>${niceDate(t.date)}</td>${admin ? `<td>${esc(e ? e.name : 'Removed member')}</td>` : ''}
+    return `<tr><td class="nowrap">${niceDate(t.date)}</td>${admin ? `<td>${esc(e ? e.name : 'Removed member')}</td>` : ''}
       <td>${esc(p ? p.name : 'Deleted project')}</td><td>${esc(tk ? tk.name : '—')}</td>
       <td class="num">${fmtH(t.hours)}</td><td class="muted" style="max-width:240px">${esc(t.notes)}</td><td>${badge(t.status)}</td>
       <td class="actions">
@@ -822,6 +993,412 @@ VIEWS.settings = function () {
     <label class="btn ghost"><i class="fa-solid fa-upload"></i>Restore from backup<input type="file" accept=".json" hidden onchange="restoreBackup(this)"></label></div>
   </div>`;
 };
+
+/* ============================================================
+   Resource planner (weeks start on Sunday)
+   ============================================================ */
+const planId = (eid, wk) => 'pl-' + eid + '-' + wk;
+const planOf = (eid, wk) => db.plans.find(p => p.id === planId(eid, wk));
+const planWeeks = (start, n) => [...Array(n || PLAN_WEEKS)].map((_, i) => ymd(addDays(start || ui.plStart, 7 * i)));
+const canPlan = eid => isAdmin() || eid === (cu() || {}).id;
+function planVal(eid, wk, key) {
+  const p = planOf(eid, wk); if (!p) return 0;
+  return key === 'leave' ? +p.leave || 0 : +(p.hours || {})[key] || 0;
+}
+function projWeek(eid, p, wk) {
+  const pl = planOf(eid, wk); if (!pl) return 0;
+  return round2(Object.entries(pl.hours || {}).reduce((a, [k, v]) => a + (k.split(':')[0] === p.id ? +v || 0 : 0), 0));
+}
+function planProjects(e, weeks) {
+  return db.projects.filter(p => ((p.resources || []).includes(e.id) && p.status !== 'done') ||
+    weeks.some(w => { const pl = planOf(e.id, w); return pl && Object.keys(pl.hours || {}).some(k => k.split(':')[0] === p.id && +pl.hours[k]); }));
+}
+function weekStats(e, wk) {
+  const pl = planOf(e.id, wk); let direct = 0, indirect = 0;
+  Object.entries((pl && pl.hours) || {}).forEach(([k, v]) => { const p = proj(k.split(':')[0]); if (!p) return; if (p.type === 'indirect') indirect += +v || 0; else direct += +v || 0; });
+  const leave = pl ? +pl.leave || 0 : 0, cap = +e.weeklyHours || 40, avail = Math.max(0, cap - leave), planned = round2(direct + indirect);
+  return { direct: round2(direct), indirect: round2(indirect), leave, cap, avail, planned, util: avail ? planned / avail : 0 };
+}
+function periodStats(e, weeks) {
+  const s = weeks.map(w => weekStats(e, w)), planned = s.reduce((a, x) => a + x.planned, 0), avail = s.reduce((a, x) => a + x.avail, 0);
+  return { planned, avail, util: avail ? planned / avail : 0 };
+}
+const utilCls = s => s.util > 1 ? 'over' : !s.planned ? 'none' : '';
+const pct = s => Math.round(s.util * 100) + '%';
+function empWeekCell(e, w) {
+  const s = weekStats(e, w), scale = Math.max(s.cap, s.planned + s.leave) || 1, wd = v => (v / scale * 100).toFixed(1) + '%';
+  const tip = `Direct ${s.direct}h, in-direct ${s.indirect}h, leave ${s.leave}h, available ${s.avail}h of ${s.cap}h`;
+  const head = !s.avail && s.leave ? '<b class="none">On leave</b>' : `<b class="${utilCls(s)}">${pct(s)}</b>`;
+  return `<div class="pl-cell" title="${tip}"><div class="top">${head}<small>${fmtH(s.planned)} / ${fmtH(s.avail)}</small></div>
+    <div class="pl-bar"><i class="grey" style="width:${wd(s.leave)}"></i><i class="green" style="width:${wd(s.direct)}"></i><i class="blue" style="width:${wd(s.indirect)}"></i></div></div>`;
+}
+function planInput(e, wk, key, color, label) {
+  const v = planVal(e.id, wk, key);
+  if (!canPlan(e.id)) return `<span class="pl-ro">${v ? round2(v) : ''}</span>`;
+  return `<input class="pl-in ${color}" type="number" min="0" max="168" step="0.5" inputmode="decimal" value="${v ? round2(v) : ''}"
+    data-e="${e.id}" data-w="${wk}" data-k="${esc(key)}" onchange="planSet(this)" aria-label="${esc(label)}, week of ${niceDate(wk)}">`;
+}
+function planBlock(e, weeks) {
+  const admin = isAdmin(), projects = planProjects(e, weeks), ps = periodStats(e, weeks);
+  let h = `<tr class="pl-emp"><th class="pl-name"><div class="pl-row"><div class="person">${avatar(e)}<div class="lbl"><b>${esc(e.name)}</b>
+      <small>${esc(e.role || 'Team member')} · ${+e.weeklyHours || 40} h/week</small></div></div>
+      <span class="pl-util ${utilCls(ps)}" id="plu-${e.id}" title="Utilization across the weeks shown">${pct(ps)}</span></div></th>
+    ${weeks.map(w => `<td id="plh-${e.id}-${w}">${empWeekCell(e, w)}</td>`).join('')}</tr>`;
+  h += `<tr class="pl-leave"><th class="pl-name"><div class="pl-row"><span class="pl-sp"></span><i class="dot grey"></i><span class="lbl">Leave</span></div></th>
+    ${weeks.map(w => `<td>${planInput(e, w, 'leave', 'grey', e.name + ' leave hours')}</td>`).join('')}</tr>`;
+  projects.forEach(p => {
+    const key = e.id + ':' + p.id, open = !!ui.plOpen[key], tasks = p.tasks || [], color = p.type === 'indirect' ? 'blue' : 'green';
+    h += `<tr class="pl-proj"><th class="pl-name"><div class="pl-row">
+        ${tasks.length ? `<button class="pl-tog" onclick="planToggle('${key}')" aria-expanded="${open}" title="${open ? 'Hide' : 'Show'} tasks"><i class="fa-solid fa-chevron-${open ? 'down' : 'right'}"></i></button>` : '<span class="pl-sp"></span>'}
+        <i class="dot ${color}"></i><span class="lbl" title="${esc(p.name)}">${esc(p.name)}</span>
+        ${admin ? `<button class="icon-btn pl-x" title="Remove ${esc(e.name)} from this project" aria-label="Remove from project" onclick="planUnassign('${e.id}','${p.id}')"><i class="fa-solid fa-xmark"></i></button>` : ''}</div></th>
+      ${weeks.map(w => tasks.length ? `<td class="pl-psum ${color}" id="plp-${e.id}-${p.id}-${w}">${projWeek(e.id, p, w) || ''}</td>`
+        : `<td>${planInput(e, w, p.id + ':', color, p.name)}</td>`).join('')}</tr>`;
+    if (open) tasks.forEach(t => {
+      h += `<tr class="pl-task"><th class="pl-name"><div class="pl-row"><span class="lbl" title="${esc(t.name)}">${esc(t.name)}</span></div></th>
+        ${weeks.map(w => `<td>${planInput(e, w, p.id + ':' + t.id, color, t.name)}</td>`).join('')}</tr>`;
+    });
+  });
+  if (!projects.length) h += `<tr><th class="pl-name"><div class="pl-row"><span class="pl-sp"></span><span class="muted" style="font-size:12.5px">Not assigned to a project yet.</span></div></th><td colspan="${weeks.length}"></td></tr>`;
+  if (admin) h += `<tr class="pl-add"><th class="pl-name"><button class="btn ghost sm" onclick="planAssign('${e.id}')"><i class="fa-solid fa-plus"></i>Assign project</button></th><td colspan="${weeks.length}"></td></tr>`;
+  return `<tbody>${h}</tbody>`;
+}
+VIEWS.planner = function () {
+  const me = cu(), weeks = planWeeks(), thisWk = ymd(sundayOf(new Date()));
+  let people = db.employees.filter(e => !ui.plMine || e.id === me.id);
+  people = [...people.filter(e => e.id === me.id), ...people.filter(e => e.id !== me.id)];
+  const last = addDays(parseYmd(weeks[weeks.length - 1]), 6);
+  const range = `${parseYmd(weeks[0]).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })} – ${last.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+  return `<div class="toolbar">
+      <div class="week"><button onclick="planShift(-4)" aria-label="Earlier weeks"><i class="fa-solid fa-chevron-left"></i></button><span>${range}</span>
+        <button onclick="planShift(4)" aria-label="Later weeks"><i class="fa-solid fa-chevron-right"></i></button></div>
+      ${weeks[0] === thisWk ? '' : '<button class="btn ghost sm" onclick="planShift(0)">This week</button>'}
+      <span class="sp"></span>
+      <div class="seg" role="group" aria-label="Who to show"><button class="${ui.plMine ? '' : 'on'}" onclick="ui.plMine=false;render()">Everyone</button><button class="${ui.plMine ? 'on' : ''}" onclick="ui.plMine=true;render()">Only me</button></div>
+      <button class="btn ghost sm" onclick="planExpand(true)"><i class="fa-solid fa-angles-down"></i>Expand all</button>
+      <button class="btn ghost sm" onclick="planExpand(false)"><i class="fa-solid fa-angles-up"></i>Collapse all</button></div>
+    <div class="legend"><span><i class="dot grey"></i>Leave</span><span><i class="dot green"></i>Direct hours (standard projects)</span><span><i class="dot blue"></i>In-direct hours</span>
+      <span>Utilization = planned project hours ÷ (weekly hours − leave). Weeks start on Sunday.${isAdmin() ? '' : ' You can edit your own rows.'}</span></div>
+    <div class="card pl-wrap"><table class="pl"><thead><tr><th class="pl-name">Team member / project</th>
+      ${weeks.map(w => `<th class="pl-wk ${w === thisWk ? 'now' : ''}"><span>${w === thisWk ? 'This week' : 'Week of'}</span>${parseYmd(w).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' })}</th>`).join('')}</tr></thead>
+      ${people.map(e => planBlock(e, weeks)).join('') || `<tbody><tr><td colspan="${weeks.length + 1}"><div class="empty">No team members yet.</div></td></tr></tbody>`}</table></div>`;
+};
+function planShift(n) { ui.plStart = n === 0 ? sundayOf(new Date()) : addDays(ui.plStart, 7 * n); render(); }
+function planToggle(key) { ui.plOpen[key] = !ui.plOpen[key]; render(); }
+function planExpand(open) {
+  const weeks = planWeeks();
+  db.employees.forEach(e => planProjects(e, weeks).forEach(p => { if ((p.tasks || []).length) ui.plOpen[e.id + ':' + p.id] = open; }));
+  render();
+}
+function planSet(el) {
+  const eid = el.dataset.e, wk = el.dataset.w, key = el.dataset.k;
+  if (!canPlan(eid)) return;
+  let v = el.value === '' ? 0 : round2(el.value);
+  if (!(v >= 0)) v = 0;
+  if (v > 168) v = 168;
+  el.value = v ? v : '';
+  const old = planOf(eid, wk) || { id: planId(eid, wk), employeeId: eid, week: wk, leave: 0, hours: {} };
+  const rec = { ...old, hours: { ...(old.hours || {}) }, updatedBy: cu().id, updatedAt: Date.now() };
+  if (key === 'leave') rec.leave = v; else if (v) rec.hours[key] = v; else delete rec.hours[key];
+  if (!rec.leave && !Object.keys(rec.hours).length) { if (planOf(eid, wk)) removeRec('plans', rec.id); }
+  else saveRec('plans', rec);
+  planRefresh(eid);
+}
+function planRefresh(eid) {
+  const e = emp(eid); if (!e) return;
+  const weeks = planWeeks();
+  weeks.forEach(w => {
+    const c = document.getElementById(`plh-${eid}-${w}`); if (c) c.innerHTML = empWeekCell(e, w);
+    db.projects.forEach(p => { const pc = document.getElementById(`plp-${eid}-${p.id}-${w}`); if (pc) pc.textContent = projWeek(eid, p, w) || ''; });
+  });
+  const u = document.getElementById('plu-' + eid);
+  if (u) { const s = periodStats(e, weeks); u.textContent = pct(s); u.className = 'pl-util ' + utilCls(s); }
+}
+function planAssign(eid) {
+  const e = emp(eid), options = db.projects.filter(p => p.status !== 'done' && !(p.resources || []).includes(eid));
+  if (!options.length) { toast(`${e.name} is already assigned to every active project.`); return; }
+  openModal('Assign ' + e.name + ' to projects', `<form onsubmit="planAssignSave(event,'${eid}')">
+    <p class="muted" style="margin-top:0">Pick one or more projects. ${esc(e.name.split(' ')[0])} will see them in the Resource planner and can plan hours on their tasks.</p>
+    <div class="chips">${options.map(p => `<label class="chip proj"><input type="checkbox" name="aProj" value="${p.id}"><i class="dot ${p.type === 'indirect' ? 'blue' : 'green'}"></i>${esc(p.name)}</label>`).join('')}</div>
+    <div class="modal-foot"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn primary">Assign</button></div></form>`);
+}
+function planAssignSave(ev, eid) {
+  ev.preventDefault();
+  const ids = [...document.querySelectorAll('[name=aProj]:checked')].map(i => i.value);
+  if (!ids.length) { toast('Pick at least one project.', 'err'); return; }
+  ids.forEach(id => { const p = proj(id); saveRec('projects', { ...p, resources: [...(p.resources || []), eid] }); });
+  closeModal(); render(); toast(`Assigned to ${ids.length} project${ids.length === 1 ? '' : 's'}.`, 'ok');
+}
+async function planUnassign(eid, pid) {
+  const e = emp(eid), p = proj(pid);
+  if (!await ask(`Remove ${e.name} from ${p.name}?\n\nHours already planned stay in the plan, so the project still shows for weeks that have hours.`, 'Remove', true)) return;
+  saveRec('projects', { ...p, resources: (p.resources || []).filter(x => x !== eid) }); render();
+}
+/* Resource plan data for reports: 4 weeks from a Sunday */
+function buildPlanReport(startSunday) {
+  const weeks = planWeeks(startSunday, 4);
+  return { weeks, people: db.employees.map(e => {
+    const projects = planProjects(e, weeks).map(p => ({ name: p.name, type: p.type,
+      own: weeks.map(w => planVal(e.id, w, p.id + ':')),
+      tasks: (p.tasks || []).map(t => ({ name: t.name, vals: weeks.map(w => planVal(e.id, w, p.id + ':' + t.id)) })) }));
+    return { e, name: e.name, cap: +e.weeklyHours || 40, leave: weeks.map(w => planVal(e.id, w, 'leave')), projects, stats: weeks.map(w => weekStats(e, w)) };
+  }) };
+}
+
+/* ============================================================
+   Accounting (administrators and people given access)
+   ============================================================ */
+function acRange() {
+  if (ui.acScope === 'year') { const y = ui.acMonth.getFullYear(); return { start: `${y}-01-01`, end: `${y}-12-31`, label: String(y) }; }
+  const s = ui.acMonth, e = new Date(s.getFullYear(), s.getMonth() + 1, 0);
+  return { start: ymd(s), end: ymd(e), label: s.toLocaleDateString('en-AU', { month: 'long', year: 'numeric' }) };
+}
+function ledgerReport(range) {
+  const fx = db.settings.fxToAUD;
+  const entries = db.ledger.filter(x => x.date >= range.start && x.date <= range.end)
+    .sort((a, b) => a.date.localeCompare(b.date) || (a.createdAt || 0) - (b.createdAt || 0));
+  const currencies = CURRENCIES.filter(c => entries.some(x => x.currency === c)), totals = {};
+  currencies.forEach(c => {
+    const es = entries.filter(x => x.currency === c);
+    const income = round2(es.filter(x => x.type === 'income').reduce((a, x) => a + (+x.amount || 0), 0));
+    const expense = round2(es.filter(x => x.type === 'expense').reduce((a, x) => a + (+x.amount || 0), 0));
+    totals[c] = { income, expense, net: round2(income - expense), aud: round2((income - expense) * (fx[c] || 0)) };
+  });
+  const cats = {};
+  entries.forEach(x => { const k = [x.type, x.category || 'Uncategorised', x.currency].join('|'); cats[k] = round2((cats[k] || 0) + (+x.amount || 0)); });
+  const byCat = Object.entries(cats).map(([k, v]) => { const [type, category, currency] = k.split('|'); return { type, category, currency, amount: v }; })
+    .sort((a, b) => a.type.localeCompare(b.type) || a.currency.localeCompare(b.currency) || b.amount - a.amount);
+  return { ...range, entries, currencies, totals, byCat, audNet: round2(currencies.reduce((a, c) => a + totals[c].aud, 0)),
+    generated: new Date().toLocaleString('en-AU', { dateStyle: 'medium', timeStyle: 'short' }) };
+}
+VIEWS.accounting = function () {
+  if (!canAcct()) return '<div class="card empty"><b>No access</b>Ask an administrator to give you accounting access.</div>';
+  const R = ledgerReport(acRange());
+  const list = ui.acType === 'all' ? R.entries : R.entries.filter(x => x.type === ui.acType);
+  ui.acList = list;
+  const isNow = ui.acScope === 'year' ? ui.acMonth.getFullYear() === new Date().getFullYear() : ymd(ui.acMonth) === ymd(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+  const cards = R.currencies.map(c => { const t = R.totals[c];
+    return `<div class="card stat"><span>Net in ${c}</span><b class="${t.net < 0 ? 'neg' : 'pos'}">${money(t.net, c)}</b><small>Income ${money(t.income)} · Expenses ${money(t.expense)}</small></div>`; }).join('');
+  const rows = list.map(x => `<tr><td class="nowrap">${niceDate(x.date)}</td>
+    <td>${x.type === 'income' ? '<span class="badge b-green">Income</span>' : '<span class="badge b-red">Expense</span>'}</td>
+    <td>${esc(x.category || '')}</td><td>${esc(x.party || '')}</td><td class="muted" style="max-width:260px">${esc(x.description || '')}</td><td>${esc(x.reference || '')}</td>
+    <td class="num ${x.type === 'income' ? 'amt-in' : 'amt-out'}">${x.type === 'income' ? '+' : '\u2212'}${money(x.amount, x.currency)}</td>
+    <td class="actions"><button class="icon-btn" onclick="openLedgerModal('${x.id}')" title="Edit" aria-label="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+      <button class="icon-btn" onclick="duplicateLedger('${x.id}')" title="Duplicate" aria-label="Duplicate"><i class="fa-regular fa-copy"></i></button>
+      <button class="icon-btn del" onclick="deleteLedger('${x.id}')" title="Delete" aria-label="Delete"><i class="fa-regular fa-trash-can"></i></button></td></tr>`).join('');
+  return `<div class="card head-card"><div><h2>Income & expenses</h2><p>Record money in and out in any currency. Only administrators and people you give accounting access can see this section.</p></div>
+      <button class="btn ok" onclick="openLedgerModal(null,'income')"><i class="fa-solid fa-plus"></i>Add income</button>
+      <button class="btn danger" onclick="openLedgerModal(null,'expense')"><i class="fa-solid fa-minus"></i>Add expense</button></div>
+    <div class="card email-box"><div><h3>Accounting report for ${esc(R.label)}</h3><p>Sends totals by currency and category, plus every entry, to <b>${esc(REPORT_EMAIL)}</b> as a PDF and an Excel file.</p></div>
+      <button class="btn primary" id="acEmailBtn" onclick="emailLedger()"><i class="fa-solid fa-paper-plane"></i>Email PDF + Excel</button></div>
+    <div class="toolbar">
+      <div class="week"><button onclick="acShift(-1)" aria-label="Previous period"><i class="fa-solid fa-chevron-left"></i></button><span>${esc(R.label)}</span>
+        <button onclick="acShift(1)" aria-label="Next period"><i class="fa-solid fa-chevron-right"></i></button></div>
+      ${isNow ? '' : `<button class="btn ghost sm" onclick="acShift(0)">${ui.acScope === 'year' ? 'This year' : 'This month'}</button>`}
+      <div class="seg" role="group" aria-label="Period"><button class="${ui.acScope === 'month' ? 'on' : ''}" onclick="ui.acScope='month';render()">Month</button><button class="${ui.acScope === 'year' ? 'on' : ''}" onclick="ui.acScope='year';render()">Year</button></div>
+      <span class="sp"></span>
+      <select class="in inline" onchange="ui.acType=this.value;render()" aria-label="Filter by type">
+        ${[['all', 'Income and expenses'], ['income', 'Income only'], ['expense', 'Expenses only']].map(([v, l]) => `<option value="${v}" ${ui.acType === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      <button class="btn ghost sm" onclick="copyLedgerTable()" ${list.length ? '' : 'disabled'}><i class="fa-regular fa-copy"></i>Copy table</button>
+      <button class="btn ghost sm" onclick="downloadLedgerPdf()"><i class="fa-regular fa-file-pdf"></i>PDF</button>
+      <button class="btn ghost sm" onclick="downloadLedgerXlsx()"><i class="fa-regular fa-file-excel"></i>Excel</button></div>
+    ${R.currencies.length ? `<div class="cur-cards">${cards}<div class="card stat"><span>Net total in AUD (approx.)</span><b class="${R.audNet < 0 ? 'neg' : 'pos'}">${money(R.audNet, 'AUD')}</b><small>Uses the exchange rates in Settings</small></div></div>` : ''}
+    <div class="card tbl-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Client / supplier</th><th>Description</th><th>Reference</th><th class="num">Amount</th><th class="actions"></th></tr></thead>
+      <tbody>${rows || `<tr><td colspan="8"><div class="empty"><b>Nothing recorded for ${esc(R.label)}</b>Use Add income or Add expense to record an entry.</div></td></tr>`}</tbody></table></div>`;
+};
+function acShift(n) {
+  const m = ui.acMonth, now = new Date();
+  if (n === 0) ui.acMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  else ui.acMonth = ui.acScope === 'year' ? new Date(m.getFullYear() + n, m.getMonth(), 1) : new Date(m.getFullYear(), m.getMonth() + n, 1);
+  render();
+}
+const acCatOptions = type => (type === 'income' ? INC_CATS : EXP_CATS).map(c => `<option value="${esc(c)}">`).join('');
+function openLedgerModal(id, type, preset) {
+  if (!canAcct()) return;
+  const x = id ? db.ledger.find(l => l.id === id) : preset || { id: '', type: type || 'expense', date: ymd(new Date()), amount: '', currency: 'AUD', category: '', party: '', description: '', reference: '' };
+  openModal(id ? 'Edit entry' : x.type === 'income' ? 'Add income' : 'Add expense', `<form onsubmit="saveLedger(event,'${x.id}')">
+    <div class="grid3"><div class="field"><label class="fl" for="lgType">Type</label><select class="in" id="lgType" onchange="acTypeChange()">
+        <option value="income" ${x.type === 'income' ? 'selected' : ''}>Income</option><option value="expense" ${x.type === 'expense' ? 'selected' : ''}>Expense</option></select></div>
+      <div class="field"><label class="fl" for="lgDate">Date</label><input class="in" id="lgDate" type="date" required value="${esc(x.date)}"></div>
+      <div class="field"><label class="fl" for="lgCat">Category</label><input class="in" id="lgCat" list="acCats" value="${esc(x.category)}" placeholder="Pick or type" autocomplete="off"></div></div>
+    <div class="grid3"><div class="field"><label class="fl" for="lgAmt">Amount</label><input class="in" id="lgAmt" type="number" min="0.01" step="0.01" required value="${esc(x.amount)}"></div>
+      <div class="field"><label class="fl" for="lgCur">Currency</label><select class="in" id="lgCur">${CURRENCIES.map(c => `<option ${x.currency === c ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
+      <div class="field"><label class="fl" for="lgRef">Invoice or receipt no.</label><input class="in" id="lgRef" value="${esc(x.reference)}"></div></div>
+    <div class="field"><label class="fl" for="lgParty" id="lgPartyL">${x.type === 'income' ? 'Client / payer' : 'Supplier / payee'}</label><input class="in" id="lgParty" value="${esc(x.party)}"></div>
+    <div class="field"><label class="fl" for="lgDesc">Description</label><textarea class="in" id="lgDesc" rows="2">${esc(x.description)}</textarea></div>
+    <datalist id="acCats">${acCatOptions(x.type)}</datalist>
+    <div class="modal-foot"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn primary">${id ? 'Save entry' : 'Add entry'}</button></div></form>`, true);
+}
+function acTypeChange() {
+  const t = $('#lgType').value;
+  $('#acCats').innerHTML = acCatOptions(t);
+  $('#lgPartyL').textContent = t === 'income' ? 'Client / payer' : 'Supplier / payee';
+}
+function saveLedger(ev, id) {
+  ev.preventDefault();
+  const amount = round2($('#lgAmt').value);
+  if (!(amount > 0)) { toast('Enter an amount above zero.', 'err'); return; }
+  const old = id ? db.ledger.find(l => l.id === id) : {};
+  const rec = { ...old, id: id || 'led-' + uid(), type: $('#lgType').value, date: $('#lgDate').value, amount, currency: $('#lgCur').value,
+    category: $('#lgCat').value.replace(/\|/g, '/').trim(), party: $('#lgParty').value.trim(), description: $('#lgDesc').value.trim(), reference: $('#lgRef').value.trim(),
+    createdBy: old.createdBy || cu().id, createdAt: old.createdAt || Date.now(), updatedBy: cu().id };
+  saveRec('ledger', rec); closeModal();
+  const d = parseYmd(rec.date);
+  if (ui.acScope === 'month') ui.acMonth = new Date(d.getFullYear(), d.getMonth(), 1); else ui.acMonth = new Date(d.getFullYear(), ui.acMonth.getMonth(), 1);
+  render(); toast(id ? 'Entry saved.' : (rec.type === 'income' ? 'Income added.' : 'Expense added.'), 'ok');
+}
+function duplicateLedger(id) {
+  const x = db.ledger.find(l => l.id === id); if (!x) return;
+  openLedgerModal(null, null, { ...x, id: '', date: ymd(new Date()) });
+}
+async function deleteLedger(id) {
+  const x = db.ledger.find(l => l.id === id); if (!x) return;
+  if (!await ask(`Delete this ${x.type} of ${money(x.amount, x.currency)}${x.party ? ' (' + x.party + ')' : ''}?`, 'Delete', true)) return;
+  removeRec('ledger', id); render();
+}
+function copyLedgerTable() {
+  copyText(tsv([['Date', 'Type', 'Category', 'Client / supplier', 'Description', 'Reference', 'Currency', 'Amount'],
+    ...(ui.acList || []).map(x => [x.date, x.type === 'income' ? 'Income' : 'Expense', x.category, x.party, x.description, x.reference, x.currency, (x.type === 'income' ? 1 : -1) * x.amount])]), 'Accounting table');
+}
+const ledgerBase = R => `${db.settings.company.replace(/[^\w]+/g, '-')}_Accounting_${R.start}_to_${R.end}`;
+function makeLedgerPdf(R) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+  const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 32, co = db.settings.company;
+  doc.setFillColor(15, 20, 36); doc.rect(0, 0, W, 70, 'F'); doc.setFillColor(232, 93, 13); doc.rect(0, 70, W, 3, 'F');
+  doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(17); doc.text(co, M, 32);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.text('Accounting report: income & expenses', M, 50);
+  doc.setFont('helvetica', 'bold'); doc.text(R.label, W - M, 32, { align: 'right' });
+  doc.setFont('helvetica', 'normal'); doc.text('Generated ' + R.generated, W - M, 50, { align: 'right' });
+  doc.setTextColor(17, 24, 39);
+  let y = 100;
+  const title = (t, sub) => {
+    if (y > H - 110) { doc.addPage(); y = 48; }
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(12.5); doc.text(t, M, y);
+    if (sub) { doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(107, 114, 128); doc.text(sub, M, y + 13); doc.setTextColor(17, 24, 39); y += 13; }
+    y += 8;
+  };
+  const right = c => ({ content: c, styles: { halign: 'right' } });
+  const table = (head, body, opts = {}) => {
+    if (!body.length) body = [[{ content: 'Nothing recorded for this period.', colSpan: head.length, styles: { textColor: [107, 114, 128], halign: 'center' } }]];
+    doc.autoTable({ startY: y, head: [head], body, margin: { left: M, right: M }, theme: 'grid',
+      styles: { fontSize: 9, cellPadding: 5, lineColor: [230, 232, 239], lineWidth: 0.5, textColor: [17, 24, 39] },
+      headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold' }, footStyles: { fillColor: [238, 242, 255], textColor: [17, 24, 39], fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [248, 249, 252] }, ...opts });
+    y = doc.lastAutoTable.finalY + 26;
+  };
+  const green = [4, 120, 87], red = [220, 38, 38];
+  title('Totals by currency', 'Net = income minus expenses. AUD amounts are approximate, using the exchange rates in CRM Settings.');
+  table(['Currency', 'Income', 'Expenses', 'Net', 'Net in AUD (approx.)'], R.currencies.map(c => { const t = R.totals[c];
+    return [c, right(money(t.income, c)), right(money(t.expense, c)), { content: money(t.net, c), styles: { halign: 'right', fontStyle: 'bold', textColor: t.net < 0 ? red : green } }, right(money(t.aud, 'AUD'))]; }),
+    R.currencies.length ? { foot: [['Net total in AUD (approx.)', '', '', '', right(money(R.audNet, 'AUD'))]] } : {});
+  title('By category');
+  table(['Type', 'Category', 'Currency', 'Amount'], R.byCat.map(c => [{ content: c.type === 'income' ? 'Income' : 'Expense', styles: { textColor: c.type === 'income' ? green : red, fontStyle: 'bold' } },
+    c.category, c.currency, right(money(c.amount, c.currency))]));
+  title('Entries');
+  table(['Date', 'Type', 'Category', 'Client / supplier', 'Description', 'Reference', 'Amount'], R.entries.map(x => [niceDate(x.date),
+    { content: x.type === 'income' ? 'Income' : 'Expense', styles: { textColor: x.type === 'income' ? green : red, fontStyle: 'bold' } },
+    x.category || '', x.party || '', x.description || '', x.reference || '',
+    { content: (x.type === 'income' ? '+' : '-') + money(x.amount, x.currency), styles: { halign: 'right', textColor: x.type === 'income' ? green : red } }]),
+    { columnStyles: { 4: { cellWidth: 190 } } });
+  const n = doc.getNumberOfPages();
+  for (let i = 1; i <= n; i++) {
+    doc.setPage(i); doc.setFontSize(8); doc.setTextColor(140);
+    doc.text(`${co} accounting report, ${R.start} to ${R.end}. Confidential.`, M, H - 16);
+    doc.text(`Page ${i} of ${n}`, W - M, H - 16, { align: 'right' });
+  }
+  return doc;
+}
+async function buildLedgerXlsx(R) {
+  const wb = new ExcelJS.Workbook(), co = db.settings.company, fx = db.settings.fxToAUD;
+  wb.creator = co + ' CRM'; wb.created = new Date(); wb.title = `${co} accounting report ${R.label}`;
+  const icon = document.querySelector('link[rel=icon]');
+  const ctx = { company: co, label: R.label, subtitle: 'Accounting report  |  ' + R.label, footer: 'Accounting report ' + R.label + ' (confidential)',
+    logoId: icon && /^data:image\/png;base64,/.test(icon.href) ? wb.addImage({ base64: icon.href, extension: 'png' }) : null };
+  const S = xlSheet(wb, 'Summary', [30, 22, 20, 20, 20, 24], ctx);
+  const E = xlSheet(wb, 'Entries', [17, 11, 26, 26, 46, 18, 10, 18], ctx, 5);
+
+  xlHeader(E, 5, ['Date', 'Type', 'Category', 'Client / supplier', 'Description', 'Reference', 'Currency', 'Amount'], [8]);
+  E.getCell(5, 7).alignment = { vertical: 'middle', horizontal: 'center' };
+  const first = 6, last = first + Math.max(R.entries.length, 1) - 1;
+  R.entries.forEach((x, i) => xlRow(E, first + i, [{ v: xlDate(x.date), nf: NF.date, align: 'left' },
+    { v: x.type === 'income' ? 'Income' : 'Expense', font: { bold: true, color: { argb: x.type === 'income' ? XL.green : XL.red } } },
+    x.category || 'Uncategorised', x.party || '', { v: x.description || '', wrap: true }, x.reference || '', { v: x.currency, align: 'center' },
+    { v: +x.amount || 0, nf: NF.money(x.currency) }], { fill: i % 2 ? XL.zebra : null, height: 20 }));
+  if (!R.entries.length) xlRow(E, first, [{ v: 'Nothing recorded for this period.', font: { italic: true, color: { argb: XL.muted } } }]);
+  else E.autoFilter = { from: { row: 5, column: 1 }, to: { row: last, column: 8 } };
+
+  [['Period', `${dmy(R.start)} to ${dmy(R.end)}`], ['Entries', String(R.entries.length)], ['Generated', R.generated], ['Prepared by', (cu() || {}).name || '']]
+    .forEach(([k, v], i) => { const row = 5 + i; S.getCell(row, 1).value = k; S.getCell(row, 1).font = xlFont({ bold: true, color: { argb: XL.muted } });
+      S.mergeCells(row, 2, row, 3); S.getCell(row, 2).value = v; S.getCell(row, 2).font = xlFont(); });
+  const rng = col => `Entries!$${col}$${first}:$${col}$${last}`;
+  const cur = R.currencies.length ? R.currencies : ['AUD'];
+  const tFirst = 12, tLast = tFirst + cur.length - 1, tTot = tLast + 1;
+  const fxSec = tTot + 2, fxHead = fxSec + 1, fxFirst = fxHead + 1, fxLast = fxFirst + CURRENCIES.length - 1, fxRange = `$A$${fxFirst}:$B$${fxLast}`;
+  xlSection(S, 10, 'Totals by currency', 6);
+  xlHeader(S, 11, ['Currency', 'Income', 'Expenses', 'Net', 'Net in AUD (approx.)'], [2, 3, 4, 5]);
+  cur.forEach((c, i) => {
+    const row = tFirst + i, t = R.totals[c] || { income: 0, expense: 0, net: 0, aud: 0 };
+    xlRow(S, row, [{ v: c, font: { bold: true } },
+      { v: F(`SUMIFS(${rng('H')},${rng('B')},"Income",${rng('G')},"${c}")`, t.income), nf: NF.money(c), font: { color: { argb: XL.green } } },
+      { v: F(`SUMIFS(${rng('H')},${rng('B')},"Expense",${rng('G')},"${c}")`, t.expense), nf: NF.money(c), font: { color: { argb: XL.red } } },
+      { v: F(`B${row}-C${row}`, t.net), nf: NF.money(c), font: { bold: true } },
+      { v: F(`D${row}*VLOOKUP(A${row},${fxRange},2,FALSE)`, t.aud), nf: NF.money('AUD') }], { fill: i % 2 ? XL.zebra : null, height: 20 });
+  });
+  xlTotal(S, tTot, ['Net total in AUD (approx.)', '', '', '', { v: F(`SUM(E${tFirst}:E${tLast})`, R.audNet), nf: NF.money('AUD') }]);
+  xlSection(S, fxSec, 'Exchange rates used', 2);
+  xlHeader(S, fxHead, ['Currency', '1 unit in AUD'], [2]);
+  CURRENCIES.forEach((c, i) => xlRow(S, fxFirst + i, [{ v: c, align: 'left' }, { v: +fx[c] || 0, nf: NF.fx, font: { color: { argb: XL.input } } }], { fill: i % 2 ? XL.zebra : null }));
+  const cSec = fxLast + 2;
+  xlSection(S, cSec, 'By category', 6);
+  xlHeader(S, cSec + 1, ['Type', 'Category', 'Currency', 'Amount'], [4]);
+  const q = s => String(s).replace(/"/g, '""');
+  R.byCat.forEach((c, i) => {
+    const t = c.type === 'income' ? 'Income' : 'Expense';
+    xlRow(S, cSec + 2 + i, [{ v: t, font: { bold: true, color: { argb: c.type === 'income' ? XL.green : XL.red } } }, c.category, { v: c.currency, align: 'center' },
+      { v: F(`SUMIFS(${rng('H')},${rng('B')},"${t}",${rng('C')},"${q(c.category)}",${rng('G')},"${c.currency}")`, c.amount), nf: NF.money(c.currency) }],
+      { fill: i % 2 ? XL.zebra : null, height: 20 });
+  });
+  if (!R.byCat.length) xlRow(S, cSec + 2, [{ v: 'Nothing recorded for this period.', font: { italic: true, color: { argb: XL.muted } } }]);
+  xlNote(S, cSec + 3 + Math.max(R.byCat.length, 1), 'Totals are formulas over the Entries sheet, so they update if an entry is changed there. ' +
+    'AUD amounts are approximate, using the exchange rates above (blue) from CRM Settings. Confidential: for administrators and people with accounting access.', 6);
+  return wb;
+}
+function downloadLedgerPdf() { if (!libsReady()) return; const R = ledgerReport(acRange()); makeLedgerPdf(R).save(ledgerBase(R) + '.pdf'); }
+async function downloadLedgerXlsx() {
+  if (!libsReady()) return;
+  const R = ledgerReport(acRange());
+  try { saveBlob(new Blob([await (await buildLedgerXlsx(R)).xlsx.writeBuffer()], { type: XLSX_MIME }), ledgerBase(R) + '.xlsx'); }
+  catch (e) { toast('The Excel file could not be created: ' + e.message, 'err'); }
+}
+async function emailLedger() {
+  if (!libsReady()) return;
+  const btn = $('#acEmailBtn'), R = ledgerReport(acRange()), base = ledgerBase(R), co = db.settings.company;
+  const doc = makeLedgerPdf(R);
+  let xbuf;
+  try { xbuf = await (await buildLedgerXlsx(R)).xlsx.writeBuffer(); } catch (e) { toast('The Excel file could not be created: ' + e.message, 'err'); return; }
+  if (!cfg.apiUrl) {
+    doc.save(base + '.pdf'); saveBlob(new Blob([xbuf], { type: XLSX_MIME }), base + '.xlsx');
+    location.href = `mailto:${REPORT_EMAIL}?subject=${encodeURIComponent(co + ' accounting report: ' + R.label)}`;
+    toast('No backend is connected, so the two files were downloaded and your email app opened. Attach both files before sending.');
+    return;
+  }
+  const td = 'padding:6px 10px;border-bottom:1px solid #e6e8ef;';
+  const html = `<div style="font-family:Arial,sans-serif;color:#111827;font-size:14px"><p>Hello,</p>
+    <p>Attached is the ${esc(co)} accounting report for <b>${esc(R.label)}</b> (PDF and Excel), with ${R.entries.length} entr${R.entries.length === 1 ? 'y' : 'ies'}.</p>
+    <table style="border-collapse:collapse;margin:12px 0"><tr><th style="${td}text-align:left">Currency</th><th style="${td}text-align:right">Income</th><th style="${td}text-align:right">Expenses</th><th style="${td}text-align:right">Net</th></tr>
+    ${R.currencies.map(c => { const t = R.totals[c]; return `<tr><td style="${td}">${c}</td><td style="${td}text-align:right">${money(t.income)}</td><td style="${td}text-align:right">${money(t.expense)}</td>
+      <td style="${td}text-align:right;font-weight:bold;color:${t.net < 0 ? '#dc2626' : '#047857'}">${money(t.net)}</td></tr>`; }).join('')}</table>
+    <p>Net total in AUD (approx.): <b>${money(R.audNet, 'AUD')}</b></p><p style="color:#6b7280;font-size:12px">Sent from ${esc(co)} CRM by ${esc(cu().name)}. Confidential.</p></div>`;
+  btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>Sending…';
+  try {
+    const j = await api('email', { subject: `${co} accounting report: ${R.label}`, html, files: [
+      { name: base + '.pdf', mime: 'application/pdf', data: doc.output('datauristring').split(',')[1] },
+      { name: base + '.xlsx', mime: XLSX_MIME, data: bufToB64(xbuf) }] });
+    toast(`Accounting report emailed to ${j.to || REPORT_EMAIL}.`, 'ok');
+  } catch (e) { toast('The email was not sent: ' + e.message, 'err'); }
+  btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>Email PDF + Excel';
+}
 
 /* ============================================================
    Copy and paste
@@ -972,7 +1549,7 @@ function taskRow(t) {
 }
 function openProjectModal(id, preset) {
   if (!isAdmin()) return;
-  const p = id ? JSON.parse(JSON.stringify(proj(id))) : preset || { id: '', name: '', client: 'Artificial Engineering Solutions', type: 'standard', status: 'active', budget: '', tasks: [{ id: uid(), name: '', limit: '' }] };
+  const p = id ? JSON.parse(JSON.stringify(proj(id))) : preset || { id: '', name: '', client: 'Artificial Engineering Solutions', type: 'standard', status: 'active', budget: '', resources: [], tasks: [{ id: uid(), name: '', limit: '' }] };
   const sel = (v, opts) => opts.map(([k, l]) => `<option value="${k}" ${v === k ? 'selected' : ''}>${l}</option>`).join('');
   openModal(id ? 'Edit project' : 'New project', `<form onsubmit="saveProject(event,'${p.id}')">
     <div class="grid2"><div class="field"><label class="fl" for="pName">Project name</label><input class="in" id="pName" required value="${esc(p.name)}"></div>
@@ -987,6 +1564,9 @@ function openProjectModal(id, preset) {
     <button type="button" class="btn ghost sm" onclick="$('#taskRows').insertAdjacentHTML('beforeend',taskRow({id:uid(),name:'',limit:''}))"><i class="fa-solid fa-plus"></i>Add task</button>
     <p class="hint">For in-direct projects, task limits are hours per week. For standard projects, they are total hours.<br>
     Tip: copy a list of tasks from Excel (task name, then hours in the next column) and paste it into any task box to add them all at once.</p>
+    <div class="field" style="margin-top:16px"><label class="fl">Resourcing: who works on this project</label>
+      <div class="chips">${db.employees.map(e => `<label class="chip"><input type="checkbox" name="pRes" value="${e.id}" ${(p.resources || []).includes(e.id) ? 'checked' : ''}>${avatar(e)}${esc(e.name)}</label>`).join('')}</div>
+      <div class="hint">Assigned people see this project in the Resource planner and can plan hours on its tasks.</div></div>
     <div class="modal-foot"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn primary">Save project</button></div></form>`, true);
 }
 function saveProject(ev, id) {
@@ -998,6 +1578,7 @@ function saveProject(ev, id) {
   const rec = {
     id: id || 'prj-' + uid(), name: $('#pName').value.trim(), client: $('#pClient').value.trim(),
     type: $('#pType').value, status: $('#pStatus').value, tasks,
+    resources: [...document.querySelectorAll('[name=pRes]:checked')].map(i => i.value),
     budget: b === '' ? round2(tasks.reduce((a, t) => a + t.limit, 0)) : round2(b)
   };
   saveRec('projects', rec); closeModal(); render(); toast(id ? 'Project saved.' : 'Project created.', 'ok');
@@ -1012,7 +1593,8 @@ async function deleteProject(id) {
    Actions: team
    ============================================================ */
 function openEmpModal(id) {
-  const e = id ? emp(id) : { id: '', name: '', location: '', email: '', phone: '', role: '', rate: '', currency: 'AUD', access: 'employee', photo: '' };
+  const e = id ? emp(id) : { id: '', name: '', location: '', email: '', phone: '', role: '', rate: '', currency: 'AUD', access: 'employee', photo: '', weeklyHours: 40, accounting: false };
+  const assigned = db.projects.filter(p => p.status !== 'done' || (p.resources || []).includes(e.id));
   ui.draftPhoto = e.photo || '';
   openModal(id ? 'Edit team member' : 'Add employee', `<form onsubmit="saveEmp(event,'${e.id}')">
     <div class="field photo-pick"><span id="phPrev">${avatar(e)}</span>
@@ -1027,9 +1609,17 @@ function openEmpModal(id) {
         <option value="employee" ${e.access !== 'admin' ? 'selected' : ''}>Team member: logs own time</option>
         <option value="admin" ${e.access === 'admin' ? 'selected' : ''}>Administrator: full access</option></select></div>
       <div class="field"><label class="fl" for="eRate">Hourly rate</label><input class="in" id="eRate" type="number" min="0" step="0.01" required value="${esc(e.rate)}"></div>
-      <div class="field"><label class="fl" for="eCur">Currency</label><select class="in" id="eCur">${CURRENCIES.map(c => `<option ${e.currency === c ? 'selected' : ''}>${c}</option>`).join('')}</select></div></div>
-    ${id ? `<label style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" id="eResetPin"> Reset PIN to 1234 (they will be asked to choose a new one)</label>`
-         : '<p class="hint">They sign in with this email and the PIN 1234, then choose their own PIN.</p>'}
+      <div class="field"><label class="fl" for="eCur">Currency</label><select class="in" id="eCur">${CURRENCIES.map(c => `<option ${e.currency === c ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
+      <div class="field"><label class="fl" for="eHours">Weekly working hours</label><input class="in" id="eHours" type="number" min="1" max="80" step="0.5" required value="${esc(+e.weeklyHours || 40)}">
+        <div class="hint">Used for utilization in the Resource planner.</div></div>
+      <div class="field"><label class="fl">Accounting</label><label style="display:flex;gap:8px;align-items:center;font-size:13px;margin-top:9px">
+        <input type="checkbox" id="eAcct" ${e.accounting ? 'checked' : ''}> Can see and edit Accounting</label>
+        <div class="hint">Administrators always have access.</div></div></div>
+    <div class="field"><label class="fl">Assigned projects (Resource planner)</label>
+      <div class="chips">${assigned.length ? assigned.map(p => `<label class="chip proj"><input type="checkbox" name="eProj" value="${p.id}" ${(p.resources || []).includes(e.id) ? 'checked' : ''}>
+        <i class="dot ${p.type === 'indirect' ? 'blue' : 'green'}"></i>${esc(p.name)}</label>`).join('') : '<span class="muted">No projects yet.</span>'}</div></div>
+    ${id ? `<label style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" id="eResetPw"> Reset password to their starter password${e.starterPw && !hasOwnPw(e) ? ` (${esc(e.starterPw)})` : ''}</label>`
+         : '<p class="hint">Their starter password will be their first name plus the time you add them (for example Mohamed0512). You\u2019ll see it on the Team page to pass on to them.</p>'}
     <div class="modal-foot"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn primary">${id ? 'Save changes' : 'Add employee'}</button></div></form>`);
 }
 function pickPhoto(input) {
@@ -1045,7 +1635,7 @@ function pickPhoto(input) {
   img.onerror = () => toast('That file could not be read as an image. Try a JPG or PNG.', 'err');
   img.src = url;
 }
-function saveEmp(ev, id) {
+async function saveEmp(ev, id) {
   ev.preventDefault();
   const email = $('#eEmail').value.trim();
   if (db.employees.some(x => x.id !== id && x.email.toLowerCase() === email.toLowerCase())) { toast('Another team member already uses that email.', 'err'); return; }
@@ -1053,9 +1643,22 @@ function saveEmp(ev, id) {
   const access = $('#eAccess').value;
   if (id === session.id && access !== 'admin' && db.employees.filter(x => x.access === 'admin').length === 1) { toast('You are the only administrator. Make someone else an administrator first.', 'err'); return; }
   const rec = { ...old, id: id || 'emp-' + uid(), name: $('#eName').value.trim(), location: $('#eLoc').value.trim(), email,
-    phone: $('#ePhone').value.trim(), role: $('#eRole').value.trim(), access, rate: round2($('#eRate').value), currency: $('#eCur').value, photo: ui.draftPhoto || '' };
-  if (!id || ($('#eResetPin') && $('#eResetPin').checked) || (old.email && old.email.toLowerCase() !== email.toLowerCase())) rec.pinHash = '';
-  saveRec('employees', rec); closeModal(); render(); toast(id ? 'Changes saved.' : 'Employee added.', 'ok');
+    phone: $('#ePhone').value.trim(), role: $('#eRole').value.trim(), access, rate: round2($('#eRate').value), currency: $('#eCur').value,
+    photo: ui.draftPhoto || '', weeklyHours: round2($('#eHours').value) || 40, accounting: $('#eAcct').checked, addedAt: old.addedAt || Date.now() };
+  const emailChanged = old.email && old.email.toLowerCase() !== email.toLowerCase();
+  const reset = !id || ($('#eResetPw') && $('#eResetPw').checked) || emailChanged;
+  if (reset) {
+    rec.starterPw = starterFor(rec.name, rec.addedAt);
+    Object.assign(rec, { pwHash: '', pinHash: '', pwSet: false, starterHash: await hashPw(rec.starterPw, email) });
+  }
+  const picked = new Set([...document.querySelectorAll('[name=eProj]:checked')].map(i => i.value));
+  saveRec('employees', rec);
+  db.projects.forEach(p => {
+    const res = p.resources || [], has = res.includes(rec.id), want = picked.has(p.id);
+    if (has !== want && document.querySelector(`[name=eProj][value="${p.id}"]`)) saveRec('projects', { ...p, resources: want ? [...res, rec.id] : res.filter(x => x !== rec.id) });
+  });
+  closeModal(); render();
+  toast(!id ? `${rec.name} added. Starter password: ${rec.starterPw}` : reset ? `Saved. ${rec.name}\u2019s password was reset to ${rec.starterPw}` : 'Changes saved.', 'ok');
 }
 async function deleteEmp(id) {
   if (id === session.id) { toast('You cannot delete your own account while signed in.', 'err'); return; }
@@ -1063,20 +1666,27 @@ async function deleteEmp(id) {
   if (!await ask(`Remove ${e.name} from the team?\n\nTheir past timesheets stay in reports.`, 'Remove', true)) return;
   removeRec('employees', id); render(); toast('Team member removed.');
 }
-function openPinModal(forced) {
-  openModal(forced ? 'Choose your own PIN' : 'Change PIN', `<form onsubmit="savePin(event)">
-    ${forced ? '<p class="muted" style="margin-top:0">You signed in with the starter PIN. Pick a PIN only you know.</p>' : ''}
-    <div class="grid2"><div class="field"><label class="fl" for="pin1">New PIN</label><input class="in" id="pin1" type="password" inputmode="numeric" minlength="4" required></div>
-    <div class="field"><label class="fl" for="pin2">Repeat new PIN</label><input class="in" id="pin2" type="password" inputmode="numeric" minlength="4" required></div></div>
-    <p class="hint">At least 4 characters.</p>
-    <div class="modal-foot">${forced ? '' : '<button type="button" class="btn ghost" onclick="closeModal()">Cancel</button>'}<button class="btn primary">Save PIN</button></div></form>`);
+function openPwModal(mode) {
+  const title = mode === 'must' ? 'Create your password' : mode === 'starter' ? 'Choose your own password' : 'Change password';
+  const intro = mode === 'must' ? 'Sign-in now uses passwords instead of PINs. Create your password to continue.'
+    : mode === 'starter' ? 'You signed in with your starter password. For security, choose a password only you know.' : '';
+  ui.lockModal = false;
+  openModal(title, `<form onsubmit="savePw(event)">
+    ${intro ? `<p class="muted" style="margin-top:0">${intro}</p>` : ''}
+    <div class="grid2"><div class="field"><label class="fl" for="pw1">New password</label><input class="in" id="pw1" type="password" autocomplete="new-password" minlength="8" required></div>
+    <div class="field"><label class="fl" for="pw2">Repeat new password</label><input class="in" id="pw2" type="password" autocomplete="new-password" minlength="8" required></div></div>
+    <p class="hint">At least 8 characters, with at least one letter and one number.</p>
+    <div class="modal-foot">${mode === 'must' ? '' : `<button type="button" class="btn ghost" onclick="closeModal()">${mode === 'starter' ? 'Later' : 'Cancel'}</button>`}<button class="btn primary">Save password</button></div></form>`);
+  ui.lockModal = mode === 'must';
 }
-async function savePin(ev) {
+async function savePw(ev) {
   ev.preventDefault();
-  if ($('#pin1').value !== $('#pin2').value) { toast('The two PINs do not match.', 'err'); return; }
-  if ($('#pin1').value === DEFAULT_PIN) { toast('Choose a PIN other than 1234.', 'err'); return; }
-  const u = cu(); saveRec('employees', { ...u, pinHash: await hashPin($('#pin1').value, u.email) });
-  closeModal(); toast('PIN saved.', 'ok');
+  const a = $('#pw1').value, b = $('#pw2').value, u = cu();
+  if (!pwOk(a)) { toast('Use at least 8 characters, including at least one letter and one number.', 'err'); return; }
+  if (a !== b) { toast('The two passwords don\u2019t match.', 'err'); return; }
+  if (u.starterPw && a === u.starterPw) { toast('Choose something different from your starter password.', 'err'); return; }
+  saveRec('employees', { ...u, pwHash: await hashPw(a, u.email), pwSet: true, pinHash: '', starterHash: '', starterPw: '' });
+  ui.lockModal = false; closeModal(); toast('Password saved.', 'ok'); render();
 }
 
 /* ============================================================
@@ -1163,7 +1773,7 @@ function restoreBackup(input) {
     db = normaliseDb(d); saveLocal();
     if (cfg.apiUrl) {
       enqueue({ action: 'upsert', payload: { collection: 'settings', record: db.settings } });
-      ['employees', 'projects', 'timesheets'].forEach(c => db[c].forEach(r => queue.push({ action: 'upsert', payload: { collection: c, record: r } })));
+      COLLECTIONS.forEach(c => db[c].forEach(r => queue.push({ action: 'upsert', payload: { collection: c, record: r } })));
       store.set(K.q, queue); flushQueue();
     }
     if (!cu()) logout(); else render();
@@ -1201,7 +1811,8 @@ function buildReport(ws) {
   return {
     ...r, label: weekLabel(ws), daily, generated: new Date().toLocaleString('en-AU', { dateStyle: 'medium', timeStyle: 'short' }),
     payroll, currencyTotals, audTotal: round2(payroll.reduce((a, p) => a + p.aud, 0)),
-    pendingTotal: round2(payroll.reduce((a, p) => a + p.pending, 0)), projects, detail
+    pendingTotal: round2(payroll.reduce((a, p) => a + p.pending, 0)), projects, detail,
+    plan: buildPlanReport(addDays(ws, -1))
   };
 }
 const fileBase = r => `${db.settings.company.replace(/[^\w]+/g, '-')}_Weekly-Report_${r.start}_to_${r.end}`;
@@ -1252,6 +1863,24 @@ function makePdf(r) {
   });
   table(['Project / task', 'Type', 'This week', 'All time', 'Limit'], pBody);
 
+  title('Resource plan', `Planned hours for the 4 weeks from ${niceDate(r.plan.weeks[0])} (weeks start on Sunday). Utilization = planned project hours / (weekly hours - leave).`);
+  const soft = [238, 242, 255], planBody = [];
+  r.plan.people.forEach(p => {
+    planBody.push([{ content: `${p.name}  (${p.cap} h/week)`, colSpan: 2, styles: { fontStyle: 'bold', fillColor: soft } },
+      ...p.stats.map(s => ({ content: !s.avail && s.leave ? 'On leave' : Math.round(s.util * 100) + '% utilised',
+        styles: { halign: 'right', fontStyle: 'bold', fillColor: soft, textColor: s.util > 1 ? [220, 38, 38] : [79, 70, 229] } }))]);
+    planBody.push([{ content: '   Leave', styles: { textColor: [75, 85, 99] } }, { content: 'Leave', styles: { textColor: [107, 114, 128] } }, ...p.leave.map(v => right(v ? fmtH(v) : '-'))]);
+    p.projects.forEach(pr => {
+      const col = pr.type === 'indirect' ? [29, 78, 216] : [4, 120, 87];
+      const vals = [0, 1, 2, 3].map(k => round2(pr.own[k] + pr.tasks.reduce((a, t) => a + t.vals[k], 0)));
+      planBody.push([{ content: '   ' + pr.name, styles: { fontStyle: 'bold', textColor: col } }, { content: pr.type === 'indirect' ? 'In-direct' : 'Direct', styles: { textColor: col } },
+        ...vals.map(v => ({ content: v ? fmtH(v) : '-', styles: { halign: 'right', textColor: col } }))]);
+      pr.tasks.filter(t => t.vals.some(Boolean)).forEach(t => planBody.push([{ content: '         ' + t.name, styles: { textColor: [75, 85, 99] } }, '', ...t.vals.map(v => right(v ? fmtH(v) : '-'))]));
+    });
+    planBody.push([{ content: '   Planned / available hours', styles: { textColor: [107, 114, 128] } }, '', ...p.stats.map(s => right(`${fmtH(s.planned)} / ${fmtH(s.avail)}`))]);
+  });
+  table(['Employee / project', 'Type', ...r.plan.weeks.map(w => 'Week of ' + niceDate(w))], planBody);
+
   title('Timesheet detail');
   table(['Date', 'Employee', 'Project', 'Task', 'Hours', 'Status', 'Notes'],
     r.detail.map(d => [niceDate(d.date), d.person, d.project, d.task, right(fmtH(d.hours)), d.status, d.notes]),
@@ -1300,7 +1929,7 @@ function xlSheet(wb, name, widths, ctx, headerRow) {
   ws.pageSetup = { orientation: 'landscape', paperSize: 9, fitToPage: true, fitToWidth: 1, fitToHeight: 0, horizontalCentered: true,
     margins: { left: 0.4, right: 0.4, top: 0.5, bottom: 0.6, header: 0.2, footer: 0.25 } };
   if (headerRow) ws.pageSetup.printTitlesRow = `${headerRow}:${headerRow}`;
-  ws.headerFooter = { oddFooter: `&L&8${ctx.company.replace(/&/g, '&&')}  |  Weekly report ${ctx.label}&R&8Page &P of &N` };
+  ws.headerFooter = { oddFooter: `&L&8${ctx.company.replace(/&/g, '&&')}  |  ${(ctx.footer || 'Weekly report ' + ctx.label).replace(/&/g, '&&')}&R&8Page &P of &N` };
   return ws;
 }
 function xlSection(ws, row, text, n) {
@@ -1458,7 +2087,51 @@ async function buildXlsx(r) {
   xlNote(P, pr + 1, 'In-direct projects are measured against their weekly limit using this week\u2019s hours. Standard projects are measured against their total budget using all-time hours. ' +
     'Hours include approved and pending entries. Anything over 100% is highlighted in red.', 8);
 
-  /* 5. Team */
+  /* 5. Resource plan */
+  const RP = xlSheet(wb, 'Resource plan', [46, 13, 15, 15, 15, 15, 13], ctx, 5);
+  xlHeader(RP, 5, ['Employee / project / task', 'Type', ...r.plan.weeks.map(w => 'Week of ' + parseYmd(w).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' })), 'Total'], [3, 4, 5, 6, 7]);
+  const WC = k => String.fromCharCode(67 + k), add4 = a => round2(a.reduce((x, y) => x + y, 0));
+  let rr = 6;
+  r.plan.people.forEach(p => {
+    const hdr = rr++;
+    xlRow(RP, hdr, [p.name, { v: p.cap, nf: '0" h/wk"' }, '', '', '', '', ''], { bold: true, fill: XL.soft, height: 22 });
+    const leave = rr++;
+    xlRow(RP, leave, [{ v: 'Leave', indent: 1, font: { color: { argb: 'FF4B5563' } } }, { v: 'Leave', font: { color: { argb: XL.muted } } },
+      ...p.leave.map(v => ({ v, nf: NF.h })), { v: F(`SUM(C${leave}:F${leave})`, add4(p.leave)), nf: NF.h }], { fill: 'FFF3F4F6', height: 19 });
+    const projRows = [];
+    p.projects.forEach(pr => {
+      const prow = rr++, taskRows = [];
+      pr.tasks.forEach(t => {
+        xlRow(RP, rr, [{ v: t.name, indent: 3, font: { color: { argb: 'FF374151' } } }, '', ...t.vals.map(v => ({ v, nf: NF.h })), { v: F(`SUM(C${rr}:F${rr})`, add4(t.vals)), nf: NF.h }], { height: 19 });
+        taskRows.push(rr++);
+      });
+      const ind = pr.type === 'indirect', fg = ind ? 'FF1D4ED8' : 'FF047857';
+      const tot = [0, 1, 2, 3].map(k => round2(pr.own[k] + pr.tasks.reduce((a, t) => a + t.vals[k], 0)));
+      xlRow(RP, prow, [{ v: pr.name, indent: 1 }, ind ? 'In-direct' : 'Direct',
+        ...tot.map((v, k) => ({ v: taskRows.length ? F(`${pr.own[k]}+SUM(${WC(k)}${taskRows[0]}:${WC(k)}${taskRows[taskRows.length - 1]})`, v) : v, nf: NF.h })),
+        { v: F(`SUM(C${prow}:F${prow})`, add4(tot)), nf: NF.h }], { bold: true, fill: ind ? 'FFEFF6FF' : 'FFECFDF5', height: 20 });
+      for (let c = 1; c <= 7; c++) RP.getCell(prow, c).font = xlFont({ bold: true, color: { argb: fg } });
+      projRows.push(prow);
+    });
+    const planned = rr++, avail = rr++, util = rr++;
+    const pl = p.stats.map(s => s.planned), av = p.stats.map(s => s.avail);
+    xlRow(RP, planned, [{ v: 'Planned project hours', indent: 1 }, '', ...pl.map((v, k) => ({ v: projRows.length ? F(projRows.map(x => WC(k) + x).join('+'), v) : 0, nf: NF.h })),
+      { v: F(`SUM(C${planned}:F${planned})`, add4(pl)), nf: NF.h }], { bold: true, height: 20 });
+    xlRow(RP, avail, [{ v: 'Available hours (weekly hours less leave)', indent: 1, font: { color: { argb: XL.muted } } }, '',
+      ...av.map((v, k) => ({ v: F(`MAX(0,$B$${hdr}-${WC(k)}${leave})`, v), nf: NF.h, font: { color: { argb: XL.muted } } })),
+      { v: F(`SUM(C${avail}:F${avail})`, add4(av)), nf: NF.h, font: { color: { argb: XL.muted } } }], { height: 19 });
+    const tp = add4(pl), ta = add4(av);
+    xlRow(RP, util, [{ v: 'Utilization', indent: 1 }, '', ...p.stats.map((s, k) => ({ v: F(`IF(${WC(k)}${avail}=0,0,${WC(k)}${planned}/${WC(k)}${avail})`, s.util), nf: NF.pct })),
+      { v: F(`IF(G${avail}=0,0,G${planned}/G${avail})`, ta ? tp / ta : 0), nf: NF.pct }], { total: true, bold: true, height: 22 });
+    RP.addConditionalFormatting({ ref: `C${util}:G${util}`, rules: [{ type: 'cellIs', operator: 'greaterThan', formulae: [1], priority: 1,
+      style: { font: { bold: true, color: { argb: XL.red } }, fill: { type: 'pattern', pattern: 'solid', bgColor: { argb: 'FFFEF2F2' } } } }] });
+    rr++;
+  });
+  if (!r.plan.people.length) xlRow(RP, 6, [{ v: 'No team members yet.', font: { italic: true, color: { argb: XL.muted } } }]);
+  xlNote(RP, rr + 1, 'Planned hours from the Resource planner. Weeks start on Sunday. Green = direct (standard) projects, blue = in-direct projects, grey = leave. ' +
+    'Utilization = planned project hours \u00f7 (weekly hours \u2212 leave). Over 100% is highlighted in red.', 7);
+
+  /* 6. Team */
   const M = xlSheet(wb, 'Team', [26, 22, 42, 34, 18, 14, 12, 16], ctx, 5);
   xlHeader(M, 5, ['Name', 'Role', 'Location', 'Email', 'Phone', 'Rate / hour', 'Currency', 'Access'], [6]);
   M.getCell(5, 7).alignment = { vertical: 'middle', horizontal: 'center' };
@@ -1496,6 +2169,10 @@ function summaryHtml(r) {
     <table style="border-collapse:collapse;margin:12px 0"><tr><th style="${td}text-align:left">Employee</th><th style="${td}text-align:right">Approved hours</th><th style="${td}text-align:right">Pay</th></tr>
     ${r.payroll.map(p => `<tr><td style="${td}">${esc(p.e.name)}</td><td style="${td}text-align:right">${fmtH(p.approved)}</td><td style="${td}text-align:right">${money(p.amount, p.e.currency)}</td></tr>`).join('')}
     </table><p>Approximate total in AUD: <b>${money(r.audTotal, 'AUD')}</b>${r.pendingTotal ? `<br>Pending, not yet approved: ${fmtH(r.pendingTotal)}` : ''}</p>
+    <p style="margin-top:18px"><b>Resource plan, week of Sunday ${esc(niceDate(r.plan.weeks[0]))}</b></p>
+    <table style="border-collapse:collapse;margin:8px 0"><tr><th style="${td}text-align:left">Employee</th><th style="${td}text-align:right">Planned</th><th style="${td}text-align:right">Leave</th><th style="${td}text-align:right">Utilization</th></tr>
+    ${r.plan.people.map(p => { const s = p.stats[0]; return `<tr><td style="${td}">${esc(p.name)}</td><td style="${td}text-align:right">${fmtH(s.planned)}</td><td style="${td}text-align:right">${fmtH(s.leave)}</td>
+      <td style="${td}text-align:right;color:${s.util > 1 ? '#dc2626' : '#111827'}">${Math.round(s.util * 100)}%</td></tr>`; }).join('')}</table>
     <p style="color:#6b7280;font-size:12px">Sent from ${esc(db.settings.company)} CRM by ${esc(cu().name)}.</p></div>`;
 }
 
@@ -1545,17 +2222,25 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
 }
 async function boot() {
   const invite = readConnectHash();
-  if (!cfg.apiUrl) { applyOwnerEmail(); applySeedPhotos(); }
+  if (cfg.apiUrl && session && !session.token) { session = null; store.set(K.sess, null); }
+  if (!cfg.apiUrl) { applyOwnerEmail(); applySeedPhotos(); if (cu()) await ensureStarters(); }
   render();
   if (invite && (!cfg.apiUrl || cfg.apiUrl !== invite.u)) { if (await connect(invite.u, invite.k)) render(); }
   if (cfg.apiUrl) {
-    try { await flushQueue(); await pullRemote(); applyOwnerEmail(); applySeedPhotos(); ui.sync = queue.length ? ui.sync : 'ok'; if (!ui.modalOpen) render(); }
+    try {
+      const p = await api('ping');
+      if (!p.version || p.version < 2) throw new Error(OLD_BACKEND);
+      if (signedIn()) { await flushQueue(); await pullRemote(); if (isAdmin()) await ensureStarters(); }
+      ui.sync = queue.length ? ui.sync : 'ok'; if (!ui.modalOpen) render();
+    }
     catch (e) { ui.sync = 'error'; ui.syncMsg = e.message; updateSync(); }
   }
   handleShortcut();
 }
 async function backgroundRefresh() {
-  if (!cfg.apiUrl || document.hidden || queue.length || ui.modalOpen || flushing) return;
+  const a = document.activeElement;
+  if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.closest('#view')) return;
+  if (!cfg.apiUrl || document.hidden || queue.length || ui.modalOpen || flushing || !signedIn()) return;
   try {
     const before = JSON.stringify(db); await pullRemote();
     ui.sync = 'ok'; if (JSON.stringify(db) !== before) render(); else updateSync();
