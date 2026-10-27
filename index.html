@@ -119,6 +119,12 @@ tfoot td{font-weight:700;background:#fbfbfd;border-top:1px solid var(--line)}
 .person small{color:var(--muted);font-size:12px}
 .role-tag{white-space:nowrap;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:6px;padding:3px 8px;font-size:12.5px}
 .actions{white-space:nowrap;text-align:right}
+.copyable{all:unset;cursor:copy;border-radius:5px;padding:2px 5px;margin:-2px -5px;white-space:nowrap}
+.copyable i{opacity:0;margin-left:6px;font-size:11px;color:var(--brand)}
+.copyable:hover,.copyable:focus-visible{background:var(--brand-soft);color:var(--brand)}
+.copyable:hover i,.copyable:focus-visible i{opacity:1}
+textarea.paste{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;white-space:pre;overflow:auto}
+.errs{margin:8px 0 0;padding-left:18px;color:var(--amber);font-size:12.5px;max-height:140px;overflow:auto}
 
 /* Dashboard */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px}
@@ -697,7 +703,8 @@ VIEWS.projects = function () {
     return `<article class="card pcard">
       <div class="pc-top"><span class="badge ${status[1]}">${status[0]}</span>
         <span class="badge ${ind ? 'b-purple' : 'b-blue'}">${ind ? 'In-direct limit' : 'Standard project'}</span><span class="sp"></span>
-        ${admin ? `<button class="icon-btn" onclick="openProjectModal('${p.id}')" aria-label="Edit ${esc(p.name)}"><i class="fa-regular fa-pen-to-square"></i></button>
+        ${admin ? `<button class="icon-btn" onclick="duplicateProject('${p.id}')" title="Duplicate project" aria-label="Duplicate ${esc(p.name)}"><i class="fa-regular fa-copy"></i></button>
+        <button class="icon-btn" onclick="openProjectModal('${p.id}')" aria-label="Edit ${esc(p.name)}"><i class="fa-regular fa-pen-to-square"></i></button>
         <button class="icon-btn del" onclick="deleteProject('${p.id}')" aria-label="Delete ${esc(p.name)}"><i class="fa-regular fa-trash-can"></i></button>` : ''}</div>
       <h3>${esc(p.name)}</h3><div class="client"><i class="fa-solid fa-building"></i>Client: ${esc(p.client)}</div>
       <div class="pc-label">Tasks, deliverables and ${ind ? 'weekly limits (this week)' : 'hour limits'}</div>
@@ -714,13 +721,14 @@ VIEWS.projects = function () {
 VIEWS.team = function () {
   const rows = db.employees.map(e => `<tr>
     <td><div class="person">${avatar(e)}<div><b>${esc(e.name)}</b><small>${esc(e.location)}</small></div></div></td>
-    <td>${esc(e.email)}</td><td>${esc(e.phone)}</td>
+    <td>${copyable(e.email, 'Email')}</td><td>${copyable(e.phone, 'Phone number')}</td>
     <td><span class="role-tag">${esc(e.role)}</span></td>
     <td>${e.access === 'admin' ? '<span class="badge b-blue">Administrator</span>' : '<span class="badge b-grey">Team member</span>'}</td>
     <td><b>${round2(e.rate)} ${esc(e.currency)}/hr</b></td>
     <td class="actions"><button class="icon-btn" onclick="openEmpModal('${e.id}')" aria-label="Edit ${esc(e.name)}"><i class="fa-regular fa-pen-to-square"></i></button>
       <button class="icon-btn del" onclick="deleteEmp('${e.id}')" aria-label="Delete ${esc(e.name)}"><i class="fa-regular fa-trash-can"></i></button></td></tr>`).join('');
   return `<div class="card head-card"><div><h2>Team members & access</h2><p>Manage people, contact details, photos, pay rates in EGP, AUD, SAR or USD, and who can administer the workspace.</p></div>
+    <button class="btn ghost" onclick="copyTeamTable()" title="Copy the table to paste into Excel or an email"><i class="fa-regular fa-copy"></i>Copy table</button>
     <button class="btn primary" onclick="openEmpModal()"><i class="fa-solid fa-user-plus"></i>Add employee</button></div>
     <div class="card tbl-wrap"><table><thead><tr><th>Employee</th><th>Email / login</th><th>Contact & phone</th><th>Role</th><th>Access</th><th>Rate & currency</th><th class="actions">Actions</th></tr></thead>
     <tbody>${rows}</tbody></table></div>`;
@@ -742,17 +750,21 @@ VIEWS.timesheets = function () {
       <td class="actions">
         ${admin && t.status !== 'approved' ? `<button class="icon-btn" onclick="setStatus('${t.id}','approved')" title="Approve" aria-label="Approve"><i class="fa-solid fa-check"></i></button>` : ''}
         ${admin && t.status !== 'rejected' ? `<button class="icon-btn del" onclick="setStatus('${t.id}','rejected')" title="Reject" aria-label="Reject"><i class="fa-solid fa-ban"></i></button>` : ''}
+        ${admin || t.employeeId === u.id ? `<button class="icon-btn" onclick="duplicateTs('${t.id}')" title="Duplicate this entry" aria-label="Duplicate"><i class="fa-regular fa-copy"></i></button>` : ''}
         ${canEdit ? `<button class="icon-btn" onclick="openTsModal('${t.id}')" title="Edit" aria-label="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
         <button class="icon-btn del" onclick="deleteTs('${t.id}')" title="Delete" aria-label="Delete"><i class="fa-regular fa-trash-can"></i></button>` : ''}</td></tr>`;
   }).join('');
   const pendingIds = list.filter(t => t.status === 'pending').map(t => t.id);
   const cols = admin ? 8 : 7;
+  ui.tsList = list;
   return `<div class="toolbar">${weekNav()}<span class="sp"></span>
     ${admin ? `<select class="in inline" onchange="ui.tsEmp=this.value;render()" aria-label="Filter by person"><option value="all">Everyone</option>
       ${db.employees.map(e => `<option value="${e.id}" ${ui.tsEmp === e.id ? 'selected' : ''}>${esc(e.name)}</option>`).join('')}</select>` : ''}
     <select class="in inline" onchange="ui.tsStatus=this.value;render()" aria-label="Filter by status">
       ${[['all', 'All statuses'], ['pending', 'Pending'], ['approved', 'Approved'], ['rejected', 'Rejected']].map(([v, l]) => `<option value="${v}" ${ui.tsStatus === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
     ${admin && pendingIds.length ? `<button class="btn ok sm" onclick="approveAll(${esc(JSON.stringify(pendingIds))})"><i class="fa-solid fa-check-double"></i>Approve ${pendingIds.length} pending</button>` : ''}
+    <button class="btn ghost sm" onclick="copyTsTable()" ${list.length ? '' : 'disabled'}><i class="fa-regular fa-copy"></i>Copy table</button>
+    <button class="btn ghost sm" onclick="openTsPaste()"><i class="fa-regular fa-paste"></i>Paste from Excel</button>
   </div>
   <div class="card tbl-wrap"><table><thead><tr><th>Date</th>${admin ? '<th>Person</th>' : ''}<th>Project</th><th>Task</th><th class="num">Hours</th><th>Notes</th><th>Status</th><th class="actions"></th></tr></thead>
     <tbody>${rows || `<tr><td colspan="${cols}"><div class="empty"><b>No entries for this week</b>Use Submit timesheet to log your hours.</div></td></tr>`}</tbody>
@@ -775,7 +787,8 @@ VIEWS.payroll = function () {
     </div>
     <div class="toolbar">${weekNav()}<span class="sp"></span>
       <button class="btn ghost sm" onclick="downloadPdf()"><i class="fa-regular fa-file-pdf"></i>Download PDF</button>
-      <button class="btn ghost sm" onclick="downloadXlsx()"><i class="fa-regular fa-file-excel"></i>Download Excel</button></div>
+      <button class="btn ghost sm" onclick="downloadXlsx()"><i class="fa-regular fa-file-excel"></i>Download Excel</button>
+      <button class="btn ghost sm" onclick="copyPayrollTable()"><i class="fa-regular fa-copy"></i>Copy table</button></div>
     <div class="cur-cards">${cur}<div class="card stat"><span>Total in AUD (approx.)</span><b>${money(r.audTotal)}</b></div></div>
     ${r.pendingTotal ? `<div class="warn">${fmtH(r.pendingTotal)} this week is still pending and is not included in pay. Approve it on Timesheets to include it.</div>` : ''}
     <div class="card tbl-wrap" style="margin-bottom:20px"><table><thead><tr><th>Employee</th><th class="num">Rate</th><th class="num">Approved hours</th><th class="num">Pending</th><th class="num">Pay</th><th class="num">AUD equiv.</th></tr></thead>
@@ -811,16 +824,155 @@ VIEWS.settings = function () {
 };
 
 /* ============================================================
+   Copy and paste
+   ============================================================ */
+const tsv = rows => rows.map(r => r.map(c => String(c ?? '').replace(/[\t\r\n]+/g, ' ')).join('\t')).join('\n');
+const norm = s => String(s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+function copyable(text, what) {
+  if (!text) return '';
+  return `<button type="button" class="copyable" data-copy="${esc(text)}" onclick="copyText(this.dataset.copy,'${what}')" title="Click to copy">${esc(text)}<i class="fa-regular fa-copy"></i></button>`;
+}
+async function copyText(text, what) {
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+    document.body.appendChild(ta); ta.select();
+    try { ok = document.execCommand('copy'); } catch (_) { ok = false; }
+    ta.remove();
+  }
+  if (ok) { toast((what || 'Text') + ' copied. Paste it with Ctrl + V.', 'ok'); return; }
+  if (askResolve) askDone(false);
+  openModal('Copy', `<p class="muted" style="margin-top:0">Your browser blocked automatic copying. The text is selected below: press Ctrl + C to copy it.</p>
+    <textarea class="in paste" rows="8" readonly onfocus="this.select()">${esc(text)}</textarea>
+    <div class="modal-foot"><button type="button" class="btn primary" onclick="closeModal()">Done</button></div>`);
+  setTimeout(() => { const t = $('#modalRoot textarea'); if (t) { t.focus(); t.select(); } }, 30);
+}
+function copyTeamTable() {
+  copyText(tsv([['Name', 'Location', 'Email', 'Phone', 'Role', 'Access', 'Rate', 'Currency'],
+    ...db.employees.map(e => [e.name, e.location, e.email, e.phone, e.role, e.access === 'admin' ? 'Administrator' : 'Team member', e.rate, e.currency])]), 'Team table');
+}
+function copyTsTable() {
+  const admin = isAdmin();
+  copyText(tsv([['Date', ...(admin ? ['Person'] : []), 'Project', 'Task', 'Hours', 'Notes', 'Status'],
+    ...(ui.tsList || []).map(t => {
+      const e = emp(t.employeeId), p = proj(t.projectId), tk = task(p, t.taskId);
+      return [t.date, ...(admin ? [e ? e.name : 'Removed member'] : []), p ? p.name : 'Deleted project', tk ? tk.name : '', +t.hours, t.notes, t.status];
+    })]), 'Timesheet table');
+}
+function copyPayrollTable() {
+  const r = buildReport(ui.week);
+  copyText(tsv([['Week', r.label], [], ['Employee', 'Role', 'Rate', 'Currency', 'Approved hours', 'Pending hours', 'Pay', 'AUD equivalent (approx.)'],
+    ...r.payroll.map(p => [p.e.name, p.e.role, p.e.rate, p.e.currency, p.approved, p.pending, p.amount, p.aud]),
+    [], ...Object.entries(r.currencyTotals).map(([c, v]) => ['Total ' + c, '', '', '', '', '', v]), ['Total AUD (approx.)', '', '', '', '', '', '', r.audTotal]]), 'Payroll table');
+}
+function duplicateTs(id) {
+  const s = db.timesheets.find(x => x.id === id); if (!s) return;
+  openTsModal(null, { id: '', employeeId: s.employeeId, projectId: s.projectId, taskId: s.taskId, date: ymd(new Date()), hours: s.hours, notes: s.notes || '' });
+  toast('Copied into a new entry. Check the date and hours, then submit.');
+}
+function duplicateProject(id) {
+  const s = proj(id); if (!s) return;
+  openProjectModal(null, { ...JSON.parse(JSON.stringify(s)), id: '', name: s.name + ' (copy)', tasks: s.tasks.map(t => ({ ...t, id: uid() })) });
+}
+function pasteTasks(ev, input) {
+  const text = (ev.clipboardData || window.clipboardData).getData('text');
+  if (!/[\n\t]/.test(text.trim())) return;           // a single value: let the normal paste happen
+  ev.preventDefault();
+  let lines = text.split(/\r?\n/).map(l => l.split('\t').map(s => s.trim())).filter(c => c.some(Boolean));
+  const hoursOf = c => { const v = String(c[c.length - 1] || '').replace(/\s*(h|hr|hrs|hours)$/i, ''); return c.length > 1 && v !== '' && !isNaN(v) ? +v : null; };
+  if (lines.length > 1 && hoursOf(lines[0]) === null && hoursOf(lines[1]) !== null) lines = lines.slice(1);   // skip a header row
+  let row = input.closest('.trow');
+  lines.forEach((c, i) => {
+    const h = hoursOf(c), name = (h === null ? c : c.slice(0, -1)).filter(Boolean).join(' ');
+    if (i > 0) { row.insertAdjacentHTML('afterend', taskRow({ id: uid(), name: '', limit: '' })); row = row.nextElementSibling; }
+    row.querySelector('[name=tname]').value = name;
+    if (h !== null) row.querySelector('[name=tlimit]').value = h;
+  });
+  toast(lines.length + ' tasks pasted. Check them, then save.', 'ok');
+}
+
+/* Paste timesheet rows copied from Excel or Google Sheets */
+function parseDateCell(s) {
+  s = String(s || '').trim(); let m;
+  if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) { const d = new Date(+m[1], m[2] - 1, +m[3]); return d.getMonth() === m[2] - 1 ? ymd(d) : null; }
+  if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})$/))) {
+    let y = +m[3]; if (y < 100) y += 2000;
+    const d = new Date(y, m[2] - 1, +m[1]); return d.getMonth() === m[2] - 1 ? ymd(d) : null;   // day/month/year
+  }
+  return null;
+}
+function findByName(arr, name, extra) {
+  const n = norm(name); if (!n) return null;
+  const exact = arr.find(x => norm(x.name) === n || (extra && norm(extra(x)) === n));
+  if (exact) return exact;
+  const part = arr.filter(x => norm(x.name).includes(n));
+  return part.length === 1 ? part[0] : null;
+}
+function parseTsPaste(text) {
+  const admin = isAdmin(), u = cu(), rows = [], errors = [];
+  text.split(/\r?\n/).forEach((line, i) => {
+    if (!line.trim()) return;
+    const c = (line.includes('\t') ? line.split('\t') : line.split(/\s*[;,]\s*/)).map(s => s.trim());
+    let k = 0;
+    const rawDate = c[k++], date = parseDateCell(rawDate);
+    const rawPerson = admin ? c[k++] : '', person = admin ? findByName(db.employees, rawPerson, x => x.email) : u;
+    const rawProj = c[k++], p = findByName(db.projects, rawProj);
+    const rawTask = c[k++], rawHours = c[k++], hours = round2(String(rawHours || '').replace(/\s*(h|hr|hrs|hours)$/i, ''));
+    const notes = c.slice(k).filter(Boolean).join(' ');
+    if (!rows.length && !errors.length && !date && isNaN(parseFloat(rawHours))) return;   // header row
+    const L = 'Line ' + (i + 1) + ': ';
+    if (!date) return errors.push(L + `date "${rawDate || ''}" not recognised. Use 27/10/2026 or 2026-10-27.`);
+    if (admin && !person) return errors.push(L + `no team member called "${rawPerson || ''}".`);
+    if (!p) return errors.push(L + `no project called "${rawProj || ''}".`);
+    const tk = p.tasks.length ? findByName(p.tasks, rawTask) : null;
+    if (p.tasks.length && !tk) return errors.push(L + `no task "${rawTask || ''}" in ${p.name}.`);
+    if (!(hours > 0 && hours <= 24)) return errors.push(L + `hours "${rawHours || ''}" must be between 0.25 and 24.`);
+    rows.push({ id: 'ts-' + uid(), employeeId: person.id, projectId: p.id, taskId: tk ? tk.id : '', date, hours, notes,
+      status: admin ? 'approved' : 'pending', createdAt: Date.now() + i, updatedBy: u.id });
+  });
+  return { rows, errors };
+}
+function openTsPaste() {
+  const admin = isAdmin();
+  const cols = 'Date, ' + (admin ? 'Person, ' : '') + 'Project, Task, Hours, Notes';
+  openModal('Paste hours from Excel', `
+    <p class="muted" style="margin-top:0">Copy rows from Excel or Google Sheets and paste them below with Ctrl + V. Use these columns in this order:</p>
+    <p style="margin:0 0 10px"><b>${cols}</b></p>
+    <p class="hint" style="margin:0 0 10px">Notes are optional. A header row is skipped automatically. Names don't need to be exact, as long as they match only one ${admin ? 'person, ' : ''}project or task.</p>
+    <textarea class="in paste" id="tsPasteBox" rows="9" oninput="tsPastePreview()" placeholder="27/10/2026    ${admin ? 'Mohamed Badran    ' : ''}IQRA Island    Testing the Quran Tahfeez    3    Review"></textarea>
+    <div id="tsPastePrev" class="hint" aria-live="polite"></div>
+    <div class="modal-foot"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button type="button" class="btn primary" id="tsPasteBtn" onclick="tsPasteImport()" disabled>Add entries</button></div>`, true);
+}
+function tsPastePreview() {
+  const { rows, errors } = parseTsPaste($('#tsPasteBox').value);
+  $('#tsPasteBtn').disabled = !rows.length;
+  $('#tsPasteBtn').textContent = rows.length ? `Add ${rows.length} entr${rows.length === 1 ? 'y' : 'ies'}` : 'Add entries';
+  $('#tsPastePrev').innerHTML = (rows.length ? `<b style="color:var(--green)">${rows.length} entr${rows.length === 1 ? 'y' : 'ies'} ready, ${fmtH(sumH(rows))} in total.</b>` : '')
+    + (errors.length ? `<ul class="errs">${errors.map(e => `<li>${esc(e)}</li>`).join('')}</ul><div>Lines with problems are skipped. Fix them in the box above, or add them later.</div>` : '');
+}
+function tsPasteImport() {
+  const { rows } = parseTsPaste($('#tsPasteBox').value);
+  if (!rows.length) return;
+  rows.forEach(r => saveRec('timesheets', r));
+  closeModal();
+  ui.week = mondayOf(parseYmd(rows.map(r => r.date).sort()[0]));
+  render();
+  toast(`${rows.length} entr${rows.length === 1 ? 'y' : 'ies'} added${isAdmin() ? ' and approved' : ' for approval'}.`, 'ok');
+}
+
+/* ============================================================
    Actions: projects
    ============================================================ */
 function taskRow(t) {
-  return `<div class="trow" data-id="${esc(t.id)}"><input class="in" name="tname" placeholder="Task or deliverable" value="${esc(t.name)}" aria-label="Task name">
+  return `<div class="trow" data-id="${esc(t.id)}"><input class="in" name="tname" placeholder="Task or deliverable" value="${esc(t.name)}" aria-label="Task name" onpaste="pasteTasks(event,this)">
     <input class="in" name="tlimit" type="number" min="0" step="0.25" placeholder="Hours" value="${esc(t.limit)}" aria-label="Hour limit">
     <button type="button" class="icon-btn del" onclick="this.parentElement.remove()" aria-label="Remove task"><i class="fa-solid fa-xmark"></i></button></div>`;
 }
-function openProjectModal(id) {
+function openProjectModal(id, preset) {
   if (!isAdmin()) return;
-  const p = id ? JSON.parse(JSON.stringify(proj(id))) : { id: '', name: '', client: 'Artificial Engineering Solutions', type: 'standard', status: 'active', budget: '', tasks: [{ id: uid(), name: '', limit: '' }] };
+  const p = id ? JSON.parse(JSON.stringify(proj(id))) : preset || { id: '', name: '', client: 'Artificial Engineering Solutions', type: 'standard', status: 'active', budget: '', tasks: [{ id: uid(), name: '', limit: '' }] };
   const sel = (v, opts) => opts.map(([k, l]) => `<option value="${k}" ${v === k ? 'selected' : ''}>${l}</option>`).join('');
   openModal(id ? 'Edit project' : 'New project', `<form onsubmit="saveProject(event,'${p.id}')">
     <div class="grid2"><div class="field"><label class="fl" for="pName">Project name</label><input class="in" id="pName" required value="${esc(p.name)}"></div>
@@ -833,7 +985,8 @@ function openProjectModal(id) {
     <label class="fl">Tasks and hour limits</label>
     <div id="taskRows">${p.tasks.map(taskRow).join('')}</div>
     <button type="button" class="btn ghost sm" onclick="$('#taskRows').insertAdjacentHTML('beforeend',taskRow({id:uid(),name:'',limit:''}))"><i class="fa-solid fa-plus"></i>Add task</button>
-    <p class="hint">For in-direct projects, task limits are hours per week. For standard projects, they are total hours.</p>
+    <p class="hint">For in-direct projects, task limits are hours per week. For standard projects, they are total hours.<br>
+    Tip: copy a list of tasks from Excel (task name, then hours in the next column) and paste it into any task box to add them all at once.</p>
     <div class="modal-foot"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn primary">Save project</button></div></form>`, true);
 }
 function saveProject(ev, id) {
@@ -929,10 +1082,10 @@ async function savePin(ev) {
 /* ============================================================
    Actions: timesheets
    ============================================================ */
-function openTsModal(id) {
+function openTsModal(id, preset) {
   const u = cu(), admin = isAdmin();
   const active = db.projects.filter(p => p.status === 'active');
-  const t = id ? db.timesheets.find(x => x.id === id) : { id: '', employeeId: u.id, projectId: (active[0] || {}).id || '', taskId: '', date: ymd(new Date()), hours: '', notes: '' };
+  const t = id ? db.timesheets.find(x => x.id === id) : preset || { id: '', employeeId: u.id, projectId: (active[0] || {}).id || '', taskId: '', date: ymd(new Date()), hours: '', notes: '' };
   const projects = db.projects.filter(p => p.status === 'active' || p.id === t.projectId);
   if (!projects.length) { toast('There are no active projects to log time against yet.', 'err'); return; }
   openModal(id ? 'Edit time entry' : 'Submit timesheet', `<form onsubmit="saveTs(event,'${t.id}')">
