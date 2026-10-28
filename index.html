@@ -16,6 +16,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 :root{
   --side:#0f1424; --side-2:#1b2236; --side-ink:#cbd2e1;
@@ -246,6 +247,22 @@ table.pl{border-collapse:separate;border-spacing:0;width:max-content;min-width:1
 .stat small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
 .stat b.pos{color:var(--green)}.stat b.neg{color:var(--red)}
 
+/* Clients and invoices */
+.code-tag{font-family:ui-monospace,Consolas,monospace;font-size:12px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:6px;padding:2px 7px;white-space:nowrap}
+.tabs{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;margin-bottom:18px}
+.tabs button{all:unset;cursor:pointer;padding:10px 18px;font-weight:600;color:var(--muted);display:inline-flex;gap:8px;align-items:center}
+.tabs button.on{background:var(--brand);color:#fff}
+.tabs button:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+.irow{display:grid;grid-template-columns:minmax(150px,2fr) minmax(130px,2fr) 70px 105px 100px 100px 30px;gap:6px;align-items:center;margin-bottom:6px}
+.irow .in{padding:7px 9px}
+.irow .iamt{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.ihead{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.inv-bottom{display:grid;grid-template-columns:1fr 300px;gap:18px;margin-top:14px}
+.inv-tot{background:#f8f9fc;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13.5px}
+.inv-tot div{display:flex;justify-content:space-between;padding:4px 0}
+.inv-tot div.total{border-top:2px solid var(--ink);margin-top:6px;padding-top:8px;font-weight:700;font-size:15px}
+@media (max-width:860px){.irow{grid-template-columns:1fr 1fr;}.irow .iamt{text-align:left}.inv-bottom{grid-template-columns:1fr}.ihead{display:none}}
+
 /* Toast */
 #toasts{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:8px;z-index:60}
 .toast{background:var(--side);color:#fff;padding:12px 16px;border-radius:10px;max-width:380px;box-shadow:0 10px 30px rgba(0,0,0,.2);font-size:13.5px;display:flex;gap:10px;align-items:flex-start}
@@ -354,7 +371,15 @@ const LEGACY_PIN = '1234';      // old PIN default, accepted once so people can 
 const PLAN_WEEKS = 8;
 const EXP_CATS = ['Contractors & salaries', 'Software & subscriptions', 'Office & rent', 'Equipment', 'Marketing & advertising', 'Travel', 'Professional fees', 'Bank & payment fees', 'Tax', 'Insurance', 'Other expense'];
 const INC_CATS = ['Client payment', 'Consulting', 'Project milestone', 'Grant or refund', 'Other income'];
-const OLD_BACKEND = 'Your Google Apps Script backend is an older version. Paste the new Code.gs into Apps Script, then Deploy > Manage deployments > Edit > New version.';
+const INV_PREFIX = 'AES-INV-', CLIENT_PREFIX = 'AES-CL-';
+const CUR_SYM = { AUD: '$', USD: 'US$', EGP: 'E\u00a3', SAR: 'SAR ' };
+/* Shown on PDF invoices (the Word invoice uses your template file, invoice-template.docx) */
+const INVOICE_FROM = { name: 'Artificial Engineering Solutions', abn: '21 496 467 021', lines: ['Brisbane, Queensland, 4000', 'Australia'],
+  email: 'sales@ai-es.com.au', web: 'www.ai-es.com.au',
+  bank: [['Account name', 'Artificial Engineering Solutions'], ['Bank', 'Commonwealth Bank of Australia'], ['BSB', '067-873'], ['Account no.', '2647 4478'], ['SWIFT / BIC', 'CTBAAU2S']],
+  terms2: 'International clients: pay in {CUR} via the SWIFT code shown; bank fees are the payer\u2019s responsibility.',
+  terms3: 'SketchFlow licences are subject to the End User Licence Agreement.' };
+const OLD_BACKEND = 'Your Google Apps Script backend is an older version. Paste the new Code.gs (version 3) into Apps Script, then Deploy > Manage deployments > Edit > New version.';
 const SEED_PHOTOS = {
   'emp-elnasser': 'data:image/jpeg;base64,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',
   'emp-mustafa': 'data:image/jpeg;base64,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',
@@ -440,14 +465,14 @@ function seedDb() {
       { id: 'prj-iqra', name: 'IQRA Island', client, type: 'standard', status: 'active', budget: 120, tasks: [
         t('tk-iq-1', 'Testing the Quran Tahfeez', 50), t('tk-iq-2', 'Testing the Arabic letters teaching', 50), t('tk-iq-3', 'Upgrading the Parental Control', 20)] }
     ],
-    timesheets: [], plans: [], ledger: [],
+    timesheets: [], plans: [], ledger: [], clients: [], invoices: [],
     settings: defaultSettings()
   };
 }
 function normaliseDb(d) {
   d = d || seedDb();
   d.employees = d.employees || []; d.projects = d.projects || []; d.timesheets = d.timesheets || [];
-  d.plans = d.plans || []; d.ledger = d.ledger || [];
+  d.plans = d.plans || []; d.ledger = d.ledger || []; d.clients = d.clients || []; d.invoices = d.invoices || [];
   d.projects.forEach(p => { p.resources = p.resources || []; p.tasks = p.tasks || []; });
   d.settings = { ...defaultSettings(), ...(d.settings || {}) };
   d.settings.fxToAUD = { ...defaultSettings().fxToAUD, ...(d.settings.fxToAUD || {}) };
@@ -471,7 +496,8 @@ let queue = store.get(K.q, []);
 let session = store.get(K.sess, null);
 const ui = { view: 'dashboard', week: mondayOf(new Date()), tsEmp: 'all', tsStatus: 'all', sync: cfg.apiUrl ? 'ok' : 'local', syncMsg: '', modalOpen: false, draftPhoto: null,
   plStart: sundayOf(new Date()), plOpen: {}, plMine: false,
-  acMonth: new Date(new Date().getFullYear(), new Date().getMonth(), 1), acScope: 'month', acType: 'all', lockModal: false };
+  acMonth: new Date(new Date().getFullYear(), new Date().getMonth(), 1), acScope: 'month', acType: 'all', lockModal: false,
+  acTab: 'ledger', invStatus: 'all', invClient: 'all' };
 
 const saveLocal = () => store.set(K.db, db);
 const cu = () => session && db.employees.find(e => e.id === session.id);
@@ -532,14 +558,14 @@ async function flushQueue() {
     ui.sync = 'error'; ui.syncMsg = e.message; setTimeout(flushQueue, 20000);
   } finally { flushing = false; updateSync(); }
 }
-const COLLECTIONS = ['employees', 'projects', 'timesheets', 'plans', 'ledger'];
+const COLLECTIONS = ['employees', 'projects', 'timesheets', 'plans', 'ledger', 'clients', 'invoices'];
 async function pullRemote() {
   if (!cfg.apiUrl || queue.length || !session || !session.token) return;
   const j = await api('load');
   applyRecords(j.records);
 }
 function applyRecords(records) {
-  const d = { employees: [], projects: [], timesheets: [], plans: [], ledger: [], settings: null };
+  const d = { employees: [], projects: [], timesheets: [], plans: [], ledger: [], clients: [], invoices: [], settings: null };
   records.forEach(r => { if (r.c === 'settings') d.settings = r.data; else if (d[r.c]) d[r.c].push(r.data); });
   db = normaliseDb(d); saveLocal();
   if (session && !cu()) logout(true);
@@ -581,7 +607,7 @@ async function connect(url, key) {
   cfg = { apiUrl: url.trim(), apiKey: key.trim() };
   try {
     const p = await api('ping');
-    if (!p.version || p.version < 2) throw new Error(OLD_BACKEND);
+    if (!p.version || p.version < 3) throw new Error(OLD_BACKEND);
     if (p.empty) await bootstrapUpload();
     store.set(K.cfg, cfg);
     queue = []; store.set(K.q, queue);
@@ -619,11 +645,12 @@ const NAV = [
   ['planner', 'Resource planner', 'fa-calendar-week', false],
   ['timesheets', 'Timesheets', 'fa-clock-rotate-left', false],
   ['payroll', 'Payroll reports', 'fa-file-invoice-dollar', true],
+  ['clients', 'Clients', 'fa-address-book', 'acct'],
   ['accounting', 'Accounting', 'fa-scale-balanced', 'acct'],
   ['settings', 'Settings', 'fa-gear', true]
 ];
 const TITLES = { dashboard: 'Dashboard', projects: 'Project directory', team: 'Team roster & profiles', planner: 'Resource planner', timesheets: 'Timesheets',
-  payroll: 'Payroll reports', accounting: 'Accounting', settings: 'Settings' };
+  payroll: 'Payroll reports', clients: 'Clients', accounting: 'Accounting', settings: 'Settings' };
 const navAllowed = n => n[3] === false || (n[3] === true && isAdmin()) || (n[3] === 'acct' && canAcct());
 
 function render() {
@@ -713,7 +740,7 @@ async function resetDevice() {
 function logout(silent) {
   if (cfg.apiUrl && session && session.token) {
     api('logout').catch(() => {});
-    db = normaliseDb({ employees: [], projects: [], timesheets: [], plans: [], ledger: [], settings: db.settings }); saveLocal();
+    db = normaliseDb({ employees: [], projects: [], timesheets: [], plans: [], ledger: [], clients: [], invoices: [], settings: db.settings }); saveLocal();
   }
   session = null; store.set(K.sess, null); ui.lockModal = false; closeModal(); render();
   if (silent === true) toast('Your account is no longer on the team list, so you were signed out.', 'err');
@@ -1173,6 +1200,11 @@ function ledgerReport(range) {
 }
 VIEWS.accounting = function () {
   if (!canAcct()) return '<div class="card empty"><b>No access</b>Ask an administrator to give you accounting access.</div>';
+  const tabs = `<div class="tabs" role="tablist"><button role="tab" aria-selected="${ui.acTab === 'ledger'}" class="${ui.acTab === 'ledger' ? 'on' : ''}" onclick="ui.acTab='ledger';render()"><i class="fa-solid fa-scale-balanced"></i>Income & expenses</button>
+    <button role="tab" aria-selected="${ui.acTab === 'invoices'}" class="${ui.acTab === 'invoices' ? 'on' : ''}" onclick="ui.acTab='invoices';render()"><i class="fa-solid fa-file-invoice"></i>Invoices</button></div>`;
+  return tabs + (ui.acTab === 'invoices' ? invoicesView() : ledgerView());
+};
+function ledgerView() {
   const R = ledgerReport(acRange());
   const list = ui.acType === 'all' ? R.entries : R.entries.filter(x => x.type === ui.acType);
   ui.acList = list;
@@ -1205,7 +1237,7 @@ VIEWS.accounting = function () {
     ${R.currencies.length ? `<div class="cur-cards">${cards}<div class="card stat"><span>Net total in AUD (approx.)</span><b class="${R.audNet < 0 ? 'neg' : 'pos'}">${money(R.audNet, 'AUD')}</b><small>Uses the exchange rates in Settings</small></div></div>` : ''}
     <div class="card tbl-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Client / supplier</th><th>Description</th><th>Reference</th><th class="num">Amount</th><th class="actions"></th></tr></thead>
       <tbody>${rows || `<tr><td colspan="8"><div class="empty"><b>Nothing recorded for ${esc(R.label)}</b>Use Add income or Add expense to record an entry.</div></td></tr>`}</tbody></table></div>`;
-};
+}
 function acShift(n) {
   const m = ui.acMonth, now = new Date();
   if (n === 0) ui.acMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -1401,6 +1433,418 @@ async function emailLedger() {
 }
 
 /* ============================================================
+   Clients (accounting users) — each gets a code, e.g. AES-CL-0001
+   ============================================================ */
+const seqNo = (list, field) => list.reduce((m, x) => Math.max(m, +((String(x[field] || '').match(/(\d+)\s*$/) || [0, 0])[1])), 0) + 1;
+const nextClientCode = () => CLIENT_PREFIX + String(seqNo(db.clients, 'code')).padStart(4, '0');
+const nextInvNo = () => INV_PREFIX + String(seqNo(db.invoices, 'number')).padStart(4, '0');
+const client = id => db.clients.find(c => c.id === id);
+const cityLine = c => [c.city, c.state, c.postcode].filter(Boolean).join(', ');
+const TERMS = [[0, 'Due on receipt'], [7, 'Net 7 days'], [14, 'Net 14 days'], [30, 'Net 30 days'], [-1, 'Custom due date']];
+function clientOutstanding(id) {
+  const out = {};
+  db.invoices.filter(i => i.clientId === id && ['sent', 'overdue'].includes(invStatus(i))).forEach(i => { out[i.currency] = round2((out[i.currency] || 0) + invTotals(i).total); });
+  return out;
+}
+VIEWS.clients = function () {
+  if (!canAcct()) return '<div class="card empty"><b>No access</b>Ask an administrator to give you accounting access.</div>';
+  const list = db.clients.slice().sort((a, b) => String(a.code).localeCompare(String(b.code)));
+  const rows = list.map(c => {
+    const invs = db.invoices.filter(i => i.clientId === c.id), out = clientOutstanding(c.id);
+    const search = [c.code, c.name, c.contact, c.email, c.city, c.country].join(' ').toLowerCase();
+    return `<tr data-search="${esc(search)}"><td><span class="code-tag">${esc(c.code)}</span></td>
+      <td><b>${esc(c.name)}</b>${c.contact ? `<span class="subline">Attn: ${esc(c.contact)}</span>` : ''}</td>
+      <td>${copyable(c.email, 'Email')}${c.phone ? `<span class="subline">${copyable(c.phone, 'Phone number')}</span>` : ''}</td>
+      <td>${esc(cityLine(c) || '')}${c.country ? `<span class="subline">${esc(c.country)}</span>` : ''}</td>
+      <td>${esc(c.currency || 'AUD')}<span class="subline">${esc((TERMS.find(t => t[0] === +(c.termsDays || 0)) || TERMS[0])[1])}</span></td>
+      <td>${invs.length} invoice${invs.length === 1 ? '' : 's'}${Object.keys(out).length ? `<span class="subline" style="color:var(--amber)">Owing ${Object.entries(out).map(([k, v]) => money(v, k)).join(', ')}</span>` : ''}</td>
+      <td class="actions"><button class="icon-btn" onclick="ui.acTab='invoices';go('accounting');openInvoiceModal(null,'${c.id}')" title="New invoice" aria-label="New invoice for ${esc(c.name)}"><i class="fa-solid fa-file-invoice"></i></button>
+        <button class="icon-btn" onclick="openClientModal('${c.id}')" title="Edit" aria-label="Edit ${esc(c.name)}"><i class="fa-regular fa-pen-to-square"></i></button>
+        <button class="icon-btn del" onclick="deleteClient('${c.id}')" title="Delete" aria-label="Delete ${esc(c.name)}"><i class="fa-regular fa-trash-can"></i></button></td></tr>`;
+  }).join('');
+  return `<div class="card head-card"><div><h2>Clients</h2><p>Every client gets a code (for example ${esc(CLIENT_PREFIX)}0001). Their details fill in automatically when you draft an invoice.</p></div>
+      <button class="btn ghost" onclick="copyClientsTable()" ${list.length ? '' : 'disabled'}><i class="fa-regular fa-copy"></i>Copy table</button>
+      <button class="btn primary" onclick="openClientModal()"><i class="fa-solid fa-plus"></i>New client</button></div>
+    ${list.length ? `<div class="toolbar"><input class="in" style="max-width:320px" placeholder="Search by code, name, email or city" oninput="filterRows(this.value)" aria-label="Search clients"></div>` : ''}
+    <div class="card tbl-wrap"><table><thead><tr><th>Code</th><th>Client</th><th>Email / phone</th><th>Location</th><th>Currency & terms</th><th>Invoices</th><th class="actions"></th></tr></thead>
+      <tbody id="clientRows">${rows || '<tr><td colspan="7"><div class="empty"><b>No clients yet</b>Add your first client to start drafting invoices.</div></td></tr>'}</tbody></table></div>`;
+};
+function filterRows(q) {
+  q = norm(q);
+  document.querySelectorAll('#clientRows tr[data-search]').forEach(tr => { tr.hidden = !!q && !tr.dataset.search.includes(q); });
+}
+function openClientModal(id, after) {
+  if (!canAcct()) return;
+  const c = id ? client(id) : { id: '', code: nextClientCode(), name: '', contact: '', email: '', phone: '', street: '', city: '', state: '', postcode: '', country: 'Australia', taxId: '', currency: 'AUD', termsDays: 0, notes: '' };
+  ui.clientAfter = after || null;
+  openModal(id ? 'Edit client' : 'New client', `<form onsubmit="saveClient(event,'${c.id}')">
+    <div class="grid3"><div class="field"><label class="fl" for="cCode">Client code</label><input class="in" id="cCode" required value="${esc(c.code)}"></div>
+      <div class="field" style="grid-column:span 2"><label class="fl" for="cName">Company name</label><input class="in" id="cName" required value="${esc(c.name)}"></div></div>
+    <div class="grid3"><div class="field"><label class="fl" for="cContact">Contact person (Attn)</label><input class="in" id="cContact" value="${esc(c.contact)}"></div>
+      <div class="field"><label class="fl" for="cEmail">Email</label><input class="in" id="cEmail" type="email" value="${esc(c.email)}"></div>
+      <div class="field"><label class="fl" for="cPhone">Phone</label><input class="in" id="cPhone" value="${esc(c.phone)}"></div></div>
+    <div class="field"><label class="fl" for="cStreet">Street address</label><input class="in" id="cStreet" value="${esc(c.street)}"></div>
+    <div class="grid3"><div class="field"><label class="fl" for="cCity">City</label><input class="in" id="cCity" value="${esc(c.city)}"></div>
+      <div class="field"><label class="fl" for="cState">State / province</label><input class="in" id="cState" value="${esc(c.state)}"></div>
+      <div class="field"><label class="fl" for="cPost">Postcode</label><input class="in" id="cPost" value="${esc(c.postcode)}"></div></div>
+    <div class="grid3"><div class="field"><label class="fl" for="cCountry">Country</label><input class="in" id="cCountry" value="${esc(c.country)}"></div>
+      <div class="field"><label class="fl" for="cTax">Tax ID / ABN</label><input class="in" id="cTax" value="${esc(c.taxId)}"></div>
+      <div class="field"><label class="fl" for="cCur">Invoice currency</label><select class="in" id="cCur">${CURRENCIES.map(k => `<option ${c.currency === k ? 'selected' : ''}>${k}</option>`).join('')}</select></div></div>
+    <div class="grid2"><div class="field"><label class="fl" for="cTerms">Usual payment terms</label><select class="in" id="cTerms">${TERMS.filter(t => t[0] >= 0).map(([d, l]) => `<option value="${d}" ${+(c.termsDays || 0) === d ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <div class="field"><label class="fl" for="cNotes">Internal notes</label><input class="in" id="cNotes" value="${esc(c.notes)}" placeholder="Not shown on invoices"></div></div>
+    <div class="modal-foot"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn primary">${id ? 'Save client' : 'Add client'}</button></div></form>`, true);
+}
+function saveClient(ev, id) {
+  ev.preventDefault();
+  const code = $('#cCode').value.trim().toUpperCase();
+  if (db.clients.some(x => x.id !== id && String(x.code).toUpperCase() === code)) { toast('Another client already uses the code ' + code + '.', 'err'); return; }
+  const old = id ? client(id) : {};
+  const rec = { ...old, id: id || 'cl-' + uid(), code, name: $('#cName').value.trim(), contact: $('#cContact').value.trim(), email: $('#cEmail').value.trim(),
+    phone: $('#cPhone').value.trim(), street: $('#cStreet').value.trim(), city: $('#cCity').value.trim(), state: $('#cState').value.trim(), postcode: $('#cPost').value.trim(),
+    country: $('#cCountry').value.trim(), taxId: $('#cTax').value.trim(), currency: $('#cCur').value, termsDays: +$('#cTerms').value, notes: $('#cNotes').value.trim(),
+    createdAt: old.createdAt || Date.now() };
+  saveRec('clients', rec);
+  const after = ui.clientAfter; ui.clientAfter = null;
+  closeModal(); render();
+  toast(id ? 'Client saved.' : `${rec.name} added as ${rec.code}.`, 'ok');
+  if (after) after(rec);
+}
+async function deleteClient(id) {
+  const c = client(id), n = db.invoices.filter(i => i.clientId === id).length;
+  if (n) { toast(`${c.name} has ${n} invoice${n === 1 ? '' : 's'}, so it can\u2019t be deleted. Delete or reassign the invoices first.`, 'err'); return; }
+  if (!await ask(`Delete client ${c.code} ${c.name}?`, 'Delete', true)) return;
+  removeRec('clients', id); render();
+}
+function copyClientsTable() {
+  copyText(tsv([['Code', 'Company', 'Contact', 'Email', 'Phone', 'Street', 'City', 'State', 'Postcode', 'Country', 'Tax ID / ABN', 'Currency'],
+    ...db.clients.map(c => [c.code, c.name, c.contact, c.email, c.phone, c.street, c.city, c.state, c.postcode, c.country, c.taxId, c.currency])]), 'Clients table');
+}
+
+/* ============================================================
+   Invoices — drafted from your Word template (invoice-template.docx)
+   ============================================================ */
+const num2 = n => (+n || 0).toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const qtyTxt = q => String(round2(q));
+const isAus = c => /^(au|aus|australia)$/i.test(String((c && c.country) || '').trim());
+function invTotals(inv) {
+  const lines = (inv.items || []).map(it => round2((+it.qty || 0) * (+it.unit || 0)));
+  const sub = round2(lines.reduce((a, b) => a + b, 0));
+  const disc = Math.min(round2(+inv.discount || 0), sub);
+  const gstBase = (inv.items || []).reduce((a, it, k) => a + (it.tax === 'GST' ? lines[k] : 0), 0);
+  const gst = round2(sub ? gstBase * (1 - disc / sub) * 0.1 : 0);
+  const paid = round2(+inv.paid || 0);
+  return { lines, sub, disc, gst, paid, total: round2(sub - disc + gst - paid) };
+}
+function invStatus(inv) {
+  const s = inv.status || 'draft';
+  if (s === 'sent' && inv.dueDate && inv.dueDate < ymd(new Date())) return 'overdue';
+  return s;
+}
+const INV_BADGE = { draft: ['Draft', 'b-grey'], sent: ['Sent', 'b-blue'], overdue: ['Overdue', 'b-red'], paid: ['Paid', 'b-green'], void: ['Void', 'b-grey'] };
+const dueText = inv => +inv.termsDays === 0 ? 'Upon receipt' : dmy(inv.dueDate);
+const termsText = inv => (TERMS.find(t => t[0] === +inv.termsDays) || [0, 'Due by ' + dmy(inv.dueDate)])[1].replace('Custom due date', 'Due by ' + dmy(inv.dueDate));
+const payTermsText = inv => +inv.termsDays === 0 ? 'Payment is due immediately upon receipt of this invoice.'
+  : `Payment is due by ${dmy(inv.dueDate)}${+inv.termsDays > 0 ? ` (${inv.termsDays} days from the invoice date)` : ''}.`;
+function invoicesView() {
+  const today = ymd(new Date());
+  let list = db.invoices.slice().sort((a, b) => String(b.number).localeCompare(String(a.number), undefined, { numeric: true }));
+  if (ui.invStatus !== 'all') list = list.filter(i => invStatus(i) === ui.invStatus);
+  if (ui.invClient !== 'all') list = list.filter(i => i.clientId === ui.invClient);
+  const owing = {}, overdue = db.invoices.filter(i => invStatus(i) === 'overdue');
+  db.invoices.filter(i => ['sent', 'overdue'].includes(invStatus(i))).forEach(i => { owing[i.currency] = round2((owing[i.currency] || 0) + invTotals(i).total); });
+  const rows = list.map(inv => {
+    const t = invTotals(inv), st = invStatus(inv), c = client(inv.clientId), b = INV_BADGE[st];
+    return `<tr><td><b class="nowrap">${esc(inv.number)}</b>${inv.project ? `<span class="subline">${esc(inv.project)}</span>` : ''}</td>
+      <td>${esc((inv.billTo || {}).name || (c && c.name) || '')}<span class="subline">${c ? `<span class="code-tag">${esc(c.code)}</span>` : ''}</span></td>
+      <td class="nowrap">${niceDate(inv.issueDate)}</td><td class="nowrap">${+inv.termsDays === 0 ? 'On receipt' : niceDate(inv.dueDate)}</td>
+      <td class="num"><b>${money(t.total, inv.currency)}</b>${t.gst ? `<span class="subline">incl. GST ${num2(t.gst)}</span>` : ''}</td>
+      <td><span class="badge ${b[1]}">${b[0]}</span>${st === 'paid' && inv.paidAt ? `<span class="subline">${niceDate(inv.paidAt)}</span>` : ''}</td>
+      <td class="actions">
+        <button class="icon-btn" onclick="downloadInvoiceDocx('${inv.id}')" title="Download Word (your template)" aria-label="Download Word"><i class="fa-regular fa-file-word"></i></button>
+        <button class="icon-btn" onclick="downloadInvoicePdf('${inv.id}')" title="Download PDF" aria-label="Download PDF"><i class="fa-regular fa-file-pdf"></i></button>
+        ${st === 'draft' ? `<button class="icon-btn" onclick="setInvStatus('${inv.id}','sent')" title="Mark as sent" aria-label="Mark as sent"><i class="fa-regular fa-paper-plane"></i></button>` : ''}
+        ${st === 'sent' || st === 'overdue' ? `<button class="icon-btn" onclick="markInvPaid('${inv.id}')" title="Mark as paid (records the income)" aria-label="Mark as paid"><i class="fa-solid fa-sack-dollar"></i></button>` : ''}
+        ${st === 'paid' ? `<button class="icon-btn" onclick="markInvUnpaid('${inv.id}')" title="Undo paid" aria-label="Undo paid"><i class="fa-solid fa-rotate-left"></i></button>` : ''}
+        <button class="icon-btn" onclick="openInvoiceModal('${inv.id}')" title="Edit" aria-label="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+        <button class="icon-btn" onclick="duplicateInvoice('${inv.id}')" title="Duplicate" aria-label="Duplicate"><i class="fa-regular fa-copy"></i></button>
+        <button class="icon-btn del" onclick="deleteInvoice('${inv.id}')" title="Delete" aria-label="Delete"><i class="fa-regular fa-trash-can"></i></button></td></tr>`;
+  }).join('');
+  return `<div class="card head-card"><div><h2>Invoices</h2><p>Pick a client and add items: the invoice is drafted in your own Word template (and as a PDF). Marking an invoice paid records the income automatically.</p></div>
+      <button class="btn ghost" onclick="go('clients')"><i class="fa-solid fa-address-book"></i>Clients</button>
+      <button class="btn primary" onclick="openInvoiceModal()"><i class="fa-solid fa-plus"></i>New invoice</button></div>
+    <div class="cur-cards">
+      ${Object.entries(owing).map(([c, v]) => `<div class="card stat"><span>Owing to you (${c})</span><b>${money(v, c)}</b><small>Sent and overdue invoices</small></div>`).join('') || '<div class="card stat"><span>Owing to you</span><b>0.00</b><small>No unpaid invoices</small></div>'}
+      <div class="card stat"><span>Overdue</span><b class="${overdue.length ? 'neg' : ''}">${overdue.length}</b><small>Past their due date</small></div>
+      <div class="card stat"><span>Drafts</span><b>${db.invoices.filter(i => invStatus(i) === 'draft').length}</b><small>Not sent yet</small></div></div>
+    <div class="toolbar"><select class="in inline" onchange="ui.invStatus=this.value;render()" aria-label="Filter by status">
+        ${[['all', 'All statuses'], ['draft', 'Draft'], ['sent', 'Sent'], ['overdue', 'Overdue'], ['paid', 'Paid'], ['void', 'Void']].map(([v, l]) => `<option value="${v}" ${ui.invStatus === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      <select class="in inline" onchange="ui.invClient=this.value;render()" aria-label="Filter by client"><option value="all">All clients</option>
+        ${db.clients.map(c => `<option value="${c.id}" ${ui.invClient === c.id ? 'selected' : ''}>${esc(c.code)} ${esc(c.name)}</option>`).join('')}</select></div>
+    <div class="card tbl-wrap"><table><thead><tr><th>Invoice</th><th>Client</th><th>Issued</th><th>Due</th><th class="num">Total due</th><th>Status</th><th class="actions"></th></tr></thead>
+      <tbody>${rows || `<tr><td colspan="7"><div class="empty"><b>${db.invoices.length ? 'No invoices match these filters' : 'No invoices yet'}</b>${db.clients.length ? 'Use New invoice to draft one.' : 'Add a client first, then draft an invoice.'}</div></td></tr>`}</tbody></table></div>`;
+}
+function invItemRow(it = {}) {
+  return `<div class="irow"><input class="in" name="iDesc" placeholder="Item or service" value="${esc(it.desc || '')}" aria-label="Item or service">
+    <input class="in" name="iDetail" placeholder="Detail line (optional)" value="${esc(it.detail || '')}" aria-label="Detail line">
+    <input class="in" name="iQty" type="number" min="0" step="0.01" value="${esc(it.qty ?? 1)}" oninput="invCalc()" aria-label="Quantity">
+    <input class="in" name="iUnit" type="number" step="0.01" value="${esc(it.unit ?? '')}" placeholder="0.00" oninput="invCalc()" aria-label="Unit price">
+    <select class="in" name="iTax" onchange="invCalc()" aria-label="Tax"><option value="GST" ${it.tax !== 'GST-free' ? 'selected' : ''}>GST 10%</option><option value="GST-free" ${it.tax === 'GST-free' ? 'selected' : ''}>GST-free</option></select>
+    <span class="iamt">0.00</span>
+    <button type="button" class="icon-btn del" onclick="this.parentElement.remove();invCalc()" aria-label="Remove item"><i class="fa-solid fa-xmark"></i></button></div>`;
+}
+function openInvoiceModal(id, clientId, preset) {
+  if (!canAcct()) return;
+  if (!db.clients.length && !id) { toast('Add your first client, then draft the invoice.'); openClientModal(null, c => openInvoiceModal(null, c.id)); return; }
+  const c0 = client(clientId) || (preset && client(preset.clientId));
+  const inv = id ? JSON.parse(JSON.stringify(db.invoices.find(i => i.id === id))) : preset || {
+    id: '', number: nextInvNo(), clientId: c0 ? c0.id : '', issueDate: ymd(new Date()), termsDays: c0 ? +(c0.termsDays || 0) : 0, dueDate: ymd(new Date()),
+    po: '', project: '', currency: c0 ? c0.currency || 'AUD' : 'AUD', items: [{ desc: '', detail: '', qty: 1, unit: '', tax: c0 && !isAus(c0) ? 'GST-free' : 'GST' }],
+    discount: 0, paid: 0, notes: '', status: 'draft' };
+  const projects = db.projects.map(p => `<option value="${esc(p.name)}">`).join('');
+  openModal(id ? 'Edit invoice ' + inv.number : 'New invoice', `<form id="invForm" onsubmit="saveInvoice(event,'${inv.id}')">
+    <div class="grid3"><div class="field" style="grid-column:span 2"><label class="fl" for="ivClient">Client</label>
+        <select class="in" id="ivClient" required onchange="invClientChange()"><option value="">Choose a client…</option>
+        ${db.clients.map(c => `<option value="${c.id}" ${inv.clientId === c.id ? 'selected' : ''}>${esc(c.code)} · ${esc(c.name)}</option>`).join('')}</select>
+        <div class="hint" id="ivClientInfo"></div></div>
+      <div class="field"><label class="fl" for="ivNo">Invoice number</label><input class="in" id="ivNo" required value="${esc(inv.number)}"></div></div>
+    <div class="grid3"><div class="field"><label class="fl" for="ivDate">Issue date</label><input class="in" id="ivDate" type="date" required value="${esc(inv.issueDate)}" onchange="invDueUpdate()"></div>
+      <div class="field"><label class="fl" for="ivTerms">Payment terms</label><select class="in" id="ivTerms" onchange="invDueUpdate()">
+        ${TERMS.map(([d, l]) => `<option value="${d}" ${+inv.termsDays === d ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <div class="field"><label class="fl" for="ivDue">Due date</label><input class="in" id="ivDue" type="date" value="${esc(inv.dueDate)}"></div></div>
+    <div class="grid3"><div class="field"><label class="fl" for="ivPo">PO / reference (optional)</label><input class="in" id="ivPo" value="${esc(inv.po)}"></div>
+      <div class="field"><label class="fl" for="ivProject">Project (optional)</label><input class="in" id="ivProject" list="ivProjects" value="${esc(inv.project)}" autocomplete="off"><datalist id="ivProjects">${projects}</datalist></div>
+      <div class="field"><label class="fl" for="ivCur">Currency</label><select class="in" id="ivCur" onchange="invCalc()">${CURRENCIES.map(k => `<option ${inv.currency === k ? 'selected' : ''}>${k}</option>`).join('')}</select></div></div>
+    <label class="fl">Items</label>
+    <div class="irow ihead"><span>Item or service</span><span>Detail line</span><span>Qty</span><span>Unit price</span><span>Tax</span><span style="text-align:right">Amount</span><span></span></div>
+    <div id="ivItems">${(inv.items.length ? inv.items : [{}]).map(invItemRow).join('')}</div>
+    <button type="button" class="btn ghost sm" onclick="invAddItem()"><i class="fa-solid fa-plus"></i>Add item</button>
+    <p class="hint">GST (10%) applies to Australian clients; services to overseas clients are usually GST-free. Check with your accountant if unsure.</p>
+    <div class="inv-bottom"><div>
+        <div class="grid2"><div class="field"><label class="fl" for="ivDisc">Discount</label><input class="in" id="ivDisc" type="number" min="0" step="0.01" value="${esc(inv.discount || '')}" placeholder="0.00" oninput="invCalc()"></div>
+          <div class="field"><label class="fl" for="ivPaid">Amount already paid</label><input class="in" id="ivPaid" type="number" min="0" step="0.01" value="${esc(inv.paid || '')}" placeholder="0.00" oninput="invCalc()"></div></div>
+        <div class="field"><label class="fl" for="ivNotes">Notes for the client (optional)</label><textarea class="in" id="ivNotes" rows="3" placeholder="e.g. licence activation instructions, or the milestone this invoice covers">${esc(inv.notes)}</textarea></div></div>
+      <div class="inv-tot" id="ivTot" aria-live="polite"></div></div>
+    <div class="modal-foot"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button type="button" class="btn ghost" onclick="invSaveAnd('pdf','${inv.id}')"><i class="fa-regular fa-file-pdf"></i>Save + PDF</button>
+      <button type="button" class="btn ghost" onclick="invSaveAnd('docx','${inv.id}')"><i class="fa-regular fa-file-word"></i>Save + Word</button>
+      <button class="btn primary">Save invoice</button></div></form>`, true);
+  $('.modal').style.width = 'min(980px,100%)';
+  invClientInfo(); invDueUpdate(true); invCalc();
+}
+function invAddItem() {
+  const c = client($('#ivClient').value);
+  $('#ivItems').insertAdjacentHTML('beforeend', invItemRow({ qty: 1, tax: c && !isAus(c) ? 'GST-free' : 'GST' }));
+  invCalc();
+  const rows = document.querySelectorAll('#ivItems .irow'); rows[rows.length - 1].querySelector('[name=iDesc]').focus();
+}
+function invClientInfo() {
+  const c = client($('#ivClient').value);
+  $('#ivClientInfo').textContent = c ? [c.contact && 'Attn: ' + c.contact, c.email, cityLine(c), c.country].filter(Boolean).join(' · ') : '';
+}
+function invClientChange() {
+  const c = client($('#ivClient').value); invClientInfo();
+  if (!c) return;
+  $('#ivCur').value = c.currency || 'AUD';
+  $('#ivTerms').value = String(+(c.termsDays || 0));
+  document.querySelectorAll('#ivItems [name=iTax]').forEach(s => { s.value = isAus(c) ? 'GST' : 'GST-free'; });
+  invDueUpdate(); invCalc();
+}
+function invDueUpdate(initial) {
+  const d = +$('#ivTerms').value, due = $('#ivDue');
+  due.disabled = d !== -1;
+  if (d >= 0 && !(initial && d === -1)) due.value = ymd(addDays(parseYmd($('#ivDate').value || ymd(new Date())), d));
+}
+function invRead() {
+  return {
+    clientId: $('#ivClient').value, number: $('#ivNo').value.trim(), issueDate: $('#ivDate').value, termsDays: +$('#ivTerms').value,
+    dueDate: $('#ivDue').value || $('#ivDate').value, po: $('#ivPo').value.trim(), project: $('#ivProject').value.trim(), currency: $('#ivCur').value,
+    items: [...document.querySelectorAll('#ivItems .irow')].map(r => ({ desc: r.querySelector('[name=iDesc]').value.trim(), detail: r.querySelector('[name=iDetail]').value.trim(),
+      qty: round2(r.querySelector('[name=iQty]').value), unit: round2(r.querySelector('[name=iUnit]').value), tax: r.querySelector('[name=iTax]').value })).filter(i => i.desc || i.unit),
+    discount: round2($('#ivDisc').value), paid: round2($('#ivPaid').value), notes: $('#ivNotes').value.trim()
+  };
+}
+function invCalc() {
+  const rows = [...document.querySelectorAll('#ivItems .irow')];
+  rows.forEach(r => { r.querySelector('.iamt').textContent = num2(round2((+r.querySelector('[name=iQty]').value || 0) * (+r.querySelector('[name=iUnit]').value || 0))); });
+  const v = invRead(), t = invTotals({ ...v, items: rows.map(r => ({ qty: r.querySelector('[name=iQty]').value, unit: r.querySelector('[name=iUnit]').value, tax: r.querySelector('[name=iTax]').value })) });
+  $('#ivTot').innerHTML = `<div><span>Subtotal</span><b>${num2(t.sub)}</b></div><div><span>Discount</span><b>${num2(t.disc)}</b></div>
+    <div><span>GST (10%)</span><b>${num2(t.gst)}</b></div><div><span>Amount paid</span><b>${num2(t.paid)}</b></div>
+    <div class="total"><span>Total due ${esc(v.currency)}</span><span>${esc(CUR_SYM[v.currency] || '')}${num2(t.total)}</span></div>`;
+}
+function saveInvoice(ev, id, then) {
+  if (ev) ev.preventDefault();
+  const v = invRead(), c = client(v.clientId);
+  if (!c) { toast('Choose a client.', 'err'); return null; }
+  if (!v.items.length || v.items.some(i => !i.desc)) { toast('Each item needs a description. Remove empty rows with the ×.', 'err'); return null; }
+  if (v.termsDays === -1 && !$('#ivDue').value) { toast('Choose the due date.', 'err'); return null; }
+  if (db.invoices.some(i => i.id !== id && String(i.number).toUpperCase() === v.number.toUpperCase())) { toast('Invoice number ' + v.number + ' is already used.', 'err'); return null; }
+  const old = id ? db.invoices.find(i => i.id === id) : {};
+  const rec = { ...old, ...v, id: id || 'inv-' + uid(), status: old.status || 'draft', createdBy: old.createdBy || cu().id, createdAt: old.createdAt || Date.now(), updatedBy: cu().id,
+    billTo: { code: c.code, name: c.name, contact: c.contact, street: c.street, city: c.city, state: c.state, postcode: c.postcode, country: c.country, email: c.email, taxId: c.taxId } };
+  saveRec('invoices', rec);
+  closeModal(); ui.acTab = 'invoices'; render();
+  toast(`${rec.number} saved for ${c.name}: ${money(invTotals(rec).total, rec.currency)}.`, 'ok');
+  if (then === 'docx') downloadInvoiceDocx(rec.id); else if (then === 'pdf') downloadInvoicePdf(rec.id);
+  return rec;
+}
+function invSaveAnd(kind, id) { const f = $('#invForm'); if (!f.reportValidity()) return; saveInvoice(null, id, kind); }
+function setInvStatus(id, status) { const inv = db.invoices.find(i => i.id === id); saveRec('invoices', { ...inv, status, [status + 'At']: ymd(new Date()) }); render(); }
+async function markInvPaid(id) {
+  const inv = db.invoices.find(i => i.id === id), t = invTotals(inv), name = (inv.billTo || {}).name || '';
+  if (!await ask(`Mark ${inv.number} as paid?\n\nThis records ${money(t.total, inv.currency)} from ${name} as income under Income & expenses, dated today.`, 'Mark as paid')) return;
+  let ledgerId = '';
+  if (t.total > 0) {
+    ledgerId = 'led-' + uid();
+    saveRec('ledger', { id: ledgerId, type: 'income', date: ymd(new Date()), amount: t.total, currency: inv.currency, category: 'Client payment', party: name,
+      description: `Invoice ${inv.number}${inv.project ? ' \u2013 ' + inv.project : ''}`, reference: inv.number, invoiceId: inv.id, createdBy: cu().id, createdAt: Date.now() });
+  }
+  saveRec('invoices', { ...inv, status: 'paid', paidAt: ymd(new Date()), ledgerId }); render();
+  toast(`${inv.number} marked paid${ledgerId ? ' and the income recorded' : ''}.`, 'ok');
+}
+async function markInvUnpaid(id) {
+  const inv = db.invoices.find(i => i.id === id);
+  if (!await ask(`Mark ${inv.number} as unpaid again?${inv.ledgerId ? '\n\nThe income entry that was recorded for it will be removed.' : ''}`, 'Mark unpaid', true)) return;
+  if (inv.ledgerId && db.ledger.some(l => l.id === inv.ledgerId)) removeRec('ledger', inv.ledgerId);
+  saveRec('invoices', { ...inv, status: 'sent', paidAt: '', ledgerId: '' }); render();
+}
+function duplicateInvoice(id) {
+  const s = db.invoices.find(i => i.id === id); if (!s) return;
+  const today = ymd(new Date());
+  openInvoiceModal(null, null, { ...JSON.parse(JSON.stringify(s)), id: '', number: nextInvNo(), issueDate: today,
+    dueDate: ymd(addDays(new Date(), Math.max(0, +s.termsDays || 0))), status: 'draft', paid: 0, paidAt: '', sentAt: '', ledgerId: '' });
+}
+async function deleteInvoice(id) {
+  const inv = db.invoices.find(i => i.id === id);
+  if (!await ask(`Delete invoice ${inv.number}?${inv.ledgerId ? '\n\nIts recorded income entry stays under Income & expenses; delete it there if needed.' : ''}`, 'Delete', true)) return;
+  removeRec('invoices', id); render();
+}
+
+/* Word: fills your template, keeping its exact design */
+let invTplBuf = null;
+async function invoiceTemplate() {
+  if (invTplBuf) return invTplBuf;
+  if (!window.JSZip) throw new Error('The Word tool did not load. Check your internet connection and reload the page.');
+  let res = null;
+  try { res = await fetch('invoice-template.docx', { cache: 'no-cache' }); } catch (e) { /* handled below */ }
+  if (!res || !res.ok) throw new Error('invoice-template.docx was not found. Upload it to your GitHub repository next to index.html.');
+  invTplBuf = await res.arrayBuffer();
+  return invTplBuf;
+}
+const xmlEsc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function dropParagraph(x, i) {
+  const s = Math.max(x.lastIndexOf('<w:p>', i), x.lastIndexOf('<w:p ', i)), e = x.indexOf('</w:p>', i) + 6;
+  return x.slice(0, s) + x.slice(e);
+}
+function fillXml(x, vals, optional = []) {
+  Object.entries(vals).forEach(([k, v]) => {
+    const tok = '{{' + k + '}}';
+    if ((v === '' || v == null) && optional.includes(k)) { let i; while ((i = x.indexOf(tok)) >= 0) x = dropParagraph(x, i); }
+    else x = x.split(tok).join(xmlEsc(v));
+  });
+  return x;
+}
+const invFile = inv => `${inv.number}_${String((inv.billTo || {}).name || 'Client').replace(/[^\w]+/g, '-')}`.replace(/-+$/, '');
+async function buildInvoiceDocx(inv) {
+  const zip = await JSZip.loadAsync(await invoiceTemplate());
+  let x = await zip.file('word/document.xml').async('string');
+  const t = invTotals(inv), b = inv.billTo || {};
+  const at = x.indexOf('{{I_DESC}}');
+  if (at < 0) throw new Error('invoice-template.docx is not the CRM\u2019s template version. Upload the invoice-template.docx that came with the CRM.');
+  const rs = x.lastIndexOf('<w:tr>', at), re = x.indexOf('</w:tr>', at) + 7, row = x.slice(rs, re);
+  const rowsXml = inv.items.map((it, k) => fillXml(row, { I_DESC: it.desc, I_DETAIL: it.detail || '', I_QTY: qtyTxt(it.qty), I_UNIT: num2(it.unit),
+    I_TAX: it.tax === 'GST' ? 'GST' : 'GST-free', I_AMT: num2(t.lines[k]) }, ['I_DETAIL'])).join('');
+  x = x.slice(0, rs) + rowsXml + x.slice(re);
+  x = fillXml(x, { INV_NO: inv.number, CLIENT_NAME: b.name, CONTACT: b.contact, STREET: b.street, CITY_LINE: cityLine(b), COUNTRY: b.country, CLIENT_EMAIL: b.email,
+    CLIENT_TAX: b.taxId, ISSUE_DATE: dmy(inv.issueDate), DUE_DATE: dueText(inv), TERMS: termsText(inv), PO: inv.po, PROJECT: inv.project, CURRENCY: inv.currency,
+    NOTES: inv.notes, NOTES_LABEL: inv.notes ? 'Notes' : '', SUBTOTAL: num2(t.sub), DISCOUNT: num2(t.disc), GST: num2(t.gst), PAID: num2(t.paid), TOTAL: (CUR_SYM[inv.currency] || '') + num2(t.total),
+    PAY_TERMS: payTermsText(inv) }, ['CONTACT', 'STREET', 'CITY_LINE', 'COUNTRY', 'CLIENT_EMAIL', 'CLIENT_TAX', 'PO', 'PROJECT', 'NOTES', 'NOTES_LABEL']);
+  zip.file('word/document.xml', x);
+  return zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+}
+async function downloadInvoiceDocx(id) {
+  const inv = db.invoices.find(i => i.id === id);
+  try { saveBlob(await buildInvoiceDocx(inv), invFile(inv) + '.docx'); toast(`${inv.number} downloaded as Word. Open it to review, then save as PDF or send.`, 'ok'); }
+  catch (e) { toast('The Word invoice could not be created: ' + e.message, 'err'); }
+}
+/* PDF: same layout, drawn directly (logo taken from your template) */
+async function invoiceLogo() {
+  try {
+    const zip = await JSZip.loadAsync(await invoiceTemplate());
+    const f = Object.keys(zip.files).find(n => /^word\/media\/.+\.png$/i.test(n));
+    return f ? 'data:image/png;base64,' + await zip.file(f).async('base64') : null;
+  } catch (e) { return null; }
+}
+async function downloadInvoicePdf(id) {
+  if (!window.jspdf) { toast('The PDF tool did not load. Check your internet connection and reload the page.', 'err'); return; }
+  const inv = db.invoices.find(i => i.id === id), logo = await invoiceLogo();
+  makeInvoicePdf(inv, logo).save(invFile(inv) + '.pdf');
+}
+function makeInvoicePdf(inv, logo) {
+  const { jsPDF } = window.jspdf, doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 46, t = invTotals(inv), b = inv.billTo || {}, F = INVOICE_FROM;
+  const NAVY = [14, 26, 43], ORANGE = [200, 76, 18], GREY = [91, 100, 114], LIGHT = [244, 245, 242], LINE = [217, 220, 214];
+  const label = (txt, x, y) => { doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(...ORANGE); doc.text(txt.toUpperCase().split('').join(' '), x, y); };
+  const txt = (s, x, y, o = {}) => { doc.setFont('helvetica', o.bold ? 'bold' : 'normal'); doc.setFontSize(o.size || 8.5); doc.setTextColor(...(o.color || NAVY)); doc.text(String(s), x, y, o.align ? { align: o.align } : undefined); };
+  if (logo) { try { doc.addImage(logo, 'PNG', M, 40, 168, 32.5); } catch (e) { txt(F.name, M, 62, { bold: true, size: 13 }); } } else txt(F.name, M, 62, { bold: true, size: 13 });
+  txt('TAX INVOICE', W - M, 58, { bold: true, size: 20, align: 'right' });
+  txt('Invoice No. ' + inv.number, W - M, 72, { size: 8.5, color: GREY, align: 'right' });
+  doc.setDrawColor(...NAVY); doc.setLineWidth(1.2); doc.line(M, 92, W - M, 92);
+  // From / Bill to / Invoice details
+  const c1 = M, c2 = M + 168, c3 = W - M - 150, top = 118;
+  label('From', c1, top);
+  [[F.name, true], ['ABN ' + F.abn], ...F.lines.map(l => [l]), [F.email], [F.web]].forEach(([s, bold], k) => txt(s, c1, top + 16 + k * 12.5, { bold, color: bold ? NAVY : GREY }));
+  label('Bill to', c2, top);
+  [[b.name, true], b.contact && ['Attn: ' + b.contact], b.street && [b.street], cityLine(b) && [cityLine(b)], b.country && [b.country], b.email && [b.email], b.taxId && ['Tax ID / ABN: ' + b.taxId]]
+    .filter(Boolean).forEach(([s, bold], k) => txt(s, c2, top + 16 + k * 12.5, { bold, color: bold ? NAVY : GREY }));
+  const det = [['Issue date', dmy(inv.issueDate)], ['Due date', dueText(inv)], ['Terms', termsText(inv)], inv.po && ['PO / Ref.', inv.po], inv.project && ['Project', inv.project], ['Currency', inv.currency]].filter(Boolean);
+  doc.setFillColor(...LIGHT); doc.rect(c3 - 10, top - 14, W - M - c3 + 10, 28 + det.length * 13.5, 'F');
+  label('Invoice details', c3, top);
+  det.forEach(([k, v], i) => { txt(k, c3, top + 16 + i * 13.5, { color: GREY }); txt(v, W - M - 6, top + 16 + i * 13.5, { bold: true, align: 'right' }); });
+  // Items
+  let y = Math.max(top + 30 + det.length * 13.5, top + 110) + 16;
+  doc.autoTable({ startY: y, margin: { left: M, right: M }, theme: 'plain',
+    head: [['DESCRIPTION', 'QTY', 'UNIT PRICE', 'TAX', 'AMOUNT']],
+    body: inv.items.map((it, k) => [it.desc + (it.detail ? '\n' + it.detail : ''), qtyTxt(it.qty), num2(it.unit), it.tax === 'GST' ? 'GST' : 'GST-free', num2(t.lines[k])]),
+    styles: { font: 'helvetica', fontSize: 8.5, textColor: NAVY, cellPadding: { top: 8, bottom: 8, left: 6, right: 6 }, lineColor: LINE },
+    headStyles: { fillColor: NAVY, textColor: 255, fontStyle: 'bold', fontSize: 7.5 },
+    columnStyles: { 0: { cellWidth: 'auto' }, 1: { halign: 'center', cellWidth: 45 }, 2: { halign: 'right', cellWidth: 80 }, 3: { halign: 'center', cellWidth: 55 }, 4: { halign: 'right', cellWidth: 85 } },
+    didParseCell: d => { if (d.section === 'head' && d.column.index > 0) d.cell.styles.halign = d.column.raw === 'AMOUNT' || d.column.index === 2 || d.column.index === 4 ? 'right' : 'center'; },
+    didDrawCell: d => { if (d.section === 'body') { doc.setDrawColor(...LINE); doc.setLineWidth(0.5); doc.line(d.cell.x, d.cell.y + d.cell.height, d.cell.x + d.cell.width, d.cell.y + d.cell.height); } } });
+  y = doc.lastAutoTable.finalY + 26;
+  if (y > H - 300) { doc.addPage(); y = 60; }
+  // Notes + totals
+  const tx = W - M - 175;
+  if (inv.notes) { label('Notes', M, y); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...GREY); doc.text(doc.splitTextToSize(inv.notes, tx - M - 30), M, y + 16); }
+  [['Subtotal', t.sub], ['Discount', t.disc], ['GST (10%)', t.gst], ['Amount paid', t.paid]].forEach(([k, v], i) => {
+    const yy = y + i * 22; txt(k, tx + 6, yy + 4, { color: GREY }); txt(num2(v), W - M - 6, yy + 4, { bold: true, align: 'right' });
+    doc.setDrawColor(...LINE); doc.setLineWidth(0.5); doc.line(tx, yy + 12, W - M, yy + 12);
+  });
+  const ty = y + 4 * 22 - 4;
+  doc.setFillColor(...NAVY); doc.rect(tx, ty, W - M - tx, 28, 'F');
+  txt('Total due ' + inv.currency, tx + 8, ty + 18, { bold: true, color: [255, 255, 255], size: 9.5 });
+  txt((CUR_SYM[inv.currency] || '') + num2(t.total), W - M - 8, ty + 18.5, { bold: true, color: [255, 255, 255], size: 12, align: 'right' });
+  // How to pay + terms
+  y = ty + 58;
+  doc.setFillColor(...LIGHT); doc.rect(M, y - 4, 235, 120, 'F');
+  label('How to pay', M + 12, y + 14);
+  [...F.bank, ['Reference', inv.number]].forEach(([k, v], i) => { txt(k, M + 12, y + 32 + i * 14, { color: GREY }); txt(v, M + 90, y + 32 + i * 14, { bold: true }); });
+  const tx2 = M + 255;
+  label('Terms', tx2, y + 14);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...GREY);
+  let yy = y + 32;
+  [payTermsText(inv) + ' Please quote the invoice number as your payment reference.', F.terms2.replace('{CUR}', inv.currency), F.terms3].forEach(p => {
+    const lines = doc.splitTextToSize(p, W - M - tx2); doc.text(lines, tx2, yy); yy += lines.length * 11 + 6;
+  });
+  y += 140;
+  txt('Thank you for your business.', M, y, { bold: true, size: 10 });
+  txt('Questions about this invoice? Contact ' + F.email, M + 150, y, { color: GREY });
+  doc.setDrawColor(...LINE); doc.line(M, H - 40, W - M, H - 40);
+  const n = doc.getNumberOfPages();
+  for (let i = 1; i <= n; i++) { doc.setPage(i); txt('ARTIFICIAL ENGINEERING SOLUTIONS  \u00b7  ABN ' + F.abn + '  \u00b7  ' + F.web, M, H - 26, { size: 7, color: GREY }); txt(`Page ${i} of ${n}`, W - M, H - 26, { size: 7, color: GREY, align: 'right' }); }
+  return doc;
+}
+
+/* ============================================================
    Copy and paste
    ============================================================ */
 const tsv = rows => rows.map(r => r.map(c => String(c ?? '').replace(/[\t\r\n]+/g, ' ')).join('\t')).join('\n');
@@ -1553,7 +1997,8 @@ function openProjectModal(id, preset) {
   const sel = (v, opts) => opts.map(([k, l]) => `<option value="${k}" ${v === k ? 'selected' : ''}>${l}</option>`).join('');
   openModal(id ? 'Edit project' : 'New project', `<form onsubmit="saveProject(event,'${p.id}')">
     <div class="grid2"><div class="field"><label class="fl" for="pName">Project name</label><input class="in" id="pName" required value="${esc(p.name)}"></div>
-      <div class="field"><label class="fl" for="pClient">Client</label><input class="in" id="pClient" required value="${esc(p.client)}"></div></div>
+      <div class="field"><label class="fl" for="pClient">Client</label><input class="in" id="pClient" required value="${esc(p.client)}" list="clientNames" autocomplete="off">
+        <datalist id="clientNames">${db.clients.map(c => `<option value="${esc(c.name)}">`).join('')}</datalist></div></div>
     <div class="grid3"><div class="field"><label class="fl" for="pType">Type</label><select class="in" id="pType" onchange="$('#pBudgetL').textContent=this.value==='indirect'?'Weekly cap (hours)':'Total budget (hours)'">
         ${sel(p.type, [['standard', 'Standard project'], ['indirect', 'In-direct (weekly limit)']])}</select></div>
       <div class="field"><label class="fl" for="pStatus">Status</label><select class="in" id="pStatus">${sel(p.status, [['active', 'Active'], ['hold', 'On hold'], ['done', 'Completed']])}</select></div>
@@ -2229,7 +2674,7 @@ async function boot() {
   if (cfg.apiUrl) {
     try {
       const p = await api('ping');
-      if (!p.version || p.version < 2) throw new Error(OLD_BACKEND);
+      if (!p.version || p.version < 3) throw new Error(OLD_BACKEND);
       if (signedIn()) { await flushQueue(); await pullRemote(); if (isAdmin()) await ensureStarters(); }
       ui.sync = queue.length ? ui.sync : 'ok'; if (!ui.modalOpen) render();
     }
