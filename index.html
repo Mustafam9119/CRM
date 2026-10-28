@@ -263,6 +263,12 @@ table.pl{border-collapse:separate;border-spacing:0;width:max-content;min-width:1
 .inv-tot div.total{border-top:2px solid var(--ink);margin-top:6px;padding-top:8px;font-weight:700;font-size:15px}
 @media (max-width:860px){.irow{grid-template-columns:1fr 1fr;}.irow .iamt{text-align:left}.inv-bottom{grid-template-columns:1fr}.ihead{display:none}}
 
+/* Email drafts */
+.mail-prev{border:1px solid var(--line);border-radius:10px;padding:16px 18px;max-height:320px;overflow:auto;background:#fff;font-family:Calibri,Arial,sans-serif;font-size:14px;line-height:1.45}
+.att{display:flex;flex-direction:column;gap:6px;margin:4px 0 8px}
+.att label{display:flex;gap:8px;align-items:center;font-size:13px}
+.att small{color:var(--muted)}
+
 /* Toast */
 #toasts{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:8px;z-index:60}
 .toast{background:var(--side);color:#fff;padding:12px 16px;border-radius:10px;max-width:380px;box-shadow:0 10px 30px rgba(0,0,0,.2);font-size:13.5px;display:flex;gap:10px;align-items:flex-start}
@@ -444,8 +450,10 @@ function sundayOf(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDa
 /* ============================================================
    Data
    ============================================================ */
+const DEFAULT_EMAIL = { bcc: 'ai-eng-solutions@outlook.com', sigName: 'Sales Team', sigTitle: 'Sales', sigCompany: 'Artificial Engineering Solutions', sigEmail: 'sales@ai-es.com.au',
+  templates: [{"id": "t-intro", "name": "SketchFlow introduction", "subject": "Introducing SketchFlow – Fire Sprinkler & Hydrant Hydraulics, Sketched and Solved in One App", "body": "Hi {FIRST_NAME},\n\nI hope you are well. I'm pleased to introduce SketchFlow, our desktop software for fire sprinkler and hydrant hydraulic design, now available on the Microsoft Store.\n\nSketchFlow brings PDF markup and hydraulic calculations into a single Windows application, so your team can go from drawing to calculated, report-ready design without switching tools.\n\nKey capabilities:\n- Sketch over drawings – import PDF plans and draw pipework directly on them, with snap and tracking that keep the network connected.\n- 2D and 3D modelling – multi-floor networks, risers and droppers, with an interactive 3D view.\n- Automatic grid builder – end-fed, center-fed, grid and irregular sprinkler layouts fitted to a room in seconds.\n- Fast, accurate hydraulics – looped and branched networks solved with Hazen-Williams or Darcy-Weisbach.\n- Water supply check – demand plotted against the supply curve, with pressure margin and hose stream allowances (including USA and Canada inside/outside hose streams).\n- Network tools – Connectivity, hydrant friction loss and ring main checks.\n- Professional reporting – PDF and text hydraulic reports, plus Excel pipework library export.\n- Works fully offline – your project data stays on your computer.\n\nGetting started:\n1. Download SketchFlow free from the Microsoft Store:\n   https://apps.microsoft.com/detail/9pf4czdj17rv?hl=en-US&gl=AU\n2. Explore it in Demo mode (projects up to 10 nodes, watermarked reports).\n3. To unlock the full version, open **File → Licence and activation...**, enter your email and click Send Request. We will reply with your licence key, which you paste in and activate – no internet connection required.\n\nI've attached the SketchFlow Operation Manual, which covers every feature and the activation process step by step.\n\nI'd welcome the chance to arrange a short online demonstration using one of your current projects. Please let me know a time that suits you.\n\nKind regards,", "invoice": "none", "files": ["attachments/SketchFlow-Operation-Manual.pdf"]}, {"id": "t-invoice", "name": "Invoice", "subject": "Invoice {INV_NO} from Artificial Engineering Solutions", "body": "Hi {FIRST_NAME},\n\nThank you for your business. Please find attached invoice {INV_NO}{FOR_PROJECT}.\n\nAmount due: **{TOTAL}**\nDue date: {DUE_DATE}\n\nPayment details are shown on the invoice. Please quote {INV_NO} as your payment reference.\n\nIf you have any questions about this invoice, just reply to this email.\n\nKind regards,", "invoice": "pdf", "files": []}, {"id": "t-remind", "name": "Payment reminder", "subject": "Reminder: invoice {INV_NO} is now due", "body": "Hi {FIRST_NAME},\n\nThis is a friendly reminder that invoice {INV_NO} for **{TOTAL}** was due on {DUE_DATE} and is still showing as unpaid. I've attached a copy for your convenience.\n\nIf you have already made the payment, thank you, and please disregard this email. Otherwise, I would appreciate payment at your earliest convenience, quoting {INV_NO} as the reference.\n\nKind regards,", "invoice": "pdf", "files": []}] };
 function defaultSettings() {
-  return { id: 'main', company: 'AI Solutions', fxToAUD: { AUD: 1, EGP: 0.031, USD: 1.53, SAR: 0.41 }, lastEmailed: null };
+  return { id: 'main', company: 'AI Solutions', fxToAUD: { AUD: 1, EGP: 0.031, USD: 1.53, SAR: 0.41 }, lastEmailed: null, email: JSON.parse(JSON.stringify(DEFAULT_EMAIL)) };
 }
 function seedDb() {
   const client = 'Artificial Engineering Solutions';
@@ -479,6 +487,7 @@ function normaliseDb(d) {
   d.projects.forEach(p => { p.resources = p.resources || []; p.tasks = p.tasks || []; });
   d.settings = { ...defaultSettings(), ...(d.settings || {}) };
   d.settings.fxToAUD = { ...defaultSettings().fxToAUD, ...(d.settings.fxToAUD || {}) };
+  d.settings.email = { ...JSON.parse(JSON.stringify(DEFAULT_EMAIL)), ...(d.settings.email || {}) };
   return d;
 }
 /* Adds the profile photos to data saved before they were included (runs once). */
@@ -1021,6 +1030,7 @@ VIEWS.settings = function () {
       <div class="field"><label class="fl" for="stKey">API key</label><input class="in" id="stKey" type="password"></div></div>
       <button class="btn primary" onclick="connectFromSettings(this)">Connect</button>`}
   </div>
+  ${emailSettingsSection()}
   <div class="card sect"><h3>Workspace</h3><p>Shown in the sidebar and on reports.</p>
     <div class="field" style="max-width:360px"><label class="fl" for="stCompany">Company name</label><input class="in" id="stCompany" value="${esc(s.company)}"></div>
     <h3 style="margin-top:8px">Exchange rates to AUD</h3><p>Used only for the approximate AUD totals on reports. Update them when rates move.</p>
@@ -1471,7 +1481,8 @@ VIEWS.clients = function () {
       <td>${esc(cityLine(c) || '')}${c.country ? `<span class="subline">${esc(c.country)}</span>` : ''}</td>
       <td>${esc(c.currency || 'AUD')}<span class="subline">${esc((TERMS.find(t => t[0] === +(c.termsDays || 0)) || TERMS[0])[1])}</span></td>
       <td>${invs.length} invoice${invs.length === 1 ? '' : 's'}${Object.keys(out).length ? `<span class="subline" style="color:var(--amber)">Owing ${Object.entries(out).map(([k, v]) => money(v, k)).join(', ')}</span>` : ''}</td>
-      <td class="actions"><button class="icon-btn" onclick="ui.acTab='invoices';go('accounting');openInvoiceModal(null,'${c.id}')" title="New invoice" aria-label="New invoice for ${esc(c.name)}"><i class="fa-solid fa-file-invoice"></i></button>
+      <td class="actions"><button class="icon-btn" onclick="openEmailModal({ clientId: '${c.id}' })" title="Draft email" aria-label="Draft email to ${esc(c.name)}"><i class="fa-regular fa-envelope"></i></button>
+        <button class="icon-btn" onclick="ui.acTab='invoices';go('accounting');openInvoiceModal(null,'${c.id}')" title="New invoice" aria-label="New invoice for ${esc(c.name)}"><i class="fa-solid fa-file-invoice"></i></button>
         <button class="icon-btn" onclick="openClientModal('${c.id}')" title="Edit" aria-label="Edit ${esc(c.name)}"><i class="fa-regular fa-pen-to-square"></i></button>
         <button class="icon-btn del" onclick="deleteClient('${c.id}')" title="Delete" aria-label="Delete ${esc(c.name)}"><i class="fa-regular fa-trash-can"></i></button></td></tr>`;
   }).join('');
@@ -1575,6 +1586,7 @@ function invoicesView() {
       <td class="actions">
         <button class="icon-btn" onclick="downloadInvoiceDocx('${inv.id}')" title="Download Word (your template)" aria-label="Download Word"><i class="fa-regular fa-file-word"></i></button>
         <button class="icon-btn" onclick="downloadInvoicePdf('${inv.id}')" title="Download PDF" aria-label="Download PDF"><i class="fa-regular fa-file-pdf"></i></button>
+        <button class="icon-btn" onclick="openEmailModal({ invoiceId: '${inv.id}' })" title="Draft email to client" aria-label="Draft email to client"><i class="fa-regular fa-envelope"></i></button>
         ${st === 'draft' ? `<button class="icon-btn" onclick="setInvStatus('${inv.id}','sent')" title="Mark as sent" aria-label="Mark as sent"><i class="fa-regular fa-paper-plane"></i></button>` : ''}
         ${st === 'sent' || st === 'overdue' ? `<button class="icon-btn" onclick="markInvPaid('${inv.id}')" title="Mark as paid (records the income)" aria-label="Mark as paid"><i class="fa-solid fa-sack-dollar"></i></button>` : ''}
         ${st === 'paid' ? `<button class="icon-btn" onclick="markInvUnpaid('${inv.id}')" title="Undo paid" aria-label="Undo paid"><i class="fa-solid fa-rotate-left"></i></button>` : ''}
@@ -1855,6 +1867,231 @@ function makeInvoicePdf(inv, logo) {
   const n = doc.getNumberOfPages();
   for (let i = 1; i <= n; i++) { doc.setPage(i); txt('ARTIFICIAL ENGINEERING SOLUTIONS  \u00b7  ABN ' + F.abn + '  \u00b7  ' + F.web, M, H - 26, { size: 7, color: GREY }); txt(`Page ${i} of ${n}`, W - M, H - 26, { size: 7, color: GREY, align: 'right' }); }
   return doc;
+}
+
+/* ============================================================
+   Client emails: drafts with your signature and attachments
+   ============================================================ */
+const emailCfg = () => db.settings.email;
+function emailVars(inv, c) {
+  const b = (inv && inv.billTo) || c || {}, first = String(b.contact || '').trim().split(/\s+/)[0];
+  const t = inv ? invTotals(inv) : null;
+  return { FIRST_NAME: first || 'there', CONTACT: b.contact || '', CLIENT_NAME: b.name || '', CLIENT_CODE: b.code || (c && c.code) || '',
+    INV_NO: inv ? inv.number : '', TOTAL: inv ? `${CUR_SYM[inv.currency] || ''}${num2(t.total)} ${inv.currency}` : '',
+    DUE_DATE: inv ? (+inv.termsDays === 0 ? 'upon receipt' : niceDate(inv.dueDate)) : '', PROJECT: inv ? inv.project || '' : '',
+    FOR_PROJECT: inv && inv.project ? ' for ' + inv.project : '', COMPANY: emailCfg().sigCompany };
+}
+const fillVars = (s, v) => String(s || '').replace(/\{([A-Z_]+)\}/g, (m, k) => k in v ? v[k] : m);
+/* Simple formatting: blank line = new paragraph, "- " bullets, "1. " numbered lists, **bold**, links detected automatically. */
+function bodyHtml(text) {
+  const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1">$1</a>');
+  const P = 'style="margin:0 0 14px"';
+  return String(text).replace(/\r/g, '').split(/\n\s*\n/).map(block => {
+    let out = '', para = [], list = null;
+    const flushP = () => { if (para.length) { out += `<p ${P}>${para.map(inline).join('<br>')}</p>`; para = []; } };
+    const flushL = () => { if (list) { out += `<${list.tag} style="margin:0 0 14px;padding-left:26px">${list.items.map(i => `<li>${i.map(inline).join('<br>')}</li>`).join('')}</${list.tag}>`; list = null; } };
+    block.split('\n').forEach(line => {
+      const b = line.match(/^\s*[-•]\s+(.*)$/), n = line.match(/^\s*\d+[.)]\s+(.*)$/);
+      if (b || n) { flushP(); const tag = b ? 'ul' : 'ol'; if (!list || list.tag !== tag) { flushL(); list = { tag, items: [] }; } list.items.push([(b || n)[1]]); }
+      else if (list && /^\s+\S/.test(line)) list.items[list.items.length - 1].push(line.trim());
+      else { flushL(); para.push(line); }
+    });
+    flushP(); flushL();
+    return out;
+  }).join('');
+}
+function signatureHtml(logoSrc) {
+  const e = emailCfg();
+  return `<table cellpadding="0" cellspacing="0" style="margin-top:6px;font-family:Arial,sans-serif"><tr>
+    ${logoSrc ? `<td style="padding-right:16px;vertical-align:top"><img src="${logoSrc}" width="72" height="72" alt="${esc(e.sigCompany)}" style="display:block;border-radius:10px"></td>` : ''}
+    <td style="border-left:3px solid #E85D0D;padding-left:16px;vertical-align:top">
+      <div style="font-size:19px;font-weight:bold;color:#111827">${esc(e.sigName)}</div>
+      <div style="font-size:13px;font-weight:bold;color:#E85D0D;margin-top:2px">${esc(e.sigTitle)}</div>
+      <div style="font-size:13px;color:#111827;margin-top:4px">${esc(e.sigCompany)}</div>
+      <div style="font-size:13px;color:#111827;margin-top:8px"><span style="color:#E85D0D">E</span>&nbsp;&nbsp;<a href="mailto:${esc(e.sigEmail)}" style="color:#111827;text-decoration:none">${esc(e.sigEmail)}</a></div></td></tr></table>`;
+}
+function emailHtml(body, logoSrc) {
+  return `<div style="font-family:Calibri,Arial,sans-serif;font-size:14px;color:#111827;line-height:1.45">${bodyHtml(body)}${signatureHtml(logoSrc)}</div>`;
+}
+let sigLogoCache = null;
+async function sigLogo() {
+  if (sigLogoCache) return sigLogoCache;
+  try {
+    const r = await fetch('icons/icon-192.png', { cache: 'no-cache' }); if (!r.ok) return null;
+    sigLogoCache = 'data:image/png;base64,' + bufToB64(await r.arrayBuffer()); return sigLogoCache;
+  } catch (e) { return null; }
+}
+function openEmailModal({ invoiceId, clientId }) {
+  if (!canAcct()) return;
+  const inv = invoiceId ? db.invoices.find(i => i.id === invoiceId) : null, c = client(clientId || (inv && inv.clientId));
+  const tpls = emailCfg().templates;
+  const st = inv ? invStatus(inv) : '';
+  const tid = inv ? (st === 'overdue' ? 't-remind' : 't-invoice') : 't-intro';
+  const pick = tpls.find(t => t.id === tid) || tpls[0];
+  ui.mail = { inv, c, extra: [] };
+  openModal(inv ? `Email for ${inv.number}` : `Email to ${c ? c.name : 'client'}`, `<form onsubmit="event.preventDefault()">
+    <div class="grid2"><div class="field"><label class="fl" for="mTpl">Template</label><select class="in" id="mTpl" onchange="mailApplyTpl()">
+        ${tpls.map(t => `<option value="${t.id}" ${pick && t.id === pick.id ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select></div>
+      <div class="field"><label class="fl" for="mTo">To</label><input class="in" id="mTo" value="${esc((inv && inv.billTo && inv.billTo.email) || (c && c.email) || '')}" placeholder="client@example.com"></div></div>
+    <div class="grid2"><div class="field"><label class="fl" for="mCc">Cc (optional)</label><input class="in" id="mCc"></div>
+      <div class="field"><label class="fl" for="mBcc">Bcc</label><input class="in" id="mBcc" value="${esc(emailCfg().bcc || '')}"></div></div>
+    <div class="field"><label class="fl" for="mSubj">Subject</label><input class="in" id="mSubj"></div>
+    <div class="field"><label class="fl" for="mBody">Message</label><textarea class="in" id="mBody" rows="12" oninput="mailPreview()"></textarea>
+      <div class="hint">Blank line = new paragraph. Start lines with "- " for bullets or "1. " for numbers. **Bold**. Links work automatically. Your signature is added below.</div></div>
+    <label class="fl">Attachments</label>
+    <div class="att" id="mAtt"></div>
+    <label class="btn ghost sm" style="width:max-content"><i class="fa-solid fa-paperclip"></i>Add files<input type="file" multiple hidden onchange="mailAddFiles(this)"></label>
+    ${inv && st === 'draft' ? '<label style="display:flex;gap:8px;align-items:center;font-size:13px;margin-top:12px"><input type="checkbox" id="mMarkSent" checked> Mark the invoice as sent</label>' : ''}
+    <details style="margin-top:14px" open><summary>Preview</summary><div class="mail-prev" id="mPrev" style="margin-top:10px"></div></details>
+    <div class="modal-foot" style="flex-wrap:wrap"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button type="button" class="btn ghost" onclick="mailCopyOpen()" title="For Outlook on the web or any mail app"><i class="fa-regular fa-copy"></i>Copy &amp; open mail app</button>
+      <button type="button" class="btn primary" onclick="mailDownloadEml()" title="Opens in Outlook as a ready-to-send draft"><i class="fa-solid fa-envelope-open-text"></i>Create email draft</button></div>
+    <p class="hint" style="text-align:right;margin:8px 0 0"><b>Create email draft</b> downloads an email that opens in Outlook with the attachments included: check it and press Send.</p></form>`, true);
+  $('.modal').style.width = 'min(860px,100%)';
+  mailApplyTpl();
+}
+function mailApplyTpl() {
+  const t = emailCfg().templates.find(x => x.id === $('#mTpl').value), { inv, c } = ui.mail, v = emailVars(inv, c);
+  if (!t) return;
+  $('#mSubj').value = fillVars(t.subject, v); $('#mBody').value = fillVars(t.body, v);
+  const inc = k => inv && (t.invoice === k || t.invoice === 'both');
+  $('#mAtt').innerHTML = (inv ? `<label><input type="checkbox" name="mA" value="inv:pdf" ${inc('pdf') ? 'checked' : ''}> Invoice PDF <small>${esc(invFile(inv))}.pdf</small></label>
+      <label><input type="checkbox" name="mA" value="inv:docx" ${inc('docx') ? 'checked' : ''}> Invoice Word <small>${esc(invFile(inv))}.docx</small></label>` : '')
+    + (t.files || []).map(f => `<label><input type="checkbox" name="mA" value="file:${esc(f)}" checked> ${esc(f.split('/').pop())} <small>from your website</small></label>`).join('')
+    + ui.mail.extra.map((f, i) => `<label><input type="checkbox" name="mA" value="extra:${i}" checked> ${esc(f.name)} <small>${Math.round(f.size / 1024)} KB, from this computer</small></label>`).join('')
+    || '<span class="muted" style="font-size:13px">No attachments.</span>';
+  if ($('#mMarkSent')) $('#mMarkSent').checked = !!(inc('pdf') || inc('docx'));
+  mailPreview();
+}
+async function mailPreview() { const el = $('#mPrev'); if (el) el.innerHTML = emailHtml($('#mBody').value, await sigLogo()); }
+function mailAddFiles(input) {
+  const keep = [...document.querySelectorAll('[name=mA]')].filter(x => !x.value.startsWith('extra:')).map(x => [x.value, x.checked]);
+  ui.mail.extra.push(...input.files);
+  const body = $('#mBody').value, subj = $('#mSubj').value;
+  mailApplyTpl(); $('#mBody').value = body; $('#mSubj').value = subj; mailPreview();
+  keep.forEach(([v, on]) => { const x = document.querySelector(`[name=mA][value="${CSS.escape(v)}"]`); if (x) x.checked = on; });
+}
+async function mailAttachments() {
+  const out = [], missing = [], { inv } = ui.mail;
+  for (const x of document.querySelectorAll('[name=mA]:checked')) {
+    const [kind, ...rest] = x.value.split(':'), ref = rest.join(':');
+    if (kind === 'inv' && ref === 'pdf') out.push({ name: invFile(inv) + '.pdf', type: 'application/pdf', blob: makeInvoicePdf(inv, await invoiceLogo()).output('blob') });
+    else if (kind === 'inv' && ref === 'docx') out.push({ name: invFile(inv) + '.docx', type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', blob: await buildInvoiceDocx(inv) });
+    else if (kind === 'extra') { const f = ui.mail.extra[+ref]; out.push({ name: f.name, type: f.type || 'application/octet-stream', blob: f }); }
+    else if (kind === 'file') {
+      try { const r = await fetch(ref, { cache: 'no-cache' }); if (!r.ok) throw 0; const blob = await r.blob(); out.push({ name: ref.split('/').pop(), type: blob.type || 'application/octet-stream', blob }); }
+      catch (e) { missing.push(ref); }
+    }
+  }
+  if (missing.length) toast(`Not found on your website: ${missing.join(', ')}. Upload it to GitHub at that path, or use Add files.`, 'err');
+  return out;
+}
+function mailAfter() {
+  const { inv } = ui.mail, mark = $('#mMarkSent');
+  if (inv && mark && mark.checked) saveRec('invoices', { ...inv, status: 'sent', sentAt: ymd(new Date()) });
+  closeModal(); render();
+}
+const b64wrap = s => s.replace(/.{1,76}/g, '$&\r\n');
+const encWord = s => /^[\x20-\x7e]*$/.test(s) ? s : '=?UTF-8?B?' + btoa(unescape(encodeURIComponent(s))) + '?=';
+async function mailDownloadEml() {
+  const to = $('#mTo').value.trim(), subj = $('#mSubj').value.trim();
+  if (!to) { toast('Add the client\u2019s email address in To.', 'err'); return; }
+  const btn = document.activeElement; if (btn) btn.disabled = true;
+  try {
+    const logo = await sigLogo(), atts = await mailAttachments();
+    const html = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>' + emailHtml($('#mBody').value, logo ? 'cid:sig-logo' : null) + '</body></html>';
+    const mixed = 'mix_' + uid(), rel = 'rel_' + uid(), CRLF = '\r\n';
+    let m = [`To: ${to}`, $('#mCc').value.trim() ? `Cc: ${$('#mCc').value.trim()}` : '', $('#mBcc').value.trim() ? `Bcc: ${$('#mBcc').value.trim()}` : '',
+      `Subject: ${encWord(subj)}`, 'X-Unsent: 1', 'MIME-Version: 1.0', `Content-Type: multipart/mixed; boundary="${mixed}"`, '', ''].filter((l, i, a) => l !== '' || i >= a.length - 2).join(CRLF);
+    m += `--${mixed}${CRLF}Content-Type: multipart/related; boundary="${rel}"${CRLF}${CRLF}`;
+    m += `--${rel}${CRLF}Content-Type: text/html; charset="utf-8"${CRLF}Content-Transfer-Encoding: base64${CRLF}${CRLF}${b64wrap(btoa(unescape(encodeURIComponent(html))))}`;
+    if (logo) m += `--${rel}${CRLF}Content-Type: image/png${CRLF}Content-Transfer-Encoding: base64${CRLF}Content-ID: <sig-logo>${CRLF}Content-Disposition: inline; filename="logo.png"${CRLF}${CRLF}${b64wrap(logo.split(',')[1])}`;
+    m += `--${rel}--${CRLF}`;
+    for (const a of atts) {
+      const name = a.name.replace(/["\r\n]/g, '');
+      m += `--${mixed}${CRLF}Content-Type: ${a.type}; name="${encWord(name)}"${CRLF}Content-Transfer-Encoding: base64${CRLF}Content-Disposition: attachment; filename="${encWord(name)}"${CRLF}${CRLF}${b64wrap(bufToB64(await a.blob.arrayBuffer()))}`;
+    }
+    m += `--${mixed}--${CRLF}`;
+    const who = (ui.mail.inv && ui.mail.inv.number) || ((ui.mail.c && ui.mail.c.code) || 'client');
+    saveBlob(new Blob([m], { type: 'message/rfc822' }), `Email-draft_${who}.eml`);
+    toast('Email draft downloaded. Open it: it opens in Outlook with the attachments included. Check it, then press Send.', 'ok');
+    mailAfter();
+  } catch (e) { toast('The email draft could not be created: ' + e.message, 'err'); }
+  finally { if (btn) btn.disabled = false; }
+}
+async function mailCopyOpen() {
+  const to = $('#mTo').value.trim(), html = emailHtml($('#mBody').value, await sigLogo());
+  let copied = false;
+  try {
+    if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+      await navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([html], { type: 'text/html' }), 'text/plain': new Blob([$('#mBody').value], { type: 'text/plain' }) })]);
+      copied = true;
+    }
+  } catch (e) { copied = false; }
+  if (!copied) {
+    const d = document.createElement('div'); d.contentEditable = 'true'; d.style.cssText = 'position:fixed;left:-9999px;top:0'; d.innerHTML = html; document.body.appendChild(d);
+    const r = document.createRange(); r.selectNodeContents(d); const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    try { copied = document.execCommand('copy'); } catch (e) { copied = false; }
+    s.removeAllRanges(); d.remove();
+  }
+  const atts = await mailAttachments();
+  atts.forEach(a => saveBlob(a.blob, a.name));
+  const q = [['cc', $('#mCc').value.trim()], ['bcc', $('#mBcc').value.trim()], ['subject', $('#mSubj').value.trim()]].filter(x => x[1]).map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
+  window.location.href = 'mailto:' + encodeURIComponent(to).replace(/%40/g, '@') + (q ? '?' + q : '');
+  toast(copied ? `Message copied. In the new email press Ctrl + V to paste it${atts.length ? ', then attach the ' + atts.length + ' downloaded file' + (atts.length === 1 ? '' : 's') : ''}.`
+    : 'Your browser blocked copying. Use Create email draft instead.', copied ? 'ok' : 'err');
+  if (copied) mailAfter();
+}
+
+/* Settings: signature, Bcc and templates */
+function emailSettingsSection() {
+  const e = emailCfg();
+  return `<div class="card sect"><h3>Client emails</h3><p>Used when you draft an email from an invoice or a client. Placeholders: {FIRST_NAME}, {CLIENT_NAME}, {INV_NO}, {TOTAL}, {DUE_DATE}, {PROJECT}, {FOR_PROJECT}.</p>
+    <div class="grid3"><div class="field"><label class="fl" for="esName">Signature name</label><input class="in" id="esName" value="${esc(e.sigName)}"></div>
+      <div class="field"><label class="fl" for="esTitle">Signature title</label><input class="in" id="esTitle" value="${esc(e.sigTitle)}"></div>
+      <div class="field"><label class="fl" for="esCo">Company</label><input class="in" id="esCo" value="${esc(e.sigCompany)}"></div>
+      <div class="field"><label class="fl" for="esEmail">Signature email</label><input class="in" id="esEmail" value="${esc(e.sigEmail)}"></div>
+      <div class="field"><label class="fl" for="esBcc">Always Bcc</label><input class="in" id="esBcc" value="${esc(e.bcc)}"></div></div>
+    <button class="btn primary sm" onclick="saveEmailSettings()">Save signature</button>
+    <h3 style="margin-top:20px">Templates</h3>
+    <div class="tbl-wrap"><table style="min-width:0"><thead><tr><th>Name</th><th>Subject</th><th>Attaches</th><th class="actions"></th></tr></thead><tbody>
+      ${e.templates.map(t => `<tr><td><b>${esc(t.name)}</b></td><td class="muted">${esc(t.subject)}</td>
+        <td class="muted">${[t.invoice === 'pdf' ? 'Invoice PDF' : t.invoice === 'docx' ? 'Invoice Word' : t.invoice === 'both' ? 'Invoice PDF + Word' : '', ...(t.files || []).map(f => f.split('/').pop())].filter(Boolean).join(', ') || '-'}</td>
+        <td class="actions"><button class="icon-btn" onclick="openTplModal('${t.id}')" aria-label="Edit template"><i class="fa-regular fa-pen-to-square"></i></button>
+          <button class="icon-btn del" onclick="deleteTpl('${t.id}')" aria-label="Delete template"><i class="fa-regular fa-trash-can"></i></button></td></tr>`).join('')}</tbody></table></div>
+    <button class="btn ghost sm" style="margin-top:10px" onclick="openTplModal()"><i class="fa-solid fa-plus"></i>New template</button></div>`;
+}
+function saveEmailSettings() {
+  saveRec('settings', { ...db.settings, email: { ...emailCfg(), sigName: $('#esName').value.trim(), sigTitle: $('#esTitle').value.trim(), sigCompany: $('#esCo').value.trim(),
+    sigEmail: $('#esEmail').value.trim(), bcc: $('#esBcc').value.trim() } });
+  render(); toast('Signature saved.', 'ok');
+}
+function openTplModal(id) {
+  const t = id ? emailCfg().templates.find(x => x.id === id) : { id: '', name: '', subject: '', body: 'Hi {FIRST_NAME},\n\n\n\nKind regards,', invoice: 'none', files: [] };
+  openModal(id ? 'Edit template' : 'New template', `<form onsubmit="saveTpl(event,'${t.id}')">
+    <div class="grid2"><div class="field"><label class="fl" for="tName">Name</label><input class="in" id="tName" required value="${esc(t.name)}"></div>
+      <div class="field"><label class="fl" for="tInv">Attach the invoice</label><select class="in" id="tInv">
+        ${[['none', 'No'], ['pdf', 'PDF'], ['docx', 'Word'], ['both', 'PDF and Word']].map(([v, l]) => `<option value="${v}" ${t.invoice === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div></div>
+    <div class="field"><label class="fl" for="tSubj">Subject</label><input class="in" id="tSubj" required value="${esc(t.subject)}"></div>
+    <div class="field"><label class="fl" for="tBody">Message</label><textarea class="in" id="tBody" rows="14">${esc(t.body)}</textarea></div>
+    <div class="field"><label class="fl" for="tFiles">Files from your website to attach (one path per line)</label><textarea class="in" id="tFiles" rows="2" placeholder="attachments/SketchFlow-Operation-Manual.pdf">${esc((t.files || []).join('\n'))}</textarea>
+      <div class="hint">Upload these files to your GitHub repository at the same path.</div></div>
+    <div class="modal-foot"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn primary">Save template</button></div></form>`, true);
+}
+function saveTpl(ev, id) {
+  ev.preventDefault();
+  const rec = { id: id || 't-' + uid(), name: $('#tName').value.trim(), subject: $('#tSubj').value.trim(), body: $('#tBody').value, invoice: $('#tInv').value,
+    files: $('#tFiles').value.split('\n').map(s => s.trim()).filter(Boolean) };
+  const list = emailCfg().templates.filter(x => x.id !== rec.id);
+  const at = emailCfg().templates.findIndex(x => x.id === rec.id);
+  if (at >= 0) list.splice(at, 0, rec); else list.push(rec);
+  saveRec('settings', { ...db.settings, email: { ...emailCfg(), templates: list } });
+  closeModal(); render(); toast('Template saved.', 'ok');
+}
+async function deleteTpl(id) {
+  const t = emailCfg().templates.find(x => x.id === id);
+  if (!await ask(`Delete the template "${t.name}"?`, 'Delete', true)) return;
+  saveRec('settings', { ...db.settings, email: { ...emailCfg(), templates: emailCfg().templates.filter(x => x.id !== id) } }); render();
 }
 
 /* ============================================================
