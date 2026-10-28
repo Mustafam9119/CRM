@@ -264,6 +264,13 @@ table.pl{border-collapse:separate;border-spacing:0;width:max-content;min-width:1
 @media (max-width:860px){.irow{grid-template-columns:1fr 1fr;}.irow .iamt{text-align:left}.inv-bottom{grid-template-columns:1fr}.ihead{display:none}}
 
 /* Email drafts */
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.choice{border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px;background:#fbfbfd}
+.choice > i{font-size:22px;color:var(--brand)}
+.choice b{font-size:15px}
+.choice span{color:var(--muted);font-size:13px;flex:1}
+.choice .btn{justify-content:center}
+@media (max-width:640px){.choice-grid{grid-template-columns:1fr}}
 .mail-prev{border:1px solid var(--line);border-radius:10px;padding:16px 18px;max-height:320px;overflow:auto;background:#fff;font-family:Calibri,Arial,sans-serif;font-size:14px;line-height:1.45}
 .att{display:flex;flex-direction:column;gap:6px;margin:4px 0 8px}
 .att label{display:flex;gap:8px;align-items:center;font-size:13px}
@@ -451,7 +458,7 @@ function sundayOf(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDa
    Data
    ============================================================ */
 const DEFAULT_EMAIL = { bcc: 'ai-eng-solutions@outlook.com', sigName: 'Sales Team', sigTitle: 'Sales', sigCompany: 'Artificial Engineering Solutions', sigEmail: 'sales@ai-es.com.au',
-  templates: [{"id": "t-intro", "name": "SketchFlow introduction", "subject": "Introducing SketchFlow – Fire Sprinkler & Hydrant Hydraulics, Sketched and Solved in One App", "body": "Hi {FIRST_NAME},\n\nI hope you are well. I'm pleased to introduce SketchFlow, our desktop software for fire sprinkler and hydrant hydraulic design, now available on the Microsoft Store.\n\nSketchFlow brings PDF markup and hydraulic calculations into a single Windows application, so your team can go from drawing to calculated, report-ready design without switching tools.\n\nKey capabilities:\n- Sketch over drawings – import PDF plans and draw pipework directly on them, with snap and tracking that keep the network connected.\n- 2D and 3D modelling – multi-floor networks, risers and droppers, with an interactive 3D view.\n- Automatic grid builder – end-fed, center-fed, grid and irregular sprinkler layouts fitted to a room in seconds.\n- Fast, accurate hydraulics – looped and branched networks solved with Hazen-Williams or Darcy-Weisbach.\n- Water supply check – demand plotted against the supply curve, with pressure margin and hose stream allowances (including USA and Canada inside/outside hose streams).\n- Network tools – Connectivity, hydrant friction loss and ring main checks.\n- Professional reporting – PDF and text hydraulic reports, plus Excel pipework library export.\n- Works fully offline – your project data stays on your computer.\n\nGetting started:\n1. Download SketchFlow free from the Microsoft Store:\n   https://apps.microsoft.com/detail/9pf4czdj17rv?hl=en-US&gl=AU\n2. Explore it in Demo mode (projects up to 10 nodes, watermarked reports).\n3. To unlock the full version, open **File → Licence and activation...**, enter your email and click Send Request. We will reply with your licence key, which you paste in and activate – no internet connection required.\n\nI've attached the SketchFlow Operation Manual, which covers every feature and the activation process step by step.\n\nI'd welcome the chance to arrange a short online demonstration using one of your current projects. Please let me know a time that suits you.\n\nKind regards,", "invoice": "none", "files": ["attachments/SketchFlow-Operation-Manual.pdf"]}, {"id": "t-invoice", "name": "Invoice", "subject": "Invoice {INV_NO} from Artificial Engineering Solutions", "body": "Hi {FIRST_NAME},\n\nThank you for your business. Please find attached invoice {INV_NO}{FOR_PROJECT}.\n\nAmount due: **{TOTAL}**\nDue date: {DUE_DATE}\n\nPayment details are shown on the invoice. Please quote {INV_NO} as your payment reference.\n\nIf you have any questions about this invoice, just reply to this email.\n\nKind regards,", "invoice": "pdf", "files": []}, {"id": "t-remind", "name": "Payment reminder", "subject": "Reminder: invoice {INV_NO} is now due", "body": "Hi {FIRST_NAME},\n\nThis is a friendly reminder that invoice {INV_NO} for **{TOTAL}** was due on {DUE_DATE} and is still showing as unpaid. I've attached a copy for your convenience.\n\nIf you have already made the payment, thank you, and please disregard this email. Otherwise, I would appreciate payment at your earliest convenience, quoting {INV_NO} as the reference.\n\nKind regards,", "invoice": "pdf", "files": []}] };
+  templates: [{"id": "t-intro", "name": "SketchFlow introduction", "subject": "Introducing SketchFlow – Fire Sprinkler & Hydrant Hydraulics, Sketched and Solved in One App", "body": "Hi {FIRST_NAME},\n\nI hope you are well. I'm pleased to introduce SketchFlow, our desktop software for fire sprinkler and hydrant hydraulic design, now available on the Microsoft Store.\n\nSketchFlow brings PDF markup and hydraulic calculations into a single Windows application, so your team can go from drawing to calculated, report-ready design without switching tools.\n\nKey capabilities:\n- Sketch over drawings – import PDF plans and draw pipework directly on them, with snap and tracking that keep the network connected.\n- 2D and 3D modelling – multi-floor networks, risers and droppers, with an interactive 3D view.\n- Automatic grid builder – end-fed, center-fed, grid and irregular sprinkler layouts fitted to a room in seconds.\n- Fast, accurate hydraulics – looped and branched networks solved with Hazen-Williams or Darcy-Weisbach.\n- Water supply check – demand plotted against the supply curve, with pressure margin and hose stream allowances (including USA and Canada inside/outside hose streams).\n- Network tools – Connectivity, hydrant friction loss and ring main checks.\n- Professional reporting – PDF and text hydraulic reports, plus Excel pipework library export.\n- Works fully offline – your project data stays on your computer.\n\nGetting started:\n1. Download SketchFlow free from the Microsoft Store:\n   https://apps.microsoft.com/detail/9pf4czdj17rv?hl=en-US&gl=AU\n2. Explore it in Demo mode (projects up to 10 nodes, watermarked reports).\n3. To unlock the full version, open **File → Licence and activation...**, enter your email and click Send Request. We will reply with your licence key, which you paste in and activate – no internet connection required.\n\nI've attached the SketchFlow Operation Manual, which covers every feature and the activation process step by step.\n\nI'd welcome the chance to arrange a short online demonstration using one of your current projects. Please let me know a time that suits you.\n\nKind regards,", "invoice": "none", "files": ["attachments/SketchFlow-Operation-Manual.pdf"]}, {"id": "t-payreq", "name": "Invoice & payment request", "subject": "Invoice {INV_NO} – payment request from Artificial Engineering Solutions", "body": "Hi {FIRST_NAME},\n\nThank you for choosing Artificial Engineering Solutions. Please find attached invoice {INV_NO}{FOR_PROJECT}.\n\nAmount due: **{TOTAL}**\nDue date: {DUE_DATE}\n\nWe would be grateful if you could arrange payment by the due date. Our bank details are:\n- Account name: Artificial Engineering Solutions\n- Bank: Commonwealth Bank of Australia\n- BSB: 067-873\n- Account no.: 2647 4478\n- SWIFT / BIC (international payments): CTBAAU2S\n- Payment reference: {INV_NO}\n\nOnce the payment is made, a quick reply to confirm would be appreciated. If you have any questions about this invoice, please let me know.\n\nKind regards,", "invoice": "pdf", "files": []}, {"id": "t-invoice", "name": "Invoice", "subject": "Invoice {INV_NO} from Artificial Engineering Solutions", "body": "Hi {FIRST_NAME},\n\nThank you for your business. Please find attached invoice {INV_NO}{FOR_PROJECT}.\n\nAmount due: **{TOTAL}**\nDue date: {DUE_DATE}\n\nPayment details are shown on the invoice. Please quote {INV_NO} as your payment reference.\n\nIf you have any questions about this invoice, just reply to this email.\n\nKind regards,", "invoice": "pdf", "files": []}, {"id": "t-remind", "name": "Payment reminder", "subject": "Reminder: invoice {INV_NO} is now due", "body": "Hi {FIRST_NAME},\n\nThis is a friendly reminder that invoice {INV_NO} for **{TOTAL}** was due on {DUE_DATE} and is still showing as unpaid. I've attached a copy for your convenience.\n\nIf you have already made the payment, thank you, and please disregard this email. Otherwise, I would appreciate payment at your earliest convenience, quoting {INV_NO} as the reference.\n\nKind regards,", "invoice": "pdf", "files": []}] };
 function defaultSettings() {
   return { id: 'main', company: 'AI Solutions', fxToAUD: { AUD: 1, EGP: 0.031, USD: 1.53, SAR: 0.41 }, lastEmailed: null, email: JSON.parse(JSON.stringify(DEFAULT_EMAIL)) };
 }
@@ -488,6 +495,9 @@ function normaliseDb(d) {
   d.settings = { ...defaultSettings(), ...(d.settings || {}) };
   d.settings.fxToAUD = { ...defaultSettings().fxToAUD, ...(d.settings.fxToAUD || {}) };
   d.settings.email = { ...JSON.parse(JSON.stringify(DEFAULT_EMAIL)), ...(d.settings.email || {}) };
+  const em = d.settings.email;
+  em.templates = (em.templates || []).slice();
+  DEFAULT_EMAIL.templates.forEach(t => { if (!em.templates.some(x => x.id === t.id) && !(em.removed || []).includes(t.id)) em.templates.push(JSON.parse(JSON.stringify(t))); });
   return d;
 }
 /* Adds the profile photos to data saved before they were included (runs once). */
@@ -1481,7 +1491,7 @@ VIEWS.clients = function () {
       <td>${esc(cityLine(c) || '')}${c.country ? `<span class="subline">${esc(c.country)}</span>` : ''}</td>
       <td>${esc(c.currency || 'AUD')}<span class="subline">${esc((TERMS.find(t => t[0] === +(c.termsDays || 0)) || TERMS[0])[1])}</span></td>
       <td>${invs.length} invoice${invs.length === 1 ? '' : 's'}${Object.keys(out).length ? `<span class="subline" style="color:var(--amber)">Owing ${Object.entries(out).map(([k, v]) => money(v, k)).join(', ')}</span>` : ''}</td>
-      <td class="actions"><button class="icon-btn" onclick="openEmailModal({ clientId: '${c.id}' })" title="Draft email" aria-label="Draft email to ${esc(c.name)}"><i class="fa-regular fa-envelope"></i></button>
+      <td class="actions"><button class="icon-btn" onclick="openEmailChooser({ clientId: '${c.id}' })" title="Draft email" aria-label="Draft email to ${esc(c.name)}"><i class="fa-regular fa-envelope"></i></button>
         <button class="icon-btn" onclick="ui.acTab='invoices';go('accounting');openInvoiceModal(null,'${c.id}')" title="New invoice" aria-label="New invoice for ${esc(c.name)}"><i class="fa-solid fa-file-invoice"></i></button>
         <button class="icon-btn" onclick="openClientModal('${c.id}')" title="Edit" aria-label="Edit ${esc(c.name)}"><i class="fa-regular fa-pen-to-square"></i></button>
         <button class="icon-btn del" onclick="deleteClient('${c.id}')" title="Delete" aria-label="Delete ${esc(c.name)}"><i class="fa-regular fa-trash-can"></i></button></td></tr>`;
@@ -1586,7 +1596,7 @@ function invoicesView() {
       <td class="actions">
         <button class="icon-btn" onclick="downloadInvoiceDocx('${inv.id}')" title="Download Word (your template)" aria-label="Download Word"><i class="fa-regular fa-file-word"></i></button>
         <button class="icon-btn" onclick="downloadInvoicePdf('${inv.id}')" title="Download PDF" aria-label="Download PDF"><i class="fa-regular fa-file-pdf"></i></button>
-        <button class="icon-btn" onclick="openEmailModal({ invoiceId: '${inv.id}' })" title="Draft email to client" aria-label="Draft email to client"><i class="fa-regular fa-envelope"></i></button>
+        <button class="icon-btn" onclick="openEmailChooser({ invoiceId: '${inv.id}' })" title="Draft email to client" aria-label="Draft email to client"><i class="fa-regular fa-envelope"></i></button>
         ${st === 'draft' ? `<button class="icon-btn" onclick="setInvStatus('${inv.id}','sent')" title="Mark as sent" aria-label="Mark as sent"><i class="fa-regular fa-paper-plane"></i></button>` : ''}
         ${st === 'sent' || st === 'overdue' ? `<button class="icon-btn" onclick="markInvPaid('${inv.id}')" title="Mark as paid (records the income)" aria-label="Mark as paid"><i class="fa-solid fa-sack-dollar"></i></button>` : ''}
         ${st === 'paid' ? `<button class="icon-btn" onclick="markInvUnpaid('${inv.id}')" title="Undo paid" aria-label="Undo paid"><i class="fa-solid fa-rotate-left"></i></button>` : ''}
@@ -1921,14 +1931,39 @@ async function sigLogo() {
     sigLogoCache = 'data:image/png;base64,' + bufToB64(await r.arrayBuffer()); return sigLogoCache;
   } catch (e) { return null; }
 }
-function openEmailModal({ invoiceId, clientId }) {
+function openEmailChooser({ invoiceId, clientId }) {
+  if (!canAcct()) return;
+  const inv = invoiceId ? db.invoices.find(i => i.id === invoiceId) : null, c = client(clientId || (inv && inv.clientId));
+  const name = (inv && inv.billTo && inv.billTo.name) || (c && c.name) || 'this client';
+  const invs = inv ? [inv] : db.invoices.filter(i => c && i.clientId === c.id && invStatus(i) !== 'void')
+    .sort((a, b) => (invStatus(a) === 'paid') - (invStatus(b) === 'paid') || String(b.number).localeCompare(String(a.number), undefined, { numeric: true }));
+  ui.mailCtx = { invoiceId, clientId: c ? c.id : clientId };
+  const invLabel = i => `${i.number} \u00b7 ${money(invTotals(i).total, i.currency)} \u00b7 ${INV_BADGE[invStatus(i)][0]}`;
+  openModal('Draft an email', `<p class="muted" style="margin-top:0">What would you like to send to <b>${esc(name)}</b>?</p>
+    <div class="choice-grid">
+      <div class="choice"><i class="fa-solid fa-book-open"></i><b>Software introduction</b>
+        <span>Introduces SketchFlow and attaches the SketchFlow Operation Manual.</span>
+        <button type="button" class="btn primary" onclick="openEmailModal({ clientId: '${c ? c.id : ''}', invoiceId: ${inv ? `'${inv.id}'` : 'null'}, tpl: 't-intro' })">Draft this email</button></div>
+      <div class="choice"><i class="fa-solid fa-file-invoice-dollar"></i><b>Invoice & payment request</b>
+        <span>Attaches the invoice PDF and asks for payment by the due date, with your bank details. Overdue invoices get a polite reminder.</span>
+        ${invs.length > 1 ? `<select class="in" id="chInv" aria-label="Which invoice">${invs.map(i => `<option value="${i.id}">${esc(invLabel(i))}</option>`).join('')}</select>`
+          : invs.length ? `<small class="muted">${esc(invLabel(invs[0]))}</small><input type="hidden" id="chInv" value="${invs[0].id}">` : ''}
+        ${invs.length ? '<button type="button" class="btn primary" onclick="emailChoosePay()">Draft this email</button>'
+          : `<small class="muted">No invoices for this client yet.</small><button type="button" class="btn ghost" onclick="ui.acTab='invoices';go('accounting');openInvoiceModal(null,'${c ? c.id : ''}')">Create an invoice</button>`}</div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button></div>`, true);
+}
+function emailChoosePay() {
+  const inv = db.invoices.find(i => i.id === $('#chInv').value); if (!inv) return;
+  openEmailModal({ invoiceId: inv.id, tpl: invStatus(inv) === 'overdue' ? 't-remind' : 't-payreq' });
+}
+function openEmailModal({ invoiceId, clientId, tpl }) {
   if (!canAcct()) return;
   const inv = invoiceId ? db.invoices.find(i => i.id === invoiceId) : null, c = client(clientId || (inv && inv.clientId));
   const tpls = emailCfg().templates;
   const st = inv ? invStatus(inv) : '';
-  const last = store.get('aisol.mailtpl', null);          // the template used last time on this device
-  const tid = last && tpls.some(t => t.id === last) ? last : 't-intro';
-  const pick = tpls.find(t => t.id === tid) || tpls[0];
+  const want = tpl || (inv ? 't-payreq' : 't-intro');
+  const pick = tpls.find(t => t.id === want) || tpls.find(t => t.id === (inv ? 't-invoice' : 't-intro')) || tpls[0];
   ui.mail = { inv, c, extra: [] };
   openModal(inv ? `Email for ${inv.number}` : `Email to ${c ? c.name : 'client'}`, `<form onsubmit="event.preventDefault()">
     <div class="grid2"><div class="field"><label class="fl" for="mTpl">Template</label><select class="in" id="mTpl" onchange="mailApplyTpl()">
@@ -1944,7 +1979,8 @@ function openEmailModal({ invoiceId, clientId }) {
     <label class="btn ghost sm" style="width:max-content"><i class="fa-solid fa-paperclip"></i>Add files<input type="file" multiple hidden onchange="mailAddFiles(this)"></label>
     ${inv && st === 'draft' ? '<label style="display:flex;gap:8px;align-items:center;font-size:13px;margin-top:12px"><input type="checkbox" id="mMarkSent" checked> Mark the invoice as sent</label>' : ''}
     <details style="margin-top:14px" open><summary>Preview</summary><div class="mail-prev" id="mPrev" style="margin-top:10px"></div></details>
-    <div class="modal-foot" style="flex-wrap:wrap"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button>
+    <div class="modal-foot" style="flex-wrap:wrap"><button type="button" class="btn ghost" onclick="openEmailChooser(ui.mailCtx || {})" style="margin-right:auto"><i class="fa-solid fa-arrow-left"></i>Back</button>
+      <button type="button" class="btn ghost" onclick="closeModal()">Cancel</button>
       <button type="button" class="btn ghost" onclick="mailCopyOpen()" title="For Outlook on the web or any mail app"><i class="fa-regular fa-copy"></i>Copy &amp; open mail app</button>
       <button type="button" class="btn primary" onclick="mailDownloadEml()" title="Opens in Outlook as a ready-to-send draft"><i class="fa-solid fa-envelope-open-text"></i>Create email draft</button></div>
     <p class="hint" style="text-align:right;margin:8px 0 0"><b>Create email draft</b> downloads an email that opens in Outlook with the attachments included: check it and press Send.</p></form>`, true);
@@ -1954,7 +1990,6 @@ function openEmailModal({ invoiceId, clientId }) {
 function mailApplyTpl() {
   const t = emailCfg().templates.find(x => x.id === $('#mTpl').value), { inv, c } = ui.mail, v = emailVars(inv, c);
   if (!t) return;
-  store.set('aisol.mailtpl', t.id);
   $('#mSubj').value = fillVars(t.subject, v); $('#mBody').value = fillVars(t.body, v);
   const inc = k => inv && (t.invoice === k || t.invoice === 'both');
   $('#mAtt').innerHTML = (inv ? `<label><input type="checkbox" name="mA" value="inv:pdf" ${inc('pdf') ? 'checked' : ''}> Invoice PDF <small>${esc(invFile(inv))}.pdf</small></label>
@@ -2093,7 +2128,7 @@ function saveTpl(ev, id) {
 async function deleteTpl(id) {
   const t = emailCfg().templates.find(x => x.id === id);
   if (!await ask(`Delete the template "${t.name}"?`, 'Delete', true)) return;
-  saveRec('settings', { ...db.settings, email: { ...emailCfg(), templates: emailCfg().templates.filter(x => x.id !== id) } }); render();
+  saveRec('settings', { ...db.settings, email: { ...emailCfg(), templates: emailCfg().templates.filter(x => x.id !== id), removed: [...(emailCfg().removed || []), id] } }); render();
 }
 
 /* ============================================================
