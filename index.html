@@ -365,6 +365,9 @@ summary{cursor:pointer;color:var(--brand);font-weight:600;font-size:13px}
 /* ============================================================
    Configuration
    ============================================================ */
+/* Connection built into the app. Filled in automatically by Settings > "Build app file with connection".
+   Leave empty to connect each device by hand or with an invite link. */
+const BUILT_IN = {"apiUrl":"https://script.google.com/macros/s/AKfycbyIKXfr-b2RJHgXSFz9FlsQtqHXhlEDHMXffGMuOZLv_qjyd8Z2dJr5tud-YJfay0GGfg/exec","apiKey":"8bb6b51333984298b9faca0ce3ea6c18"};
 const REPORT_EMAIL = 'mohamed@ai-es.com.au';   // weekly report recipient (enforced again on the server)
 const CURRENCIES = ['AUD', 'EGP', 'SAR', 'USD'];
 const LEGACY_PIN = '1234';      // old PIN default, accepted once so people can move to passwords
@@ -491,7 +494,12 @@ function applySeedPhotos() {
 }
 
 let db = normaliseDb(store.get(K.db, null));
-let cfg = store.get(K.cfg, { apiUrl: '', apiKey: '' });
+let cfg = store.get(K.cfg, null) || { apiUrl: '', apiKey: '' };
+if (BUILT_IN.apiUrl && (cfg.apiUrl !== BUILT_IN.apiUrl || cfg.apiKey !== BUILT_IN.apiKey)) {
+  // Every device uses the built-in connection; one saved with a different backend signs in again.
+  if (cfg.apiUrl) { try { localStorage.removeItem(K.sess); localStorage.removeItem(K.q); } catch (e) { /* storage blocked */ } }
+  cfg = { ...BUILT_IN }; store.set(K.cfg, cfg);
+}
 let queue = store.get(K.q, []);
 let session = store.get(K.sess, null);
 const ui = { view: 'dashboard', week: mondayOf(new Date()), tsEmp: 'all', tsStatus: 'all', sync: cfg.apiUrl ? 'ok' : 'local', syncMsg: '', modalOpen: false, draftPhoto: null,
@@ -657,7 +665,7 @@ function render() {
   $('#companyName').textContent = db.settings.company;
   $('#loginCompany').textContent = db.settings.company;
   const u = signedIn() && cu();
-  if (!u) { $('#app').hidden = true; $('#login').hidden = false; return; }
+  if (!u) { $('#app').hidden = true; $('#login').hidden = false; $('#connBox').hidden = !!cfg.apiUrl; return; }
   $('#login').hidden = true; $('#app').hidden = false;
   const admin = isAdmin();
   if (!navAllowed(NAV.find(n => n[0] === ui.view))) ui.view = 'dashboard';
@@ -1002,8 +1010,13 @@ VIEWS.settings = function () {
     ${connected ? `<p style="margin-bottom:14px"><span class="badge b-green">Connected</span> <span class="muted" style="word-break:break-all">${esc(cfg.apiUrl)}</span></p>
       <div class="toolbar"><button class="btn ghost" onclick="copyInvite()"><i class="fa-regular fa-copy"></i>Copy team invite link</button>
       <button class="btn ghost" onclick="syncNow()"><i class="fa-solid fa-rotate"></i>Sync now</button>
-      <button class="btn danger" onclick="disconnect()">Disconnect this device</button></div>
-      <p class="hint">The invite link contains the API key. Send it to team members privately; opening it connects their device.</p>`
+      ${cfg.apiUrl === BUILT_IN.apiUrl ? '' : '<button class="btn danger" onclick="disconnect()">Disconnect this device</button>'}</div>
+      ${cfg.apiUrl === BUILT_IN.apiUrl && cfg.apiKey === BUILT_IN.apiKey
+        ? '<p class="hint"><span class="badge b-green">Built into the app</span> Every device that opens your site connects automatically. People just sign in with their email and password.</p>'
+        : `<div class="warn" style="margin-top:14px;color:var(--ink)"><b>Connect everyone automatically.</b> Build a copy of the app with this connection built in, then upload it to GitHub in place of index.html.
+          After that, team members just open the site and sign in: no invite links or pasting.
+          <div style="margin-top:10px"><button class="btn primary sm" onclick="buildAppFile()"><i class="fa-solid fa-download"></i>Build app file with connection</button></div></div>
+          <p class="hint">Or send the invite link privately: opening it connects a device.</p>`}`
     : `<div class="grid2"><div class="field"><label class="fl" for="stUrl">Web app URL</label><input class="in" id="stUrl" placeholder="https://script.google.com/macros/s/…/exec"></div>
       <div class="field"><label class="fl" for="stKey">API key</label><input class="in" id="stKey" type="password"></div></div>
       <button class="btn primary" onclick="connectFromSettings(this)">Connect</button>`}
@@ -2190,6 +2203,21 @@ async function deleteTs(id) { if (!await ask('Delete this time entry?', 'Delete'
    ============================================================ */
 async function connectFromSettings(btn) { btn.disabled = true; if (await connect($('#stUrl').value, $('#stKey').value)) render(); btn.disabled = false; }
 async function syncNow() { try { await flushQueue(); await pullRemote(); ui.sync = 'ok'; render(); toast('Up to date.', 'ok'); } catch (e) { toast('Sync failed: ' + e.message, 'err'); } }
+/* Downloads this app's index.html with the current connection written into BUILT_IN (exact values, no typing). */
+async function buildAppFile() {
+  if (!cfg.apiUrl) return;
+  let html = '';
+  try {
+    const path = location.pathname.endsWith('/') ? location.pathname + 'index.html' : location.pathname;
+    const r = await fetch(path, { cache: 'no-cache' });
+    if (r.ok) html = await r.text();
+  } catch (e) { /* handled below */ }
+  const re = /const BUILT_IN = \{[^\n]*\};/;
+  if (!re.test(html)) { toast('Open the app from your website (not a saved file) and try again.', 'err'); return; }
+  html = html.replace(re, () => 'const BUILT_IN = ' + JSON.stringify({ apiUrl: cfg.apiUrl, apiKey: cfg.apiKey }) + ';');
+  saveBlob(new Blob([html], { type: 'text/html' }), 'index.html');
+  toast('index.html downloaded with the connection built in. Upload it to GitHub to replace the old index.html.', 'ok');
+}
 async function copyInvite() {
   const link = inviteLink();
   try { await navigator.clipboard.writeText(link); toast('Invite link copied. Send it privately to your team.', 'ok'); }
