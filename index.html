@@ -457,7 +457,7 @@ function sundayOf(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDa
 /* ============================================================
    Data
    ============================================================ */
-const DEFAULT_EMAIL = { bcc: 'ai-eng-solutions@outlook.com', sigName: 'Sales Team', sigTitle: 'Sales', sigCompany: 'Artificial Engineering Solutions', sigEmail: 'sales@ai-es.com.au',
+const DEFAULT_EMAIL = { fromName: 'Artificial Engineering Solutions', replyTo: 'sales@ai-es.com.au', sendAs: 'sales@ai-es.com.au', bcc: 'ai-eng-solutions@outlook.com', sigName: 'Sales Team', sigTitle: 'Sales', sigCompany: 'Artificial Engineering Solutions', sigEmail: 'sales@ai-es.com.au',
   templates: [{"id": "t-intro", "name": "SketchFlow introduction", "subject": "Introducing SketchFlow – Fire Sprinkler & Hydrant Hydraulics, Sketched and Solved in One App", "body": "Hi {FIRST_NAME},\n\nI hope you are well. I'm pleased to introduce SketchFlow, our desktop software for fire sprinkler and hydrant hydraulic design, now available on the Microsoft Store.\n\nSketchFlow brings PDF markup and hydraulic calculations into a single Windows application, so your team can go from drawing to calculated, report-ready design without switching tools.\n\nKey capabilities:\n- Sketch over drawings – import PDF plans and draw pipework directly on them, with snap and tracking that keep the network connected.\n- 2D and 3D modelling – multi-floor networks, risers and droppers, with an interactive 3D view.\n- Automatic grid builder – end-fed, center-fed, grid and irregular sprinkler layouts fitted to a room in seconds.\n- Fast, accurate hydraulics – looped and branched networks solved with Hazen-Williams or Darcy-Weisbach.\n- Water supply check – demand plotted against the supply curve, with pressure margin and hose stream allowances (including USA and Canada inside/outside hose streams).\n- Network tools – Connectivity, hydrant friction loss and ring main checks.\n- Professional reporting – PDF and text hydraulic reports, plus Excel pipework library export.\n- Works fully offline – your project data stays on your computer.\n\nGetting started:\n1. Download SketchFlow free from the Microsoft Store:\n   https://apps.microsoft.com/detail/9pf4czdj17rv?hl=en-US&gl=AU\n2. Explore it in Demo mode (projects up to 10 nodes, watermarked reports).\n3. To unlock the full version, open **File → Licence and activation...**, enter your email and click Send Request. We will reply with your licence key, which you paste in and activate – no internet connection required.\n\nI've attached the SketchFlow Operation Manual, which covers every feature and the activation process step by step.\n\nI'd welcome the chance to arrange a short online demonstration using one of your current projects. Please let me know a time that suits you.\n\nKind regards,", "invoice": "none", "files": ["attachments/SketchFlow-Operation-Manual.pdf"]}, {"id": "t-payreq", "name": "Invoice & payment request", "subject": "Invoice {INV_NO} – payment request from Artificial Engineering Solutions", "body": "Hi {FIRST_NAME},\n\nThank you for choosing Artificial Engineering Solutions. Please find attached invoice {INV_NO}{FOR_PROJECT}.\n\nAmount due: **{TOTAL}**\nDue date: {DUE_DATE}\n\nWe would be grateful if you could arrange payment by the due date. Our bank details are:\n- Account name: Artificial Engineering Solutions\n- Bank: Commonwealth Bank of Australia\n- BSB: 067-873\n- Account no.: 2647 4478\n- SWIFT / BIC (international payments): CTBAAU2S\n- Payment reference: {INV_NO}\n\nOnce the payment is made, a quick reply to confirm would be appreciated. If you have any questions about this invoice, please let me know.\n\nKind regards,", "invoice": "pdf", "files": []}, {"id": "t-invoice", "name": "Invoice", "subject": "Invoice {INV_NO} from Artificial Engineering Solutions", "body": "Hi {FIRST_NAME},\n\nThank you for your business. Please find attached invoice {INV_NO}{FOR_PROJECT}.\n\nAmount due: **{TOTAL}**\nDue date: {DUE_DATE}\n\nPayment details are shown on the invoice. Please quote {INV_NO} as your payment reference.\n\nIf you have any questions about this invoice, just reply to this email.\n\nKind regards,", "invoice": "pdf", "files": []}, {"id": "t-remind", "name": "Payment reminder", "subject": "Reminder: invoice {INV_NO} is now due", "body": "Hi {FIRST_NAME},\n\nThis is a friendly reminder that invoice {INV_NO} for **{TOTAL}** was due on {DUE_DATE} and is still showing as unpaid. I've attached a copy for your convenience.\n\nIf you have already made the payment, thank you, and please disregard this email. Otherwise, I would appreciate payment at your earliest convenience, quoting {INV_NO} as the reference.\n\nKind regards,", "invoice": "pdf", "files": []}] };
 function defaultSettings() {
   return { id: 'main', company: 'AI Solutions', fxToAUD: { AUD: 1, EGP: 0.031, USD: 1.53, SAR: 0.41 }, lastEmailed: null, email: JSON.parse(JSON.stringify(DEFAULT_EMAIL)) };
@@ -496,6 +496,8 @@ function normaliseDb(d) {
   d.settings.fxToAUD = { ...defaultSettings().fxToAUD, ...(d.settings.fxToAUD || {}) };
   d.settings.email = { ...JSON.parse(JSON.stringify(DEFAULT_EMAIL)), ...(d.settings.email || {}) };
   const em = d.settings.email;
+  if (!em.sendAs) em.sendAs = DEFAULT_EMAIL.sendAs;      // send from sales@ai-es.com.au
+  if (!em.bcc) em.bcc = DEFAULT_EMAIL.bcc;              // always keep a copy in ai-eng-solutions@outlook.com
   em.templates = (em.templates || []).slice();
   DEFAULT_EMAIL.templates.forEach(t => { if (!em.templates.some(x => x.id === t.id) && !(em.removed || []).includes(t.id)) em.templates.push(JSON.parse(JSON.stringify(t))); });
   return d;
@@ -1592,7 +1594,8 @@ function invoicesView() {
       <td>${esc((inv.billTo || {}).name || (c && c.name) || '')}<span class="subline">${c ? `<span class="code-tag">${esc(c.code)}</span>` : ''}</span></td>
       <td class="nowrap">${niceDate(inv.issueDate)}</td><td class="nowrap">${+inv.termsDays === 0 ? 'On receipt' : niceDate(inv.dueDate)}</td>
       <td class="num"><b>${money(t.total, inv.currency)}</b>${t.gst ? `<span class="subline">incl. GST ${num2(t.gst)}</span>` : ''}</td>
-      <td><span class="badge ${b[1]}">${b[0]}</span>${st === 'paid' && inv.paidAt ? `<span class="subline">${niceDate(inv.paidAt)}</span>` : ''}</td>
+      <td><span class="badge ${b[1]}">${b[0]}</span>${st === 'paid' && inv.paidAt ? `<span class="subline">${niceDate(inv.paidAt)}</span>` : ''}
+        ${(inv.emails || []).length ? `<span class="subline" title="${esc(inv.emails[inv.emails.length - 1].subject)}"><i class="fa-regular fa-envelope"></i> Emailed ${niceDate(ymd(new Date(inv.emails[inv.emails.length - 1].at)))}</span>` : ''}</td>
       <td class="actions">
         <button class="icon-btn" onclick="downloadInvoiceDocx('${inv.id}')" title="Download Word (your template)" aria-label="Download Word"><i class="fa-regular fa-file-word"></i></button>
         <button class="icon-btn" onclick="downloadInvoicePdf('${inv.id}')" title="Download PDF" aria-label="Download PDF"><i class="fa-regular fa-file-pdf"></i></button>
@@ -1982,10 +1985,51 @@ function openEmailModal({ invoiceId, clientId, tpl }) {
     <div class="modal-foot" style="flex-wrap:wrap"><button type="button" class="btn ghost" onclick="openEmailChooser(ui.mailCtx || {})" style="margin-right:auto"><i class="fa-solid fa-arrow-left"></i>Back</button>
       <button type="button" class="btn ghost" onclick="closeModal()">Cancel</button>
       <button type="button" class="btn ghost" onclick="mailCopyOpen()" title="For Outlook on the web or any mail app"><i class="fa-regular fa-copy"></i>Copy &amp; open mail app</button>
-      <button type="button" class="btn primary" onclick="mailDownloadEml()" title="Opens in Outlook as a ready-to-send draft"><i class="fa-solid fa-envelope-open-text"></i>Create email draft</button></div>
-    <p class="hint" style="text-align:right;margin:8px 0 0"><b>Create email draft</b> downloads an email that opens in Outlook with the attachments included: check it and press Send.</p></form>`, true);
+      <button type="button" class="btn ghost" onclick="mailDownloadEml()" title="Opens in Outlook as a ready-to-send draft"><i class="fa-solid fa-envelope-open-text"></i>Create email draft</button>
+      <button type="button" class="btn primary" id="mSendBtn" onclick="mailSendNow()" disabled><i class="fa-solid fa-paper-plane"></i>Send now</button></div>
+    <p class="hint" id="mFrom" style="text-align:right;margin:8px 0 0">Checking how emails are sent…</p></form>`, true);
   $('.modal').style.width = 'min(860px,100%)';
   mailApplyTpl();
+  mailCheckSender();
+}
+async function mailCheckSender() {
+  const el = $('#mFrom'), btn = $('#mSendBtn');
+  if (!cfg.apiUrl || !session || !session.token) { el.textContent = 'Send now works once the CRM is connected to your Google backend. Use Create email draft for now.'; return; }
+  try {
+    const j = await api('mailInfo');
+    ui.mailFrom = j;
+    if (!$('#mFrom')) return;
+    el.innerHTML = `<b>Send now</b> sends from ${esc(j.fromName)} &lt;${esc(j.from)}&gt;. Replies go to ${esc(j.replyTo || j.from)}. ${j.quotaLeft} emails left today.`
+      + (j.aliasMissing ? ' <span style="color:var(--amber)">The "Send as" address in Settings isn\u2019t set up in that Gmail yet, so it uses the Gmail address.</span>' : '');
+    btn.disabled = false;
+  } catch (e) {
+    if (!$('#mFrom')) return;
+    el.innerHTML = /older version/.test(e.message)
+      ? 'To use <b>Send now</b>, update your Apps Script with the new Code.gs (version 4) and run <b>authorizeEmail</b> once. Create email draft works meanwhile.'
+      : 'Send now isn\u2019t available: ' + esc(e.message);
+  }
+}
+async function mailSendNow() {
+  const to = $('#mTo').value.trim(), subj = $('#mSubj').value.trim(), f = ui.mailFrom || {};
+  if (!to) { toast('Add the client\u2019s email address in To.', 'err'); return; }
+  if (!subj) { toast('Add a subject.', 'err'); return; }
+  const n = document.querySelectorAll('[name=mA]:checked').length;
+  if (!await ask(`Send this email now?\n\nTo: ${to}${$('#mCc').value.trim() ? '\nCc: ' + $('#mCc').value.trim() : ''}${$('#mBcc').value.trim() ? '\nBcc: ' + $('#mBcc').value.trim() : ''}\nFrom: ${f.fromName || ''} <${f.from || ''}>\nAttachments: ${n}`, 'Send now')) return;
+  const btn = $('#mSendBtn'); btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>Sending…';
+  try {
+    const logo = await sigLogo(), atts = await mailAttachments();
+    const files = [];
+    for (const a of atts) files.push({ name: a.name, mime: a.type, data: bufToB64(await a.blob.arrayBuffer()) });
+    const body = $('#mBody').value, e = emailCfg();
+    const text = body.replace(/\*\*(.+?)\*\*/g, '$1') + `\n\n${e.sigName}\n${e.sigTitle}\n${e.sigCompany}\nE ${e.sigEmail}`;
+    const j = await api('sendEmail', { to, cc: $('#mCc').value.trim(), bcc: $('#mBcc').value.trim(), subject: subj, text,
+      html: emailHtml(body, logo ? 'cid:sigLogo' : null), logo: logo ? logo.split(',')[1] : '', files });
+    toast(`Email sent to ${j.to}.`, 'ok');
+    mailAfter({ at: Date.now(), to, subject: subj, by: cu().id, attachments: atts.map(a => a.name) });
+  } catch (err) {
+    toast('The email was not sent: ' + err.message, 'err');
+    if ($('#mSendBtn')) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>Send now'; }
+  }
 }
 function mailApplyTpl() {
   const t = emailCfg().templates.find(x => x.id === $('#mTpl').value), { inv, c } = ui.mail, v = emailVars(inv, c);
@@ -2023,9 +2067,16 @@ async function mailAttachments() {
   if (missing.length) toast(`Not found on your website: ${missing.join(', ')}. Upload it to GitHub at that path, or use Add files.`, 'err');
   return out;
 }
-function mailAfter() {
-  const { inv } = ui.mail, mark = $('#mMarkSent');
-  if (inv && mark && mark.checked) saveRec('invoices', { ...inv, status: 'sent', sentAt: ymd(new Date()) });
+function mailAfter(log) {
+  const { inv, c } = ui.mail, mark = $('#mMarkSent');
+  if (inv) {
+    const cur = db.invoices.find(i => i.id === inv.id) || inv, rec = { ...cur };
+    if (mark && mark.checked && cur.status === 'draft') Object.assign(rec, { status: 'sent', sentAt: ymd(new Date()) });
+    if (log) rec.emails = [...(cur.emails || []), log].slice(-20);
+    saveRec('invoices', rec);
+  } else if (c && log) {
+    const cur = client(c.id) || c; saveRec('clients', { ...cur, emails: [...(cur.emails || []), log].slice(-20) });
+  }
   closeModal(); render();
 }
 const b64wrap = s => s.replace(/.{1,76}/g, '$&\r\n');
@@ -2089,7 +2140,14 @@ function emailSettingsSection() {
       <div class="field"><label class="fl" for="esCo">Company</label><input class="in" id="esCo" value="${esc(e.sigCompany)}"></div>
       <div class="field"><label class="fl" for="esEmail">Signature email</label><input class="in" id="esEmail" value="${esc(e.sigEmail)}"></div>
       <div class="field"><label class="fl" for="esBcc">Always Bcc</label><input class="in" id="esBcc" value="${esc(e.bcc)}"></div></div>
-    <button class="btn primary sm" onclick="saveEmailSettings()">Save signature</button>
+    <h3 style="margin-top:8px">Sending directly (Send now)</h3>
+    <p>Emails are sent through the Google account that owns your Apps Script.</p>
+    <div class="grid3"><div class="field"><label class="fl" for="esFromName">Sender name clients see</label><input class="in" id="esFromName" value="${esc(e.fromName)}"></div>
+      <div class="field"><label class="fl" for="esReply">Replies go to</label><input class="in" id="esReply" type="email" value="${esc(e.replyTo)}"></div>
+      <div class="field"><label class="fl" for="esSendAs">Send as (optional)</label><input class="in" id="esSendAs" type="email" value="${esc(e.sendAs)}" placeholder="sales@ai-es.com.au">
+        <div class="hint">Must be set up in that Gmail under Settings > Accounts > "Send mail as". Leave empty to send from the Gmail address.</div></div></div>
+    <div class="toolbar"><button class="btn primary sm" onclick="saveEmailSettings()">Save</button>
+      <button class="btn ghost sm" onclick="checkSending(this)"><i class="fa-solid fa-stethoscope"></i>Check sending</button><span class="hint" id="esCheck"></span></div>
     <h3 style="margin-top:20px">Templates</h3>
     <div class="tbl-wrap"><table style="min-width:0"><thead><tr><th>Name</th><th>Subject</th><th>Attaches</th><th class="actions"></th></tr></thead><tbody>
       ${e.templates.map(t => `<tr><td><b>${esc(t.name)}</b></td><td class="muted">${esc(t.subject)}</td>
@@ -2100,8 +2158,19 @@ function emailSettingsSection() {
 }
 function saveEmailSettings() {
   saveRec('settings', { ...db.settings, email: { ...emailCfg(), sigName: $('#esName').value.trim(), sigTitle: $('#esTitle').value.trim(), sigCompany: $('#esCo').value.trim(),
-    sigEmail: $('#esEmail').value.trim(), bcc: $('#esBcc').value.trim() } });
-  render(); toast('Signature saved.', 'ok');
+    sigEmail: $('#esEmail').value.trim(), bcc: $('#esBcc').value.trim(),
+    fromName: $('#esFromName').value.trim() || 'Artificial Engineering Solutions', replyTo: $('#esReply').value.trim(), sendAs: $('#esSendAs').value.trim() } });
+  render(); toast('Email settings saved.', 'ok');
+}
+async function checkSending(btn) {
+  const out = $('#esCheck'); btn.disabled = true; out.textContent = 'Checking…';
+  try {
+    await flushQueue();
+    const j = await api('mailInfo');
+    out.innerHTML = `Ready. Sends from <b>${esc(j.fromName)} &lt;${esc(j.from)}&gt;</b>, replies to ${esc(j.replyTo || j.from)}. ${j.quotaLeft} emails left today.`
+      + (j.aliasMissing ? ' <span style="color:var(--amber)">The Send as address isn\u2019t set up in that Gmail yet.</span>' : '');
+  } catch (e) { out.textContent = /older version/.test(e.message) ? 'Update Apps Script with the new Code.gs (version 4), then run authorizeEmail once.' : e.message; }
+  btn.disabled = false;
 }
 function openTplModal(id) {
   const t = id ? emailCfg().templates.find(x => x.id === id) : { id: '', name: '', subject: '', body: 'Hi {FIRST_NAME},\n\n\n\nKind regards,', invoice: 'none', files: [] };
