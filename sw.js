@@ -1,13 +1,13 @@
 /* AI Solutions CRM service worker.
-   - The app page is fetched from the network first, so every published update reaches users right away;
-     the cached copy is used only when offline.
-   - Version-pinned libraries, fonts and icons are served from cache for speed and offline use.
+   - Your own files (the app page, invoice template, icons) are fetched from the network first, so every update
+     you publish reaches people right away; the saved copy is used only when offline.
+   - Version-pinned libraries and fonts from CDNs are served from the cache for speed and offline use.
    - Calls to the Google Apps Script backend are never cached. */
-const CACHE = 'aisol-crm-v1';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png'];
+const CACHE = 'aisol-crm-v2';
+const SHELL = ['./', './index.html', './manifest.webmanifest', './invoice-template.docx', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => {})))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys()
@@ -17,11 +17,10 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.hostname.endsWith('google.com') || url.hostname.endsWith('googleusercontent.com')) return;
-
-  if (req.mode === 'navigate' || (url.origin === location.origin && /\/(index\.html)?$/.test(url.pathname))) {
+  if (url.origin === location.origin) {
     e.respondWith(fetch(req)
-      .then(res => { const copy = res.clone(); caches.open(CACHE).then(c => c.put('./index.html', copy)); return res; })
-      .catch(() => caches.match('./index.html')));
+      .then(res => { if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req.mode === 'navigate' ? './index.html' : req, copy)); } return res; })
+      .catch(() => caches.match(req.mode === 'navigate' ? './index.html' : req)));
     return;
   }
   e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(res => {
