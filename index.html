@@ -1926,7 +1926,8 @@ function openEmailModal({ invoiceId, clientId }) {
   const inv = invoiceId ? db.invoices.find(i => i.id === invoiceId) : null, c = client(clientId || (inv && inv.clientId));
   const tpls = emailCfg().templates;
   const st = inv ? invStatus(inv) : '';
-  const tid = inv ? (st === 'overdue' ? 't-remind' : 't-invoice') : 't-intro';
+  const last = store.get('aisol.mailtpl', null);          // the template used last time on this device
+  const tid = last && tpls.some(t => t.id === last) ? last : 't-intro';
   const pick = tpls.find(t => t.id === tid) || tpls[0];
   ui.mail = { inv, c, extra: [] };
   openModal(inv ? `Email for ${inv.number}` : `Email to ${c ? c.name : 'client'}`, `<form onsubmit="event.preventDefault()">
@@ -1953,6 +1954,7 @@ function openEmailModal({ invoiceId, clientId }) {
 function mailApplyTpl() {
   const t = emailCfg().templates.find(x => x.id === $('#mTpl').value), { inv, c } = ui.mail, v = emailVars(inv, c);
   if (!t) return;
+  store.set('aisol.mailtpl', t.id);
   $('#mSubj').value = fillVars(t.subject, v); $('#mBody').value = fillVars(t.body, v);
   const inc = k => inv && (t.invoice === k || t.invoice === 'both');
   $('#mAtt').innerHTML = (inv ? `<label><input type="checkbox" name="mA" value="inv:pdf" ${inc('pdf') ? 'checked' : ''}> Invoice PDF <small>${esc(invFile(inv))}.pdf</small></label>
