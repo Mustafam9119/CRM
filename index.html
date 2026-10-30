@@ -1595,10 +1595,13 @@ function invoicesView() {
       <td class="nowrap">${niceDate(inv.issueDate)}</td><td class="nowrap">${+inv.termsDays === 0 ? 'On receipt' : niceDate(inv.dueDate)}</td>
       <td class="num"><b>${money(t.total, inv.currency)}</b>${t.gst ? `<span class="subline">incl. GST ${num2(t.gst)}</span>` : ''}</td>
       <td><span class="badge ${b[1]}">${b[0]}</span>${st === 'paid' && inv.paidAt ? `<span class="subline">${niceDate(inv.paidAt)}</span>` : ''}
+        ${inv.pdf ? `<span class="subline"><a href="#" onclick="event.preventDefault();viewInvoicePdf('${inv.id}')"><i class="fa-regular fa-file-pdf"></i> PDF uploaded</a></span>` : ''}
         ${(inv.emails || []).length ? `<span class="subline" title="${esc(inv.emails[inv.emails.length - 1].subject)}"><i class="fa-regular fa-envelope"></i> Emailed ${niceDate(ymd(new Date(inv.emails[inv.emails.length - 1].at)))}</span>` : ''}</td>
       <td class="actions">
         <button class="icon-btn" onclick="downloadInvoiceDocx('${inv.id}')" title="Download Word (your template)" aria-label="Download Word"><i class="fa-regular fa-file-word"></i></button>
         <button class="icon-btn" onclick="downloadInvoicePdf('${inv.id}')" title="Download PDF" aria-label="Download PDF"><i class="fa-regular fa-file-pdf"></i></button>
+        ${inv.pdf ? `<button class="icon-btn" style="color:var(--green)" onclick="openInvoicePdfModal('${inv.id}')" title="Uploaded PDF: ${esc(inv.pdf.name)}" aria-label="Uploaded PDF"><i class="fa-solid fa-paperclip"></i></button>`
+          : `<button class="icon-btn" onclick="pickInvoicePdf('${inv.id}')" title="Upload invoice PDF" aria-label="Upload invoice PDF"><i class="fa-solid fa-upload"></i></button>`}
         <button class="icon-btn" onclick="openEmailChooser({ invoiceId: '${inv.id}' })" title="Draft email to client" aria-label="Draft email to client"><i class="fa-regular fa-envelope"></i></button>
         ${st === 'draft' ? `<button class="icon-btn" onclick="setInvStatus('${inv.id}','sent')" title="Mark as sent" aria-label="Mark as sent"><i class="fa-regular fa-paper-plane"></i></button>` : ''}
         ${st === 'sent' || st === 'overdue' ? `<button class="icon-btn" onclick="markInvPaid('${inv.id}')" title="Mark as paid (records the income)" aria-label="Mark as paid"><i class="fa-solid fa-sack-dollar"></i></button>` : ''}
@@ -1755,6 +1758,77 @@ async function deleteInvoice(id) {
   const inv = db.invoices.find(i => i.id === id);
   if (!await ask(`Delete invoice ${inv.number}?${inv.ledgerId ? '\n\nIts recorded income entry stays under Income & expenses; delete it there if needed.' : ''}`, 'Delete', true)) return;
   removeRec('invoices', id); render();
+}
+
+/* Uploaded invoice PDFs — the file is kept in your Google Drive (folder "CRM Invoices"),
+   the invoice record only keeps its Drive id, name and size. */
+const INV_PDF_MAX = 10 * 1024 * 1024;
+function invPdfOk() {
+  if (!cfg.apiUrl) { toast('Connect the backend in Settings first: uploaded PDFs are stored in your Google Drive.', 'err'); return false; }
+  return true;
+}
+function pickInvoicePdf(id) {
+  if (!canAcct() || !invPdfOk()) return;
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'application/pdf,.pdf';
+  input.onchange = () => { if (input.files[0]) uploadInvoicePdf(id, input.files[0]); };
+  input.click();
+}
+const fileB64 = f => new Promise((ok, bad) => {
+  const r = new FileReader();
+  r.onload = () => ok(String(r.result).split(',')[1]); r.onerror = () => bad(new Error('The file could not be read.'));
+  r.readAsDataURL(f);
+});
+async function uploadInvoicePdf(id, file) {
+  const inv = db.invoices.find(i => i.id === id); if (!inv) return;
+  if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') { toast('Choose a PDF file.', 'err'); return; }
+  if (file.size > INV_PDF_MAX) { toast(`That PDF is ${Math.round(file.size / 1048576)} MB. The limit is 10 MB.`, 'err'); return; }
+  if (inv.pdf && !await ask(`${inv.number} already has an uploaded PDF (${inv.pdf.name}). Replace it?`, 'Replace')) return;
+  toast(`Uploading ${file.name}…`);
+  try {
+    const j = await api('uploadInvoicePdf', { invoiceId: inv.id, number: inv.number, name: file.name, data: await fileB64(file) });
+    const cur = db.invoices.find(i => i.id === id) || inv;
+    saveRec('invoices', { ...cur, pdf: { fileId: j.fileId, name: file.name, size: file.size, uploadedAt: Date.now(), uploadedBy: cu().id } });
+    render(); toast(`${file.name} uploaded to ${inv.number}.`, 'ok');
+  } catch (e) { toast('The PDF was not uploaded: ' + e.message, 'err'); }
+}
+async function fetchInvoicePdf(inv) {
+  const j = await api('getInvoicePdf', { fileId: inv.pdf.fileId });
+  const bin = atob(j.data), bytes = new Uint8Array(bin.length);
+  for (let k = 0; k < bin.length; k++) bytes[k] = bin.charCodeAt(k);
+  return new Blob([bytes], { type: 'application/pdf' });
+}
+async function viewInvoicePdf(id) {
+  const inv = db.invoices.find(i => i.id === id); if (!inv || !inv.pdf || !invPdfOk()) return;
+  const win = window.open('', '_blank');   // opened now so the browser doesn't block it as a pop-up
+  if (win) win.document.write('<p style="font:14px sans-serif;padding:20px">Opening ' + esc(inv.pdf.name) + '…</p>');
+  try {
+    const blob = await fetchInvoicePdf(inv);
+    if (!win) { saveBlob(blob, inv.pdf.name); return; }
+    const url = URL.createObjectURL(blob);
+    win.location.href = url; setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch (e) { if (win) win.close(); toast('The PDF could not be opened: ' + e.message, 'err'); }
+}
+async function downloadUploadedPdf(id) {
+  const inv = db.invoices.find(i => i.id === id); if (!inv || !inv.pdf || !invPdfOk()) return;
+  try { saveBlob(await fetchInvoicePdf(inv), inv.pdf.name); } catch (e) { toast('The PDF could not be downloaded: ' + e.message, 'err'); }
+}
+async function removeInvoicePdf(id) {
+  const inv = db.invoices.find(i => i.id === id); if (!inv || !inv.pdf || !invPdfOk()) return;
+  if (!await ask(`Remove ${inv.pdf.name} from ${inv.number}?\n\nThe file moves to the Drive bin, where it can be restored for 30 days.`, 'Remove', true)) return;
+  try { await api('deleteInvoicePdf', { fileId: inv.pdf.fileId }); } catch (e) { toast('The file could not be removed from Drive: ' + e.message, 'err'); return; }
+  const cur = db.invoices.find(i => i.id === id) || inv, rec = { ...cur }; delete rec.pdf;
+  saveRec('invoices', rec); closeModal(); render(); toast('Uploaded PDF removed.', 'ok');
+}
+function openInvoicePdfModal(id) {
+  const inv = db.invoices.find(i => i.id === id); if (!inv || !inv.pdf) return;
+  const p = inv.pdf, who = (db.employees.find(e => e.id === p.uploadedBy) || {}).name;
+  openModal('Uploaded PDF · ' + inv.number, `<p style="margin-top:0"><i class="fa-regular fa-file-pdf"></i> <b>${esc(p.name)}</b></p>
+    <p class="muted" style="font-size:13px">${Math.max(1, Math.round(p.size / 1024))} KB · uploaded ${niceDate(ymd(new Date(p.uploadedAt)))}${who ? ' by ' + esc(who) : ''}. Stored in your Google Drive, folder "CRM Invoices".</p>
+    <div class="modal-foot"><button type="button" class="btn danger" style="margin-right:auto" onclick="removeInvoicePdf('${inv.id}')"><i class="fa-regular fa-trash-can"></i>Remove</button>
+      <button type="button" class="btn ghost" onclick="closeModal();pickInvoicePdf('${inv.id}')"><i class="fa-solid fa-upload"></i>Replace</button>
+      <button type="button" class="btn ghost" onclick="downloadUploadedPdf('${inv.id}')"><i class="fa-solid fa-download"></i>Download</button>
+      <button type="button" class="btn primary" onclick="viewInvoicePdf('${inv.id}')"><i class="fa-regular fa-eye"></i>View</button></div>`);
 }
 
 /* Word: fills your template, keeping its exact design */
@@ -2036,7 +2110,9 @@ function mailApplyTpl() {
   if (!t) return;
   $('#mSubj').value = fillVars(t.subject, v); $('#mBody').value = fillVars(t.body, v);
   const inc = k => inv && (t.invoice === k || t.invoice === 'both');
-  $('#mAtt').innerHTML = (inv ? `<label><input type="checkbox" name="mA" value="inv:pdf" ${inc('pdf') ? 'checked' : ''}> Invoice PDF <small>${esc(invFile(inv))}.pdf</small></label>
+  const up = inv && inv.pdf && cfg.apiUrl;
+  $('#mAtt').innerHTML = (inv ? (up ? `<label><input type="checkbox" name="mA" value="inv:upload" ${inc('pdf') ? 'checked' : ''}> Uploaded invoice PDF <small>${esc(inv.pdf.name)}</small></label>` : '')
+      + `<label><input type="checkbox" name="mA" value="inv:pdf" ${inc('pdf') && !up ? 'checked' : ''}> Invoice PDF${up ? ' (generated)' : ''} <small>${esc(invFile(inv))}.pdf</small></label>
       <label><input type="checkbox" name="mA" value="inv:docx" ${inc('docx') ? 'checked' : ''}> Invoice Word <small>${esc(invFile(inv))}.docx</small></label>` : '')
     + (t.files || []).map(f => `<label><input type="checkbox" name="mA" value="file:${esc(f)}" checked> ${esc(f.split('/').pop())} <small>from your website</small></label>`).join('')
     + ui.mail.extra.map((f, i) => `<label><input type="checkbox" name="mA" value="extra:${i}" checked> ${esc(f.name)} <small>${Math.round(f.size / 1024)} KB, from this computer</small></label>`).join('')
@@ -2056,7 +2132,10 @@ async function mailAttachments() {
   const out = [], missing = [], { inv } = ui.mail;
   for (const x of document.querySelectorAll('[name=mA]:checked')) {
     const [kind, ...rest] = x.value.split(':'), ref = rest.join(':');
-    if (kind === 'inv' && ref === 'pdf') out.push({ name: invFile(inv) + '.pdf', type: 'application/pdf', blob: makeInvoicePdf(inv, await invoiceLogo()).output('blob') });
+    if (kind === 'inv' && ref === 'upload') {
+      try { out.push({ name: inv.pdf.name, type: 'application/pdf', blob: await fetchInvoicePdf(inv) }); } catch (e) { toast(`The uploaded PDF could not be fetched from Drive (${e.message}), so it was left out.`, 'err'); }
+    }
+    else if (kind === 'inv' && ref === 'pdf') out.push({ name: invFile(inv) + '.pdf', type: 'application/pdf', blob: makeInvoicePdf(inv, await invoiceLogo()).output('blob') });
     else if (kind === 'inv' && ref === 'docx') out.push({ name: invFile(inv) + '.docx', type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', blob: await buildInvoiceDocx(inv) });
     else if (kind === 'extra') { const f = ui.mail.extra[+ref]; out.push({ name: f.name, type: f.type || 'application/octet-stream', blob: f }); }
     else if (kind === 'file') {
