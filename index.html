@@ -1248,7 +1248,8 @@ function ledgerView() {
     return `<div class="card stat"><span>Net in ${c}</span><b class="${t.net < 0 ? 'neg' : 'pos'}">${money(t.net, c)}</b><small>Income ${money(t.income)} · Expenses ${money(t.expense)}</small></div>`; }).join('');
   const rows = list.map(x => `<tr><td class="nowrap">${niceDate(x.date)}</td>
     <td>${x.type === 'income' ? '<span class="badge b-green">Income</span>' : '<span class="badge b-red">Expense</span>'}</td>
-    <td>${esc(x.category || '')}</td><td>${esc(x.party || '')}</td><td class="muted" style="max-width:260px">${esc(x.description || '')}</td><td>${esc(x.reference || '')}</td>
+    <td>${esc(x.category || '')}</td><td>${esc(x.party || '')}</td><td class="muted" style="max-width:260px">${esc(x.description || '')}</td><td>${esc(x.reference || '')}
+      ${x.receipt ? `<span class="subline"><a href="#" onclick="openReceipt('${x.id}');return false" title="${esc(x.receipt.name)}"><i class="fa-solid fa-paperclip"></i> Receipt</a></span>` : ''}</td>
     <td class="num ${x.type === 'income' ? 'amt-in' : 'amt-out'}">${x.type === 'income' ? '+' : '\u2212'}${money(x.amount, x.currency)}</td>
     <td class="actions"><button class="icon-btn" onclick="openLedgerModal('${x.id}')" title="Edit" aria-label="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
       <button class="icon-btn" onclick="duplicateLedger('${x.id}')" title="Duplicate" aria-label="Duplicate"><i class="fa-regular fa-copy"></i></button>
@@ -1293,6 +1294,11 @@ function openLedgerModal(id, type, preset) {
       <div class="field"><label class="fl" for="lgRef">Invoice or receipt no.</label><input class="in" id="lgRef" value="${esc(x.reference)}"></div></div>
     <div class="field"><label class="fl" for="lgParty" id="lgPartyL">${x.type === 'income' ? 'Client / payer' : 'Supplier / payee'}</label><input class="in" id="lgParty" value="${esc(x.party)}"></div>
     <div class="field"><label class="fl" for="lgDesc">Description</label><textarea class="in" id="lgDesc" rows="2">${esc(x.description)}</textarea></div>
+    <div class="field"><label class="fl" for="lgFile">Receipt or invoice (optional)</label>
+      <div id="lgFileNow">${x.receipt ? `<span class="subline" style="font-size:13px"><a href="#" onclick="openReceipt('${x.id}');return false"><i class="fa-solid fa-paperclip"></i> ${esc(x.receipt.name)}</a>
+        <label style="display:inline-flex;gap:6px;align-items:center;margin-left:12px"><input type="checkbox" id="lgFileDel"> Remove</label></span>` : ''}</div>
+      <input class="in" id="lgFile" type="file" accept="application/pdf,image/jpeg,image/png,.pdf,.jpg,.jpeg,.png" ${cfg.apiUrl ? '' : 'disabled'} style="padding:7px">
+      <div class="hint">${cfg.apiUrl ? `PDF, JPG or PNG up to 15 MB${x.receipt ? '. Choosing a file replaces the current one' : ''}. Photos of paper receipts work too.` : 'Attaching files needs the CRM connected to your Google backend.'}</div></div>
     <datalist id="acCats">${acCatOptions(x.type)}</datalist>
     <div class="modal-foot"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn primary">${id ? 'Save entry' : 'Add entry'}</button></div></form>`, true);
 }
@@ -1301,27 +1307,48 @@ function acTypeChange() {
   $('#acCats').innerHTML = acCatOptions(t);
   $('#lgPartyL').textContent = t === 'income' ? 'Client / payer' : 'Supplier / payee';
 }
-function saveLedger(ev, id) {
+async function saveLedger(ev, id) {
   ev.preventDefault();
   const amount = round2($('#lgAmt').value);
   if (!(amount > 0)) { toast('Enter an amount above zero.', 'err'); return; }
   const old = id ? db.ledger.find(l => l.id === id) : {};
-  const rec = { ...old, id: id || 'led-' + uid(), type: $('#lgType').value, date: $('#lgDate').value, amount, currency: $('#lgCur').value,
+  const f = $('#lgFile').files[0], drop = $('#lgFileDel') && $('#lgFileDel').checked;
+  let receipt = old.receipt || null, oldFile = null;
+  if (f) {
+    if (f.size > 15 * 1024 * 1024) { toast('That file is larger than 15 MB.', 'err'); return; }
+    const btn = document.querySelector('#modalRoot .btn.primary'); btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>Uploading…';
+    try {
+      const j = await api('uploadFile', { kind: 'receipt', name: f.name, data: bufToB64(await f.arrayBuffer()), ref: ($('#lgRef').value.trim() || $('#lgParty').value.trim()) });
+      oldFile = receipt; receipt = { ...j.file, uploadedAt: Date.now(), by: cu().id };
+    } catch (e) { toast('The file was not uploaded: ' + e.message, 'err'); btn.disabled = false; btn.textContent = id ? 'Save entry' : 'Add entry'; return; }
+  } else if (drop) { oldFile = receipt; receipt = null; }
+  const rec = { ...old, receipt, id: id || 'led-' + uid(), type: $('#lgType').value, date: $('#lgDate').value, amount, currency: $('#lgCur').value,
     category: $('#lgCat').value.replace(/\|/g, '/').trim(), party: $('#lgParty').value.trim(), description: $('#lgDesc').value.trim(), reference: $('#lgRef').value.trim(),
     createdBy: old.createdBy || cu().id, createdAt: old.createdAt || Date.now(), updatedBy: cu().id };
   saveRec('ledger', rec); closeModal();
+  if (oldFile) api('deleteFile', { id: oldFile.id }).catch(() => {});
   const d = parseYmd(rec.date);
   if (ui.acScope === 'month') ui.acMonth = new Date(d.getFullYear(), d.getMonth(), 1); else ui.acMonth = new Date(d.getFullYear(), ui.acMonth.getMonth(), 1);
-  render(); toast(id ? 'Entry saved.' : (rec.type === 'income' ? 'Income added.' : 'Expense added.'), 'ok');
+  render(); toast((id ? 'Entry saved' : rec.type === 'income' ? 'Income added' : 'Expense added') + (f ? ' with ' + f.name + ' attached.' : '.'), 'ok');
 }
 function duplicateLedger(id) {
   const x = db.ledger.find(l => l.id === id); if (!x) return;
-  openLedgerModal(null, null, { ...x, id: '', date: ymd(new Date()) });
+  openLedgerModal(null, null, { ...x, id: '', date: ymd(new Date()), receipt: null });
 }
 async function deleteLedger(id) {
   const x = db.ledger.find(l => l.id === id); if (!x) return;
-  if (!await ask(`Delete this ${x.type} of ${money(x.amount, x.currency)}${x.party ? ' (' + x.party + ')' : ''}?`, 'Delete', true)) return;
+  if (!await ask(`Delete this ${x.type} of ${money(x.amount, x.currency)}${x.party ? ' (' + x.party + ')' : ''}?${x.receipt ? '\n\nIts attached receipt is deleted too.' : ''}`, 'Delete', true)) return;
   removeRec('ledger', id); render();
+  if (x.receipt) api('deleteFile', { id: x.receipt.id }).catch(() => {});
+}
+async function openReceipt(id) {
+  const x = db.ledger.find(l => l.id === id); if (!x || !x.receipt) return;
+  try {
+    const j = await api('getFile', { id: x.receipt.id });
+    const bin = atob(j.data), bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    saveBlob(new Blob([bytes], { type: j.mime }), x.receipt.name);
+  } catch (e) { toast('The receipt could not be opened: ' + e.message, 'err'); }
 }
 function copyLedgerTable() {
   copyText(tsv([['Date', 'Type', 'Category', 'Client / supplier', 'Description', 'Reference', 'Currency', 'Amount'],
@@ -1383,17 +1410,17 @@ async function buildLedgerXlsx(R) {
   const ctx = { company: co, label: R.label, subtitle: 'Accounting report  |  ' + R.label, footer: 'Accounting report ' + R.label + ' (confidential)',
     logoId: icon && /^data:image\/png;base64,/.test(icon.href) ? wb.addImage({ base64: icon.href, extension: 'png' }) : null };
   const S = xlSheet(wb, 'Summary', [30, 22, 20, 20, 20, 24], ctx);
-  const E = xlSheet(wb, 'Entries', [17, 11, 26, 26, 46, 18, 10, 18], ctx, 5);
+  const E = xlSheet(wb, 'Entries', [17, 11, 26, 26, 46, 18, 10, 18, 30], ctx, 5);
 
-  xlHeader(E, 5, ['Date', 'Type', 'Category', 'Client / supplier', 'Description', 'Reference', 'Currency', 'Amount'], [8]);
+  xlHeader(E, 5, ['Date', 'Type', 'Category', 'Client / supplier', 'Description', 'Reference', 'Currency', 'Amount', 'Receipt attached'], [8]);
   E.getCell(5, 7).alignment = { vertical: 'middle', horizontal: 'center' };
   const first = 6, last = first + Math.max(R.entries.length, 1) - 1;
   R.entries.forEach((x, i) => xlRow(E, first + i, [{ v: xlDate(x.date), nf: NF.date, align: 'left' },
     { v: x.type === 'income' ? 'Income' : 'Expense', font: { bold: true, color: { argb: x.type === 'income' ? XL.green : XL.red } } },
     x.category || 'Uncategorised', x.party || '', { v: x.description || '', wrap: true }, x.reference || '', { v: x.currency, align: 'center' },
-    { v: +x.amount || 0, nf: NF.money(x.currency) }], { fill: i % 2 ? XL.zebra : null, height: 20 }));
+    { v: +x.amount || 0, nf: NF.money(x.currency) }, x.receipt ? x.receipt.name : { v: 'No', font: { color: { argb: XL.muted } } }], { fill: i % 2 ? XL.zebra : null, height: 20 }));
   if (!R.entries.length) xlRow(E, first, [{ v: 'Nothing recorded for this period.', font: { italic: true, color: { argb: XL.muted } } }]);
-  else E.autoFilter = { from: { row: 5, column: 1 }, to: { row: last, column: 8 } };
+  else E.autoFilter = { from: { row: 5, column: 1 }, to: { row: last, column: 9 } };
 
   [['Period', `${dmy(R.start)} to ${dmy(R.end)}`], ['Entries', String(R.entries.length)], ['Generated', R.generated], ['Prepared by', (cu() || {}).name || '']]
     .forEach(([k, v], i) => { const row = 5 + i; S.getCell(row, 1).value = k; S.getCell(row, 1).font = xlFont({ bold: true, color: { argb: XL.muted } });
