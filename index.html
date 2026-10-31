@@ -1590,7 +1590,9 @@ function invoicesView() {
   db.invoices.filter(i => ['sent', 'overdue'].includes(invStatus(i))).forEach(i => { owing[i.currency] = round2((owing[i.currency] || 0) + invTotals(i).total); });
   const rows = list.map(inv => {
     const t = invTotals(inv), st = invStatus(inv), c = client(inv.clientId), b = INV_BADGE[st];
-    return `<tr><td><b class="nowrap">${esc(inv.number)}</b>${inv.project ? `<span class="subline">${esc(inv.project)}</span>` : ''}</td>
+    return `<tr><td><b class="nowrap">${esc(inv.number)}</b>${inv.project ? `<span class="subline">${esc(inv.project)}</span>` : ''}
+        ${inv.pdfFile ? `<span class="subline"><a href="#" onclick="downloadInvoicePdf('${inv.id}');return false" title="${esc(inv.pdfFile.name)}"><i class="fa-solid fa-paperclip"></i> Uploaded PDF</a>
+          <button class="icon-btn del" style="width:20px;height:20px" onclick="removeInvoicePdf('${inv.id}')" title="Remove the uploaded PDF" aria-label="Remove uploaded PDF"><i class="fa-solid fa-xmark"></i></button></span>` : ''}</td>
       <td>${esc((inv.billTo || {}).name || (c && c.name) || '')}<span class="subline">${c ? `<span class="code-tag">${esc(c.code)}</span>` : ''}</span></td>
       <td class="nowrap">${niceDate(inv.issueDate)}</td><td class="nowrap">${+inv.termsDays === 0 ? 'On receipt' : niceDate(inv.dueDate)}</td>
       <td class="num"><b>${money(t.total, inv.currency)}</b>${t.gst ? `<span class="subline">incl. GST ${num2(t.gst)}</span>` : ''}</td>
@@ -1598,7 +1600,8 @@ function invoicesView() {
         ${(inv.emails || []).length ? `<span class="subline" title="${esc(inv.emails[inv.emails.length - 1].subject)}"><i class="fa-regular fa-envelope"></i> Emailed ${niceDate(ymd(new Date(inv.emails[inv.emails.length - 1].at)))}</span>` : ''}</td>
       <td class="actions">
         <button class="icon-btn" onclick="downloadInvoiceDocx('${inv.id}')" title="Download Word (your template)" aria-label="Download Word"><i class="fa-regular fa-file-word"></i></button>
-        <button class="icon-btn" onclick="downloadInvoicePdf('${inv.id}')" title="Download PDF" aria-label="Download PDF"><i class="fa-regular fa-file-pdf"></i></button>
+        <button class="icon-btn" onclick="downloadInvoicePdf('${inv.id}')" title="${inv.pdfFile ? 'Download the uploaded PDF' : 'Download PDF'}" aria-label="Download PDF"><i class="fa-regular fa-file-pdf"></i></button>
+        <button class="icon-btn" onclick="uploadInvoicePdf('${inv.id}')" title="${inv.pdfFile ? 'Replace the uploaded PDF' : 'Upload the final invoice PDF'}" aria-label="Upload invoice PDF"><i class="fa-solid fa-file-arrow-up"></i></button>
         <button class="icon-btn" onclick="openEmailChooser({ invoiceId: '${inv.id}' })" title="Draft email to client" aria-label="Draft email to client"><i class="fa-regular fa-envelope"></i></button>
         ${st === 'draft' ? `<button class="icon-btn" onclick="setInvStatus('${inv.id}','sent')" title="Mark as sent" aria-label="Mark as sent"><i class="fa-regular fa-paper-plane"></i></button>` : ''}
         ${st === 'sent' || st === 'overdue' ? `<button class="icon-btn" onclick="markInvPaid('${inv.id}')" title="Mark as paid (records the income)" aria-label="Mark as paid"><i class="fa-solid fa-sack-dollar"></i></button>` : ''}
@@ -1804,6 +1807,36 @@ async function downloadInvoiceDocx(id) {
   try { saveBlob(await buildInvoiceDocx(inv), invFile(inv) + '.docx'); toast(`${inv.number} downloaded as Word. Open it to review, then save as PDF or send.`, 'ok'); }
   catch (e) { toast('The Word invoice could not be created: ' + e.message, 'err'); }
 }
+/* Upload the final invoice PDF (stored privately in the backend's Google Drive folder) */
+function uploadInvoicePdf(id) {
+  const inv = db.invoices.find(i => i.id === id);
+  if (!cfg.apiUrl || !session || !session.token) { toast('Uploading needs the CRM connected to your Google backend.', 'err'); return; }
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'application/pdf,.pdf';
+  input.onchange = async () => {
+    const f = input.files[0]; if (!f) return;
+    if (!/\.pdf$/i.test(f.name) && f.type !== 'application/pdf') { toast('Choose a PDF file.', 'err'); return; }
+    if (f.size > 15 * 1024 * 1024) { toast('That PDF is larger than 15 MB.', 'err'); return; }
+    if (inv.pdfFile && !await ask(`Replace the uploaded PDF for ${inv.number} (${inv.pdfFile.name}) with ${f.name}?`, 'Replace')) return;
+    toast(`Uploading ${f.name}…`);
+    try {
+      const j = await api('uploadFile', { name: f.name, mime: 'application/pdf', data: bufToB64(await f.arrayBuffer()), ref: inv.number });
+      const cur = db.invoices.find(i => i.id === id) || inv, old = cur.pdfFile;
+      saveRec('invoices', { ...cur, pdfFile: { ...j.file, uploadedAt: Date.now(), by: cu().id } });
+      if (old) api('deleteFile', { id: old.id }).catch(() => {});
+      render(); toast(`${f.name} uploaded to ${inv.number}. Emails will now attach this PDF.`, 'ok');
+    } catch (e) { toast('The PDF was not uploaded: ' + e.message, 'err'); }
+  };
+  input.click();
+}
+async function removeInvoicePdf(id) {
+  const inv = db.invoices.find(i => i.id === id); if (!inv || !inv.pdfFile) return;
+  if (!await ask(`Remove the uploaded PDF (${inv.pdfFile.name}) from ${inv.number}?\n\nDownloads and emails will use the CRM-generated invoice again.`, 'Remove', true)) return;
+  const old = inv.pdfFile;
+  saveRec('invoices', { ...inv, pdfFile: null }); render();
+  api('deleteFile', { id: old.id }).catch(() => {});
+}
+
 /* PDF: same layout, drawn directly (logo taken from your template) */
 async function invoiceLogo() {
   try {
@@ -1812,7 +1845,19 @@ async function invoiceLogo() {
     return f ? 'data:image/png;base64,' + await zip.file(f).async('base64') : null;
   } catch (e) { return null; }
 }
+async function fetchUploadedPdf(inv) {
+  const j = await api('getFile', { id: inv.pdfFile.id });
+  const bin = atob(j.data), bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new Blob([bytes], { type: 'application/pdf' });
+}
 async function downloadInvoicePdf(id) {
+  const inv0 = db.invoices.find(i => i.id === id);
+  if (inv0 && inv0.pdfFile) {
+    try { saveBlob(await fetchUploadedPdf(inv0), inv0.pdfFile.name); }
+    catch (e) { toast('The uploaded PDF could not be opened: ' + e.message, 'err'); }
+    return;
+  }
   if (!window.jspdf) { toast('The PDF tool did not load. Check your internet connection and reload the page.', 'err'); return; }
   const inv = db.invoices.find(i => i.id === id), logo = await invoiceLogo();
   makeInvoicePdf(inv, logo).save(invFile(inv) + '.pdf');
@@ -1999,7 +2044,7 @@ async function mailCheckSender() {
     const j = await api('mailInfo');
     ui.mailFrom = j;
     if (!$('#mFrom')) return;
-    el.innerHTML = `<b>Send now</b> sends from ${esc(j.fromName)} &lt;${esc(j.from)}&gt;. Replies go to ${esc(j.replyTo || j.from)}. ${j.quotaLeft} emails left today.`
+    el.innerHTML = `<b>Send now</b> sends from ${esc(j.fromName)} &lt;${esc(j.from)}&gt;${j.via === 'microsoft' ? ' via Microsoft 365 (a copy goes to its Sent Items)' : ''}. Replies go to ${esc(j.replyTo || j.from)}.${j.via === 'microsoft' ? '' : ` ${j.quotaLeft} emails left today.`}`
       + (j.aliasMissing ? ' <span style="color:var(--amber)">The "Send as" address in Settings isn\u2019t set up in that Gmail yet, so it uses the Gmail address.</span>' : '');
     btn.disabled = false;
   } catch (e) {
@@ -2017,13 +2062,13 @@ async function mailSendNow() {
   if (!await ask(`Send this email now?\n\nTo: ${to}${$('#mCc').value.trim() ? '\nCc: ' + $('#mCc').value.trim() : ''}${$('#mBcc').value.trim() ? '\nBcc: ' + $('#mBcc').value.trim() : ''}\nFrom: ${f.fromName || ''} <${f.from || ''}>\nAttachments: ${n}`, 'Send now')) return;
   const btn = $('#mSendBtn'); btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>Sending…';
   try {
-    const logo = await sigLogo(), atts = await mailAttachments();
-    const files = [];
-    for (const a of atts) files.push({ name: a.name, mime: a.type, data: bufToB64(await a.blob.arrayBuffer()) });
+    const logo = await sigLogo(), atts = await mailAttachments(true);
+    const files = [], driveFiles = atts.filter(a => a.driveId).map(a => a.driveId);
+    for (const a of atts.filter(x => !x.driveId)) files.push({ name: a.name, mime: a.type, data: bufToB64(await a.blob.arrayBuffer()) });
     const body = $('#mBody').value, e = emailCfg();
     const text = body.replace(/\*\*(.+?)\*\*/g, '$1') + `\n\n${e.sigName}\n${e.sigTitle}\n${e.sigCompany}\nE ${e.sigEmail}`;
     const j = await api('sendEmail', { to, cc: $('#mCc').value.trim(), bcc: $('#mBcc').value.trim(), subject: subj, text,
-      html: emailHtml(body, logo ? 'cid:sigLogo' : null), logo: logo ? logo.split(',')[1] : '', files });
+      html: emailHtml(body, logo ? 'cid:sigLogo' : null), logo: logo ? logo.split(',')[1] : '', files, driveFiles });
     toast(`Email sent to ${j.to}.`, 'ok');
     mailAfter({ at: Date.now(), to, subject: subj, by: cu().id, attachments: atts.map(a => a.name) });
   } catch (err) {
@@ -2036,7 +2081,9 @@ function mailApplyTpl() {
   if (!t) return;
   $('#mSubj').value = fillVars(t.subject, v); $('#mBody').value = fillVars(t.body, v);
   const inc = k => inv && (t.invoice === k || t.invoice === 'both');
-  $('#mAtt').innerHTML = (inv ? `<label><input type="checkbox" name="mA" value="inv:pdf" ${inc('pdf') ? 'checked' : ''}> Invoice PDF <small>${esc(invFile(inv))}.pdf</small></label>
+  const up = inv && inv.pdfFile;
+  $('#mAtt').innerHTML = (up ? `<label><input type="checkbox" name="mA" value="up:pdf" ${inc('pdf') ? 'checked' : ''}> <i class="fa-solid fa-paperclip"></i> Uploaded invoice PDF <small>${esc(up.name)}</small></label>` : '')
+    + (inv ? `<label><input type="checkbox" name="mA" value="inv:pdf" ${inc('pdf') && !up ? 'checked' : ''}> ${up ? 'CRM-generated' : 'Invoice'} PDF <small>${esc(invFile(inv))}.pdf</small></label>
       <label><input type="checkbox" name="mA" value="inv:docx" ${inc('docx') ? 'checked' : ''}> Invoice Word <small>${esc(invFile(inv))}.docx</small></label>` : '')
     + (t.files || []).map(f => `<label><input type="checkbox" name="mA" value="file:${esc(f)}" checked> ${esc(f.split('/').pop())} <small>from your website</small></label>`).join('')
     + ui.mail.extra.map((f, i) => `<label><input type="checkbox" name="mA" value="extra:${i}" checked> ${esc(f.name)} <small>${Math.round(f.size / 1024)} KB, from this computer</small></label>`).join('')
@@ -2052,11 +2099,12 @@ function mailAddFiles(input) {
   mailApplyTpl(); $('#mBody').value = body; $('#mSubj').value = subj; mailPreview();
   keep.forEach(([v, on]) => { const x = document.querySelector(`[name=mA][value="${CSS.escape(v)}"]`); if (x) x.checked = on; });
 }
-async function mailAttachments() {
+async function mailAttachments(forServer) {
   const out = [], missing = [], { inv } = ui.mail;
   for (const x of document.querySelectorAll('[name=mA]:checked')) {
     const [kind, ...rest] = x.value.split(':'), ref = rest.join(':');
-    if (kind === 'inv' && ref === 'pdf') out.push({ name: invFile(inv) + '.pdf', type: 'application/pdf', blob: makeInvoicePdf(inv, await invoiceLogo()).output('blob') });
+    if (kind === 'up') out.push(forServer ? { name: inv.pdfFile.name, driveId: inv.pdfFile.id } : { name: inv.pdfFile.name, type: 'application/pdf', blob: await fetchUploadedPdf(inv) });
+    else if (kind === 'inv' && ref === 'pdf') out.push({ name: invFile(inv) + '.pdf', type: 'application/pdf', blob: makeInvoicePdf(inv, await invoiceLogo()).output('blob') });
     else if (kind === 'inv' && ref === 'docx') out.push({ name: invFile(inv) + '.docx', type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', blob: await buildInvoiceDocx(inv) });
     else if (kind === 'extra') { const f = ui.mail.extra[+ref]; out.push({ name: f.name, type: f.type || 'application/octet-stream', blob: f }); }
     else if (kind === 'file') {
@@ -2167,7 +2215,7 @@ async function checkSending(btn) {
   try {
     await flushQueue();
     const j = await api('mailInfo');
-    out.innerHTML = `Ready. Sends from <b>${esc(j.fromName)} &lt;${esc(j.from)}&gt;</b>, replies to ${esc(j.replyTo || j.from)}. ${j.quotaLeft} emails left today.`
+    out.innerHTML = `Ready. Sends from <b>${esc(j.fromName)} &lt;${esc(j.from)}&gt;</b>${j.via === 'microsoft' ? ' via Microsoft 365' : ' via Gmail'}, replies to ${esc(j.replyTo || j.from)}.${j.via === 'microsoft' ? '' : ` ${j.quotaLeft} emails left today.`}`
       + (j.aliasMissing ? ' <span style="color:var(--amber)">The Send as address isn\u2019t set up in that Gmail yet.</span>' : '');
   } catch (e) { out.textContent = /older version/.test(e.message) ? 'Update Apps Script with the new Code.gs (version 4), then run authorizeEmail once.' : e.message; }
   btn.disabled = false;
